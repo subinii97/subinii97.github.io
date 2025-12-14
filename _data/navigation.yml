@@ -1,19 +1,28 @@
 # main links
 main:
   - title: "Posts"
-    url: /posts
+    url: /posts/
+    children:
+      - title: "Travel"
+        url: /posts/travel/
+      - title: "Study"
+        url: /posts/study/
+      - title: "Transition"
+        url: /posts/transition/
+      - title: "Diary"
+        url: /posts/diary/
   - title: "Tags"
     url: /tags/
 
-posts:
-  - title: "Posts"
-    children:
-      - title: "Travel"
-        url: /travel/
-      - title: "Study"
-        url: /study/
-      - title: "Transition"
-        url: /transition/
-      - title: "Diary"
-        url: /diary/
-        
+#posts:
+#  - title: "Posts"
+#    children:
+#      - title: "Travel"
+#        url: /posts/travel/
+#      - title: "Study"
+#        url: /posts/study/
+#      - title: "Transition"
+#        url: /posts/transition/
+#      - title: "Diary"
+#        url: /posts/diary/
+#        

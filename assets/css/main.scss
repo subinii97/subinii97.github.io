@@ -6,6 +6,25 @@ search: false
 @charset "utf-8";
 
 @import "minimal-mistakes/skins/{{ site.minimal_mistakes_skin | default: 'default' }}"; // skin
+@import "minimal-mistakes/skins/air";
+
+$background-color: #ffffff;
+$text-color: #111827;
+$muted-text-color: #6b7280;
+
+$primary-color: #6550a2;
+
+$link-color: #374151;
+$link-color-hover: $primary-color;
+
+$border-color: rgba(0,0,0,.06);
+/* Footer colors */
+/*$footer-background-color: #F7A8B8;*/
+$footer-background-color: #6550a2;
+$footer-text-color: #6b7280;
+$footer-link-color: #374151;
+$footer-link-color-hover: #F7A8B8;
+
 @import "minimal-mistakes"; // main partials
 
 .page__content,
@@ -126,3 +145,14 @@ figcaption{
 
 .nav__list li{ opacity: 1; }
 .nav__list li:hover{ opacity: 1; }
+
+/* Remove underline from post titles */
+.archive__item-title a,
+.page__title a,
+h1 a,
+h2 a,
+h3 a {
+  text-decoration: none !important;
+  border-bottom: none !important;
+  box-shadow: none !important;
+}

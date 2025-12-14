@@ -7,3 +7,109 @@ search: false
 
 @import "minimal-mistakes/skins/{{ site.minimal_mistakes_skin | default: 'default' }}"; // skin
 @import "minimal-mistakes"; // main partials
+
+.page__content,
+.arcive__item-excerpt {
+    font-size: 18px;
+    line-height: 1.7;
+}
+
+/* 문단 마진 때문에 길어 보이면 이것도 */
+.archive .archive__item-excerpt p {
+  margin: 0 !important;
+}
+
+.year__title {
+  display: none;
+  font-size: 1.4rem;
+  margin-top: 3rem;
+}
+
+/* share option off */
+.page__share { display: none !important; }
+
+/* Minimal card-style recent posts */
+@media (min-width: 900px){
+  .recent-cards{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: .6rem;
+    max-width: 720px;
+    margin: 1rem;
+  }
+
+  .recent-card{
+    margin-bottom: 0;
+  }
+}
+.recent-cards{
+  margin-top: 1rem auto;
+  max-width: 720px;
+}
+
+.recent-card{
+  display: block;
+  padding: .6rem .7rem;
+  margin-bottom: .6rem;
+  border: 1px solid rgba(0,0,0,.08);
+  border-radius: 14px;
+  text-decoration: none;
+  background: transparent;
+  transition: border-color .15s ease, background .15s ease;
+}
+
+.recent-card:hover{
+  background: rgba(247, 168, 184, 0.12); /* trans pink */
+  border-color: #F7A8B8;
+}
+
+.recent-card-title{
+  font-weight: 600;
+  line-height: 1.35;
+  color: #111;
+}
+
+.recent-card-meta{
+  margin-top: .15rem;
+  font-size: .75em;
+  font-weight: 500;
+  color: rgba(0,0,0,.6);
+}
+
+/* Kill underline for Recent cards (definitive) */
+.recent-card,
+.recent-card:hover,
+.recent-card:focus,
+.recent-card:active,
+.recent-card a,
+.recent-card a:hover,
+.recent-card a:focus,
+.recent-card a:active {
+  text-decoration: none !important;
+  box-shadow: none !important;
+}
+
+.page__title{
+  font-size: 1.9rem;
+  line-height: 1.25;
+}
+
+.page__lead{
+  font-size: .85em;
+  line-height: 1.4;
+  opacity: .9;
+}
+
+.page__content figure{
+  max-width: 720px;
+  margin: 1.5rem auto;
+}
+
+.page__content figure img{
+  width: 100%;
+  height: auto;
+}
+
+figcaption{
+  font-size: 0.8em;
+}

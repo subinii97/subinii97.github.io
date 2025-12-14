@@ -8,8 +8,8 @@ sidebar:
 classes: posts-cards
 ---
 
-{% assign sections = "Travel,Transition,Study,Diary" | split: "," %}
-{% assign limit_n = 3 %}
+{% assign sections = "Travel,Transition,Diary,Study" | split: "," %}
+{% assign limit_n = 5 %}
 
 {% for cat in sections %}
 ## {{ cat }}

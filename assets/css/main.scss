@@ -113,3 +113,16 @@ search: false
 figcaption{
   font-size: 0.8em;
 }
+
+/* Sidebar nav: only the hovered item gets darker */
+.nav__list li > a{
+  transition: color .15s ease;
+}
+
+.nav__list li > a:hover,
+.nav__list li > a:focus{
+  color: #000;
+}
+
+.nav__list li{ opacity: 1; }
+.nav__list li:hover{ opacity: 1; }

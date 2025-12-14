@@ -196,14 +196,14 @@ h3 a {
 /* ===============================
    9) Posts page custom list → subtle cards
    =============================== */
-.page__content ul {
+.posts-cards .page__content ul {
   list-style: none;
   padding-left: 0;
   max-width: 500px;
   margin-left: 1rem;
 }
 
-.page__content ul > li {
+.posts-cards .page__content ul > li {
   border: 1px solid rgba(0, 0, 0, .1);
   border-radius: 10px;
   padding: .3rem .9rem;
@@ -213,13 +213,14 @@ h3 a {
   font-weight: 600;
 }
 
-.page__content ul > li a {
+.posts-cards .page__content ul > li a {
   text-decoration: none !important;
   border-bottom: none !important;
   box-shadow: none !important;
 }
 
-.page__content ul > li:hover {
+.posts-cards .page__content ul > li:hover {
   border-color: #6550a2;
   background: #eeecf5;
 }
+

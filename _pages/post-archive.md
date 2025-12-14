@@ -5,6 +5,7 @@ permalink: /posts/
 author_profile: false
 sidebar:
   nav: "posts"
+classes: posts-cards
 ---
 
 {% assign sections = "Travel,Transition,Study,Diary" | split: "," %}

@@ -17,6 +17,9 @@ In this website, I would like to introduce myself and share my daily experiences
 The contents are kinds of random, but you might enjoy if you have some time to look around.
 Please take a look with comfort mind and have a nice day! :)
 
+안녕하세요. 저의 블로그에 오신 것을 환영합니다. 다양한 주제의 글이 있으니 편하게 둘러보셨으면 좋겠습니다. 행복한 하루 되세요! :)
+
+
 {% include figure
    image_path="/assets/img/bicycle.jpeg"
    alt="bicycle"
@@ -24,7 +27,7 @@ Please take a look with comfort mind and have a nice day! :)
 
 ## Recent Posts
 <div class="recent-cards">
-{% for post in site.posts limit:5 %}
+{% for post in site.posts limit:4 %}
   <a class="recent-card" href="{{ post.url | relative_url }}">
     <div class="recent-card-title">{{ post.title }}</div>
     <div class="recent-card-meta">

@@ -1,40 +1,39 @@
-{% case site.category_archive.type %}
-  {% when "liquid" %}
-    {% assign path_type = "#" %}
-  {% when "jekyll-archives" %}
-    {% assign path_type = nil %}
-{% endcase %}
-
-{% if page.collection != 'posts' %}
-  {% assign path_type = nil %}
-  {% assign crumb_path = '/' %}
-{% else %}
-  {% assign crumb_path = site.category_archive.path %}
-{% endif %}
-
+{% unless page.breadcrumbs == false %}
 <nav class="breadcrumbs">
-  <ol itemscope itemtype="https://schema.org/BreadcrumbList">
-    {% assign crumbs = page.url | split: '/' %}
-    {% assign i = 1 %}
-    {% for crumb in crumbs offset: 1 %}
-      {% if forloop.first %}
-        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-          <a href="{{ '/' | relative_url }}" itemprop="item"><span itemprop="name">{{ site.data.ui-text[site.locale].breadcrumb_home_label | default: "Home" }}</span></a>
+  <ol class="breadcrumbs__list">
 
-          <meta itemprop="position" content="{{ i }}" />
-        </li>
-        <span class="sep">{{ site.data.ui-text[site.locale].breadcrumb_separator | default: "/" }}</span>
-      {% endif %}
-      {% if forloop.last %}
-        <li class="current"{% if page.locale %} lang="{{ page.locale }}"{% endif %}>{{ page.title }}</li>
-      {% else %}
-        {% assign i = i | plus: 1 %}
-        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-          <a href="{{ crumb | downcase | replace: '%20', '-' | prepend: path_type | prepend: crumb_path | relative_url }}" itemprop="item"><span itemprop="name">{{ crumb | url_decode | replace: '-', ' ' | capitalize }}</span></a>
-          <meta itemprop="position" content="{{ i }}" />
-        </li>
-        <span class="sep">{{ site.data.ui-text[site.locale].breadcrumb_separator | default: "/" }}</span>
-      {% endif %}
-    {% endfor %}
+    <!-- Home -->
+    <li class="breadcrumbs__item">
+      <a href="{{ '/' | relative_url }}">Home</a>
+    </li>
+
+    <!-- Posts: /posts/ 아래라면 항상 표시 -->
+    {% if page.url contains '/posts/' %}
+      <li class="breadcrumbs__item">
+        <span class="sep">/</span>
+        <a href="{{ '/posts/' | relative_url }}">Posts</a>
+      </li>
+    {% endif %}
+
+    <!-- Category: posts(글)에서만 첫 카테고리를 /posts/<cat>/로 -->
+    {% if page.collection == "posts" and page.categories and page.categories.size > 0 %}
+      {% assign c = page.categories[0] %}
+      <li class="breadcrumbs__item">
+        <span class="sep">/</span>
+        <a href="{{ '/posts/' | append: c | append: '/' | relative_url }}">
+          {{ c | capitalize }}
+        </a>
+      </li>
+    {% endif %}
+
+    <!-- Current page: /posts/ 자체에서는 중복 방지 -->
+    {% unless page.url == '/posts/' %}
+      <li class="breadcrumbs__item breadcrumbs__item--current">
+        <span class="sep">/</span>
+        {{ page.title }}
+      </li>
+    {% endunless %}
+
   </ol>
 </nav>
+{% endunless %}

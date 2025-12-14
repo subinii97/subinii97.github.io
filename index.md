@@ -11,6 +11,8 @@ header:
 <meta http-equiv="expires" content="0" />
 <meta http-equiv="pragma" content="no-cache" />
 
+
+
 ## Hello. Nice to meet you!
 
 In this website, I would like to introduce myself and share my daily experiences.
@@ -19,11 +21,9 @@ Please take a look with comfort mind and have a nice day! :)
 
 안녕하세요. 저의 블로그에 오신 것을 환영합니다. 다양한 주제의 글이 있으니 편하게 둘러보셨으면 좋겠습니다. 행복한 하루 되세요! :)
 
-
-{% include figure
-   image_path="/assets/img/bicycle.jpeg"
-   alt="bicycle"
-%}
+<figure>
+  <img src="/assets/img/bicycle.jpeg" alt="bicycle">
+</figure>
 
 ## Recent Posts
 <div class="recent-cards">

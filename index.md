@@ -34,7 +34,7 @@ Please take a look with comfort mind and have a nice day! :)
   <a class="recent-card" href="{{ post.url | relative_url }}">
     <div class="recent-card-title">{{ post.title }}</div>
     <div class="recent-card-meta">
-      {{ post.date | date: "%Y.%m.%d" }}
+      Updated: {{ post.last_modified_at | date: "%Y.%m.%d %H:%M" }}
     </div>
   </a>
 {% endfor %}

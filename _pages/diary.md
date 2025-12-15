@@ -8,4 +8,4 @@ sidebar:
   nav: "posts"
 ---
 {% include back-to-posts.html %}
-% include post-cards.html %}
+{% include post-cards.html %}

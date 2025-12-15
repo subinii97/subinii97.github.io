@@ -27,18 +27,7 @@ Please take a look with comfort mind and have a nice day! :)
 </figure>
 
 <div class="home-recent">
-<h2 class="recent-title">Recently Updated</h2>
-<div class="recent-cards">
-{% assign recent_posts = site.posts | sort: "last_modified_at" | reverse %}
-{% for post in recent_posts limit: 4 %}
-  <a class="recent-card" href="{{ post.url | relative_url }}">
-    <div class="recent-card-title">{{ post.title }}</div>
-    <div class="recent-card-meta">
-      Updated: {{ post.last_modified_at | date: "%Y.%m.%d %H:%M" }}
-      <!-- {{ post.title }} | {{ post.last_modified_at | date: "%s" }} -->
-    </div>
-  </a>
-{% endfor %}
-</div>
+  <h3 class="recent-title">Recently Updated</h3>
+  {% include recent-cards.html limit=4 %}
 </div>
 

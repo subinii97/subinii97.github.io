@@ -1,0 +1,32 @@
+{%- assign n = include.limit | default: 4 -%}
+
+{%- comment -%}
+Build sortable keys as "EPOCH|TITLE|URL" then sort/reverse.
+This makes ordering stable and correct across local/Actions.
+{%- endcomment -%}
+
+{%- assign items = "" | split: "" -%}
+
+{%- for post in site.posts -%}
+  {%- assign epoch = post.last_modified_at | date: "%s" -%}
+  {%- assign key = epoch | append: "|" | append: post.title | append: "|" | append: post.url -%}
+  {%- assign items = items | push: key -%}
+{%- endfor -%}
+
+{%- assign items = items | sort | reverse -%}
+
+<div class="recent-cards {% if include.class %}{{ include.class }}{% endif %}">
+  {%- for it in items limit: n -%}
+    {%- assign parts = it | split: "|" -%}
+    {%- assign epoch = parts[0] -%}
+    {%- assign title = parts[1] -%}
+    {%- assign url = parts[2] -%}
+
+    <a class="recent-card" href="{{ url | relative_url }}">
+      <div class="recent-card-title">{{ title }}</div>
+      <div class="recent-card-meta">
+        Updated: {{ epoch | plus: 0 | date: "%Y.%m.%d %H:%M" }}
+      </div>
+    </a>
+  {%- endfor -%}
+</div>

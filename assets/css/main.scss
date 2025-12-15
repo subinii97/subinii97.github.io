@@ -393,3 +393,63 @@ h3 a {
   .home-recent { display: none; }
   .home-right  { display: block; }
 }
+
+
+/* ===== Restore MM layout behavior: do NOT grid the whole single layout ===== */
+.layout--single,
+.layout--single .page__inner-wrap,
+.layout--single .initial-content{
+  display: block !important; /* 혹시 남아있던 grid/flex 강제 해제 */
+}
+
+/* ===== Right pane recent: safe width & no overlap ===== */
+@media (min-width: 1024px){
+  .sidebar__right{
+    width: 320px;           /* 원하는 폭 */
+    max-width: 320px;
+  }
+
+  .sidebar__right .home-right{
+    width: 100%;
+  }
+
+  .sidebar__right .recent-cards--right{
+    width: 100%;
+    gap: 0rem;
+  }
+
+  .sidebar__right .recent-card{
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* title/meta 겹침 방지 */
+  .sidebar__right .recent-title{
+    display: block;
+    margin: 0 0 .75rem 0;
+  }
+}
+@media (min-width: 1024px){
+  /* Push the entire right sidebar away from the main content */
+  .layout--single .sidebar__right{
+    padding-left: 1.5rem;   /* ✅ 추천: 1.5~3rem */
+    margin-left: 0;       /* 충돌 방지 */
+  }
+}
+
+/* Prevent content from expanding when right sidebar drops */
+@media (max-width: 1023px){
+  .layout--single .page__inner-wrap{
+    max-width: 720px;   /* ⭐ 지금 네가 보기 좋은 본문 폭 */
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+@media (max-width: 640px){
+  .layout--single .page__inner-wrap{
+    max-width: none;
+
+  }
+}
+

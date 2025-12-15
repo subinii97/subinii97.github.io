@@ -344,3 +344,5 @@ defaults:
 
 date_format: "%Y-%m-%d"
 share: false
+last-modified-at:
+    date-format: "%Y-%m-%d"

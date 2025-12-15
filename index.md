@@ -6,6 +6,7 @@ excerpt: "I am a person with full of curiosity. I pursue everyone's happiness an
 header:
   overlay_image: /assets/img/chamonix.jpeg
   overlay_filter: 0.4
+show_home_recent: true
 ---
 <meta http-equiv="cache-control" content="no-cache" />
 <meta http-equiv="expires" content="0" />
@@ -25,9 +26,11 @@ Please take a look with comfort mind and have a nice day! :)
   <img src="/assets/img/bicycle.jpeg" alt="bicycle">
 </figure>
 
-## Recent Posts
+<div class="home-recent">
+<h2 class="recent-title">Recently Updated</h2>
 <div class="recent-cards">
-{% for post in site.posts limit:4 %}
+{% assign recent_posts = site.posts | sort: "last_modified_at" | reverse %}
+{% for post in recent_posts limit: 4 %}
   <a class="recent-card" href="{{ post.url | relative_url }}">
     <div class="recent-card-title">{{ post.title }}</div>
     <div class="recent-card-meta">
@@ -36,3 +39,5 @@ Please take a look with comfort mind and have a nice day! :)
   </a>
 {% endfor %}
 </div>
+</div>
+

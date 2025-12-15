@@ -6,6 +6,7 @@ author_profile: true
 sidebar:
   nav: "profile"
 toc: true
+toc_sticky: true
 use_math: true
 header:
   overlay_image: /assets/img/tromso.jpeg

@@ -344,3 +344,52 @@ h3 a {
   inset: 0;              /* li 전체 덮기 */
   cursor: pointer;
 }
+.recent-cards--right{
+  max-width: 100%;
+  margin: .5rem 0 0;
+}
+
+/* =========================
+   Home Recent: show once
+   ========================= */
+
+/* mobile default */
+.home-recent { display: block; }
+.home-right { display: none; }
+
+/* desktop */
+@media (min-width: 1024px){
+  .home-recent { display: none; }
+  .home-right { display: block; }
+}
+.sidebar__right .recent-cards{
+  display: flex !important;
+  flex-direction: column !important;
+  gap: .6rem;
+}
+/* Compact recent cards in right sidebar only */
+.sidebar__right .recent-card{
+  padding: .45rem .55rem;   /* 카드 높이 줄이기 */
+  border-radius: 10px;
+}
+
+.sidebar__right .recent-card-title{
+  font-size: .9em;          /* 제목 작게 */
+  line-height: 1.3;
+}
+
+.sidebar__right .recent-card-meta{
+  font-size: .7em;          /* 날짜 더 작게 */
+  margin-top: .1rem;
+}
+/* Home Recent: show ONLY one version depending on width */
+
+/* default (tablet/mobile): show inline (below content), hide right */
+.home-recent { display: block; }
+.home-right  { display: none; }
+
+/* wide desktop: show right, hide inline */
+@media (min-width: 1280px){
+  .home-recent { display: none; }
+  .home-right  { display: block; }
+}

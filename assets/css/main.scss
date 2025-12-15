@@ -328,3 +328,19 @@ h3 a {
   color: #6550a2 !important;
   -webkit-text-fill-color: currentColor;
 }
+/* Make entire li clickable (including date outside the link) */
+.posts-cards .page__content ul > li{
+  position: relative;
+}
+
+.posts-cards .page__content ul > li .post-link{
+  position: static; /* 안전 */
+}
+
+/* overlay click area */
+.posts-cards .page__content ul > li .post-link::after{
+  content: "";
+  position: absolute;
+  inset: 0;              /* li 전체 덮기 */
+  cursor: pointer;
+}

@@ -26,6 +26,11 @@ jobs:
         with:
           ruby-version: '3.2' # 최신 버전을 권장합니다
           bundler-cache: true
+      
+      - name: Debug git history
+        run: |
+          git rev-parse --is-shallow-repository
+          git log -1 --pretty=oneline
 
       - name: Build the site
         # `--baseurl`을 여기서 직접 설정하지 않습니다.

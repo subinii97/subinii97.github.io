@@ -1,3 +1,0 @@
-- uses: actions/checkout@v4
-  with:
-    fetch-depth: 0   # ✅ 전체 git 히스토리 가져오기 (last_modified_at 정확해짐)

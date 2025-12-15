@@ -36,6 +36,9 @@ jobs:
         # `--baseurl`을 여기서 직접 설정하지 않습니다.
         # GitHub Pages가 알아서 경로를 처리합니다.
         run: bundle exec jekyll build
+        env:
+          JEKYLL_ENV: production
+          TZ: Asia/Seoul
 
       - name: Upload artifact
         # 빌드된 결과물(_site 폴더)을 배포 단계로 전달합니다

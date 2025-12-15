@@ -35,6 +35,7 @@ Please take a look with comfort mind and have a nice day! :)
     <div class="recent-card-title">{{ post.title }}</div>
     <div class="recent-card-meta">
       Updated: {{ post.last_modified_at | date: "%Y.%m.%d %H:%M" }}
+      <!-- {{ post.title }} | {{ post.last_modified_at | date: "%s" }} -->
     </div>
   </a>
 {% endfor %}

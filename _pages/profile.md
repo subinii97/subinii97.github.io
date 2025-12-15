@@ -7,6 +7,9 @@ sidebar:
   nav: "profile"
 toc: true
 use_math: true
+header:
+  overlay_image: /assets/img/tromso.jpeg
+  overlay_filter: 0.1
 ---
 
 ## Subin Lim

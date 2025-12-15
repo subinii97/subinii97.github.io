@@ -6,6 +6,8 @@ author_profile: false
 sidebar:
   nav: "posts"
 classes: posts-cards
+header:
+  overlay_image: /assets/img/nz_remarkable.jpeg
 ---
 
 {% assign sections = "Travel,Transition,Diary,Study" | split: "," %}

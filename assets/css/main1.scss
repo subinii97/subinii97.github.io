@@ -8,6 +8,8 @@ search: false
 /* ===============================
    1) Skin
    =============================== */
+/* Air 스킨을 사용 중이므로 중복 import 방지를 위해 하나만 남기는 것이 좋습니다.
+   기존 동작 유지를 원하시면 위쪽 import 주석을 해제하세요. */
 /* @import "minimal-mistakes/skins/{{ site.minimal_mistakes_skin | default: 'default' }}"; */
 @import "minimal-mistakes/skins/air";
 
@@ -30,12 +32,6 @@ $footer-background-color: #6550a2;
 $footer-text-color: #6b7280;
 $footer-link-color: #374151;
 $footer-link-color-hover: #F7A8B8;
-
-/* ===============================
-   Variables for Radius
-   =============================== */
-$radius-card: 14px;  /* 요청하신 기존 카드 곡률(14px)로 통일 */
-$radius-pill: 999px; /* 버튼 알약 모양 */
 
 /* ===============================
    3) Theme core
@@ -129,6 +125,7 @@ h3 a {
    8) Recent posts cards (Integrated)
    =============================== */
 .recent-cards {
+  /* margin-top: 1rem auto; 는 잘못된 문법이므로 수정 */
   margin: 1rem auto;
   max-width: 720px;
 }
@@ -138,7 +135,7 @@ h3 a {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: .6rem;
-    margin: 1rem;
+    margin: 1rem; /* max-width는 위에서 상속 */
   }
 
   .recent-card {
@@ -152,17 +149,19 @@ h3 a {
   padding: .6rem .7rem;
   margin-bottom: .6rem;
   border: 1px solid rgba(0, 0, 0, .08);
-  border-radius: $radius-card; /* 14px 적용 */
-  text-decoration: none !important;
+  border-radius: 14px;
+  text-decoration: none !important; /* 강제 적용 통합 */
   background: transparent;
   transition: border-color .15s ease, background .15s ease;
   box-shadow: none !important;
+  
+  /* Category child pages용 width 설정 (필요 시) */
   box-sizing: border-box;
 }
 
 /* Card Hover State */
 .recent-card:hover {
-  background: #eeecf5;
+  background: #eeecf5; /* trans pink */
   border-color: #6550a2;
 }
 
@@ -178,30 +177,31 @@ h3 a {
   font-weight: 600;
   line-height: 1.35;
   color: #111;
-  margin-left: .5rem;
-  transition: color .15s ease;
+  margin-left: .5rem; /* Section 9에서 이동 */
+  transition: color .15s ease; /* Section 9에서 이동 */
 }
 
+/* Hover 시 Title 색상 변경 */
 .recent-card:hover .recent-card-title {
   color: #6550a2;
 }
 
-/* Card Meta */
+/* Card Meta (Date, etc.) */
 .recent-card-meta {
   margin-top: .15rem;
-  margin-left: .5rem;
+  margin-left: .5rem; /* Section 9에서 이동 */
   font-size: .8em;
   font-weight: 500;
   color: rgba(0, 0, 0, .6);
 }
 
-/* Card Excerpt */
+/* Card Excerpt (Section 9에서 이동) */
 .recent-card-excerpt {
   margin-top: .25rem;
   margin-left: .5rem;
   font-size: .8em;
   line-height: 1.45;
-  color: #6b7280;
+  color: #6b7280; /* muted */
 }
 
 /* ===============================
@@ -216,7 +216,7 @@ h3 a {
 
 .posts-cards .page__content ul > li {
   border: 1px solid rgba(0, 0, 0, .1);
-  border-radius: $radius-card; /* 14px 적용 */
+  border-radius: 10px;
   padding: .3rem .9rem;
   margin-bottom: .5rem;
   width: 100%;
@@ -245,16 +245,12 @@ h3 a {
   width: 100%;
 }
 
-/* ===============================
-   10) Buttons (Unified)
-   =============================== */
-.back-to-posts,
-.pill-btn {
+.back-to-posts{
   display: inline-block;
   margin: .5rem 0 1rem;
   padding: .35rem .6rem;
   border: 1px solid rgba(0,0,0,.08);
-  border-radius: $radius-pill; /* 알약 모양 */
+  border-radius: 999px;
   text-decoration: none !important;
   box-shadow: none !important;
   font-size: .85em;
@@ -263,68 +259,28 @@ h3 a {
   transition: border-color .15s ease, background .15s ease, color .15s ease;
 }
 
-.back-to-posts:hover,
-.pill-btn:hover {
+.back-to-posts:hover{
   border-color: #6550a2;
   background: #eeecf5;
   color: #6550a2;
 }
-
-/* Posts page list: keep title color same even after visited */
-.posts-cards .post-link:visited {
-  color: #a99ecb !important;
-}
-
-/* date style */
-.posts-cards .post-date{
-  margin-left: .5rem;
-  font-size: .7em;
-  color: #6b7280;
-  white-space: nowrap;
-}
-.posts-cards .page__content ul > li{
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: .75rem;
-}
-/* =========================
-   Posts page: lock link colors (NO flicker)
-   ========================= */
-
-/* keep parent text color stable (prevents inherit surprises) */
-.posts-cards .page__content ul > li{
-  color: #111827;
-}
-
-/* base (unread) */
-.posts-cards .page__content ul > li a.post-link{
-  color: #111827 !important;
+/* shared pill button */
+.pill-btn{
+  display: inline-block;
+  margin: .5rem 0 1rem;
+  padding: .35rem .6rem;
+  border: 1px solid rgba(0,0,0,.08);
+  border-radius: 999px;
   text-decoration: none !important;
-  border-bottom: none !important;
   box-shadow: none !important;
-
-  /* flicker killer: don't animate color between states */
-  transition: none !important;
-  -webkit-text-fill-color: currentColor;
+  font-size: .85em;
+  color: #374151;
+  background: transparent;
+  transition: border-color .15s ease, background .15s ease, color .15s ease;
 }
 
-/* visited (read) */
-.posts-cards .page__content ul > li a.post-link:visited{
-  color: #a99ecb !important;
-  -webkit-text-fill-color: currentColor;
-}
-
-/* hover (only when pointer is on the text) */
-.posts-cards .page__content ul > li a.post-link:hover,
-.posts-cards .page__content ul > li a.post-link:focus{
-  color: #6550a2 !important;
-  -webkit-text-fill-color: currentColor;
-}
-
-/* visited + hover */
-.posts-cards .page__content ul > li a.post-link:visited:hover,
-.posts-cards .page__content ul > li a.post-link:visited:focus{
-  color: #6550a2 !important;
-  -webkit-text-fill-color: currentColor;
+.pill-btn:hover{
+  border-color: #6550a2;
+  background: #eeecf5;
+  color: #6550a2;
 }

@@ -1,0 +1,23 @@
+{% assign cat = include.category | default: page.category %}
+{% assign limit = include.limit | default: 9999 %}
+
+{% if cat %}
+  {% assign items = site.posts | where_exp: "p", "p.categories contains cat" %}
+  <div class="post-cards">
+    {% for post in items limit: limit %}
+      <a class="recent-card" href="{{ post.url | relative_url }}">
+        <div class="recent-card-title">{{ post.title }}</div>
+
+        {% if post.excerpt %}
+          <div class="recent-card-excerpt">
+            {{ post.excerpt | strip_html | truncate: 100 }}
+          </div>
+        {% endif %}
+
+        <div class="recent-card-meta">
+          {{ post.date | date: "%Y-%m-%d" }}
+        </div>
+      </a>
+    {% endfor %}
+  </div>
+{% endif %}

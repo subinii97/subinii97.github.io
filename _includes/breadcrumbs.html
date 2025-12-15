@@ -18,11 +18,12 @@
     <!-- Category: posts(글)에서만 첫 카테고리를 /posts/<cat>/로 -->
     {% if page.collection == "posts" and page.categories and page.categories.size > 0 %}
       {% assign c = page.categories[0] %}
+      {% assign c_slug = c | downcase %}
       <li class="breadcrumbs__item">
         <span class="sep">/</span>
-        <a href="{{ '/posts/' | append: c | append: '/' | relative_url }}">
-          {{ c | capitalize }}
-        </a>
+      <a href="{{ '/posts/' | append: c_slug | append: '/' | relative_url }}">
+        {{ c | capitalize }}
+      </a>
       </li>
     {% endif %}
 

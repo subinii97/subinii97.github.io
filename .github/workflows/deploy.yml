@@ -1,9 +1,15 @@
-name: Deploy Jekyll site to Pages
+name: Deploy Jekyll site to Pages (Official Method)
 
 on:
   push:
     branches:
       - main # main 브랜치에 푸시될 때마다 실행
+
+# GITHUB_TOKEN 권한 설정 (읽기/쓰기 권한 필요)
+permissions:
+  contents: read
+  pages: write
+  id-token: write
 
 jobs:
   build:
@@ -13,23 +19,34 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # 모든 git 커밋 기록을 가져오도록 설정 (last-modified-at 플러그인에 필수)
+          fetch-depth: 0 # last-modified-at 플러그인에 필수
 
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: '3.4.7' # 사용 중인 Ruby 버전에 맞게 조정
-          bundler-cache: true # Gemfile.lock을 사용하여 의존성 캐시 및 설치
-
-      - name: Install dependencies
-        run: bundle install
+          ruby-version: '3.2' # 최신 버전을 권장합니다
+          bundler-cache: true
 
       - name: Build the site
+        # `--baseurl`을 여기서 직접 설정하지 않습니다.
+        # GitHub Pages가 알아서 경로를 처리합니다.
         run: bundle exec jekyll build
 
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        if: github.ref == 'refs/heads/main' # main 브랜치에서만 배포
+      - name: Upload artifact
+        # 빌드된 결과물(_site 폴더)을 배포 단계로 전달합니다
+        uses: actions/upload-pages-artifact@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./_site
+          path: './_site'
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        # GitHub 공식 배포 액션을 사용합니다
+        uses: actions/deploy-pages@v4
+

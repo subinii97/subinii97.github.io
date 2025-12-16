@@ -37,7 +37,7 @@ High Energy Physics Experiment, Top quark, Higgs boson, Machine Learning, Beyond
 * March 2020 - August 2022
 * Advisor: Prof. Tae Jeong Kim
 * Dissertation: "Search for charged lepton flavor violation in top quark sector
-with hadronic tau final state using CMS Run 2 data at $$\sqrt{s}$$ = 13 TeV" [[PDF]](https://hanyang.dcollection.net/public_resource/pdf/200000626407_20251215102316.pdf)
+with hadronic tau final state using CMS Run 2 data at $\sqrt{s}$ = 13 TeV" [[PDF]](https://hanyang.dcollection.net/public_resource/pdf/200000626407_20251215102316.pdf)
 * Honored with a Best Dissertation Award.
 
 **Bachelor of Science in Physics**, Hanyang University

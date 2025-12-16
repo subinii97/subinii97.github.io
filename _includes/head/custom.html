@@ -2,4 +2,25 @@
 
 <!-- insert favicons. use https://realfavicongenerator.net/ -->
 
+<!-- 1. MathJax 전역 설정 (inlineMath: ['$', '$'] 포함) -->
+<script>
+  window.MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']],
+      displayMath: [['$$', '$$'], ['\\[', '\\]']],
+      processEscapes: true
+    },
+    options: {
+      ignoreHtmlClass: 'tex2jax_ignore',
+      processHtmlClass: 'tex2jax_process'
+    }
+  };
+</script>
+<!-- 2. MathJax 라이브러리 로드 (이 설정 후에 로드되어야 함) -->
+<script id="MathJax-script" async 
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+</script>
+
+
+
 <!-- end custom head snippets -->

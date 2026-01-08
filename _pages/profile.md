@@ -49,9 +49,7 @@ with hadronic tau final state using CMS Run 2 data at $\sqrt{s}$ = 13 TeV" [[PDF
 
 ### Research Experience
 * Search for the charged lepton flavour violation (CLFV) in the top quark sector using CMS Run 2 data (Jan.2020 - Aug, 2022)
-
 * Learning to increase matching efficiency in identifying additional b-jets in $t\bar{t}b\bar{b}$ process (Feb.2020 - Jul. 2022)
-
 * Identification of additional jets in the $t\bar{t}b\bar{b}$ events by using DNN (Mar.2019 - Nov.2020)
 
 ### Publications

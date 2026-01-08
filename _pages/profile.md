@@ -26,7 +26,7 @@ Dark matter, Higgs boson, neutrino, and so on.
 
 ## Curriculum Vitae
 
-Here is my CV.
+Here is my CV. [[PDF]](/assets/pdf/CV_JongwonLim_Jan062026.pdf)
 
 ### Research Interests
 High Energy Physics Experiment, Top quark, Higgs boson, Machine Learning, Beyond the Standard Model, Precise Measurement, Uncertainty Quantification

@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Subin's blog</title>
+  <meta name="description" content="Subin Lim's personal blog. Profile and Diary.">
+
+  <!-- FontAwesome for Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Main Stylesheet -->
+  <link rel="stylesheet" href="./assets/css/style.css">
+</head>
+
+<body id="main-page-container">
+
+  <!-- Header Logo (Shared or Home Only) -->
+  <header class="main-header" id="blog-logo-header">
+    <h1 class="main-logo">Subin's blog</h1>
+  </header>
+
+  <!-- 1. HOME VIEW (Orbit Layout) -->
+  <div id="home-view" class="view-section">
+    <div class="main-wrapper">
+      <div class="orbit-container">
+
+        <!-- Triple Pendulum Canvas Overlay -->
+        <canvas id="orbit-canvas" width="1300" height="1300"></canvas>
+
+        <!-- Planet Orbit Ring with child satellites -->
+        <div class="orbit-line">
+
+          <!-- Satellite Button 1: Profile -->
+          <div class="orbit-satellite satellite-profile">
+            <button class="orbit-btn" data-target="profile">
+              <span>Profile</span>
+            </button>
+          </div>
+
+          <!-- Satellite Button 2: Diary -->
+          <div class="orbit-satellite satellite-diary">
+            <button class="orbit-btn" data-target="diary">
+              <span>Diary</span>
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. PROFILE VIEW -->
+  <div id="profile-view" class="view-section" style="display: none;">
+    <div class="profile-wrapper container">
+      <!-- Back to home -->
+      <div style="margin-top: 1.5rem; margin-bottom: 1.5rem;">
+        <button class="back-btn" data-target="home">
+          <i class="fas fa-arrow-left"></i> 돌아가기
+        </button>
+      </div>
+
+      <!-- Profile card -->
+      <div class="profile-container">
+        <div class="profile-card glass-card">
+          <!-- Avatar image -->
+          <div class="avatar-container">
+            <img src="./assets/img/avatar.png" alt="Subin Lim" class="avatar-image">
+          </div>
+          <h1 class="profile-name">Subin Lim</h1>
+          <p class="profile-bio">I am a person with full of curiosity. I pursue everyone's happiness and healthiness.
+          </p>
+
+          <!-- Social Contact grid -->
+          <div class="social-grid">
+            <!-- Email -->
+            <a href="mailto:forestsb97@gmail.com" class="social-card">
+              <div class="social-icon-wrapper">
+                <i class="fas fa-envelope"></i>
+              </div>
+              <div class="social-info">
+                <div class="social-label">Email</div>
+                <div class="social-value">forestsb97@gmail.com</div>
+              </div>
+            </a>
+
+            <!-- X (Twitter) -->
+            <a href="https://x.com/limsb97" target="_blank" rel="noopener noreferrer" class="social-card">
+              <div class="social-icon-wrapper">
+                <i class="fa-brands fa-x-twitter"></i>
+              </div>
+              <div class="social-info">
+                <div class="social-label">X / Twitter</div>
+                <div class="social-value">@limsb97</div>
+              </div>
+            </a>
+
+            <!-- GitHub -->
+            <a href="https://github.com/subinii97" target="_blank" rel="noopener noreferrer" class="social-card">
+              <div class="social-icon-wrapper">
+                <i class="fab fa-github"></i>
+              </div>
+              <div class="social-info">
+                <div class="social-label">GitHub</div>
+                <div class="social-value">subinii97</div>
+              </div>
+            </a>
+
+            <!-- Instagram -->
+            <a href="https://instagram.com/" target="_blank" rel="noopener noreferrer" class="social-card">
+              <div class="social-icon-wrapper">
+                <i class="fab fa-instagram"></i>
+              </div>
+              <div class="social-info">
+                <div class="social-label">Instagram</div>
+                <div class="social-value">@subin_lim</div>
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. DIARY VIEW (List & Reader) -->
+  <div id="diary-view" class="view-section" style="display: none;">
+    <div class="diary-wrapper container">
+      <!-- Smart Header Controls -->
+      <header class="diary-header">
+        <button class="back-btn" id="diary-back-btn">
+          <i class="fas fa-arrow-left"></i> 돌아가기
+        </button>
+      </header>
+
+      <!-- Post List Section -->
+      <div id="diary-list-container">
+        <div class="diary-grid">
+          <!-- 1. Left Sidebar: Categories & Search -->
+          <aside class="category-sidebar glass-card">
+            <h3 class="sidebar-title">Categories</h3>
+            <ul class="category-menu" id="category-menu-element">
+              <!-- Populated by JavaScript -->
+            </ul>
+
+            <!-- Search bar located under categories -->
+            <div class="search-container sidebar-search" style="margin-top: 1.5rem; width: 100%;">
+              <i class="fas fa-search"></i>
+              <input type="text" id="diary-search" class="search-input" placeholder="검색">
+            </div>
+          </aside>
+
+          <!-- 2. Right: Post List Section -->
+          <div class="post-list-container-wrapper">
+            <div class="post-list-header-row">
+              <span class="post-list-title">목록</span>
+              <button id="diary-sort-btn" class="sort-btn">
+                <!-- Toggled by JS: "오래된순" (when Desc) or "최신순" (when Asc) -->
+              </button>
+            </div>
+
+            <main class="post-list" id="post-list-element">
+              <!-- Populated by JavaScript -->
+            </main>
+
+            <!-- Pagination Controls -->
+            <div id="diary-pagination" class="pagination-container">
+              <!-- Populated by JavaScript -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Detailed Post Reader View -->
+      <div id="diary-reader-container" class="reader-container">
+        <article class="glass-card" style="padding: 2.5rem 2rem;">
+          <div class="reader-header">
+            <div class="reader-meta">
+              <span id="reader-post-date"></span>
+              <span id="reader-post-category"></span>
+            </div>
+            <h1 class="reader-title" id="reader-post-title">Loading...</h1>
+          </div>
+          <div class="reader-content" id="reader-post-content">
+            <!-- Rendered Markdown goes here -->
+          </div>
+        </article>
+      </div>
+    </div>
+  </div>
+
+  <!-- Marked JS Library from CDN for Client-side Markdown Compilation -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+  <!-- Main Application Script -->
+  <script src="./assets/js/main.js"></script>
+</body>
+
+</html>

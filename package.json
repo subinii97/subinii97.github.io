@@ -1,27 +1,19 @@
 {
-  "name": "minimal-mistakes",
+  "name": "subin-blog",
+  "version": "1.0.0",
+  "description": "Subin Lim's custom personal blog with Orbit UI and Diary markdown parser.",
   "private": true,
-  "version": "4.27.3",
-  "description": "Minimal Mistakes 2 column Jekyll theme.",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/mmistakes/minimal-mistakes.git"
+  "scripts": {
+    "build": "node scripts/build-posts.js",
+    "dev": "npx http-server ./ -p 8085 -c-1",
+    "start": "npm run dev"
   },
   "keywords": [
-    "jekyll",
-    "theme",
-    "minimal"
+    "blog",
+    "custom",
+    "diary",
+    "vanilla-js"
   ],
-  "author": "Michael Rose",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/mmistakes/minimal-mistakes/issues"
-  },
-  "homepage": "https://mmistakes.github.io/minimal-mistakes/",
-  "engines": {
-    "node": ">= 0.10.0"
-  },
-  "devDependencies": {
-    "uglify-js": "^3.17.4"
-  }
+  "author": "Subin Lim",
+  "license": "MIT"
 }

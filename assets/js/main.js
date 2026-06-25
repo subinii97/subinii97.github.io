@@ -211,7 +211,7 @@ function initMainPage() {
     ctx.clearRect(0, 0, designSize, designSize);
 
     // 1. Determine device dimensions
-    const R = isMobile ? 160 : 240; // Increased Orbit ring radius (Desktop 240, Mobile 160)
+    const R = isMobile ? 130 : 240; // Increased Orbit ring radius (Desktop 240, Mobile 130)
 
     // 1.5. Draw matching static orbit ring inside canvas (ensures perfect alignment with pendulum pivot)
     ctx.beginPath();

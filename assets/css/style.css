@@ -258,13 +258,13 @@ header.nav-header {
 /* Mobile support for Orbit */
 @media (max-width: 600px) {
   .orbit-container {
-    width: 400px;
-    height: 400px;
+    width: 320px;
+    height: 320px;
     margin-top: -110px; /* Shift diagram further upwards on mobile */
   }
   .orbit-line {
-    width: 320px;
-    height: 320px;
+    width: 260px;
+    height: 260px;
   }
   .main-header {
     top: 1.5rem;
@@ -280,10 +280,10 @@ header.nav-header {
     margin-left: -55px;
   }
   .satellite-profile {
-    transform: translate(-160px, 0);
+    transform: translate(-130px, 0);
   }
   .satellite-diary {
-    transform: translate(160px, 0);
+    transform: translate(130px, 0);
   }
   .orbit-btn {
     font-size: 1.0rem;

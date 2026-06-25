@@ -80,6 +80,8 @@ function initMainPage() {
   let cx = designSize / 2;
   let cy = designSize / 2;
 
+
+
   function resizeCanvas() {
     isMobile = window.innerWidth <= 600;
     designSize = isMobile ? 850 : 1300;
@@ -92,11 +94,6 @@ function initMainPage() {
     ctx.setTransform(1, 0, 0, 1, 0, 0); // reset scale
     ctx.scale(dpr, dpr);
 
-    // Reset pivot acceleration history to prevent resize-induced spikes
-    x0_prev = null;
-    y0_prev = null;
-    vx0_prev = 0;
-    vy0_prev = 0;
   }
 
   resizeCanvas();
@@ -105,11 +102,6 @@ function initMainPage() {
   // Physics & animation states
   let phi = 0; // Orbit angle (starts at diary (0 radians) and swings to profile (PI radians))
   let omega_phi = 0; // Angular velocity of the pivot
-  let isDraggingPivot = false; // Tracks if Node 0 is being dragged by the mouse/touch
-  let x0_prev = null; // Previous pivot x-position
-  let y0_prev = null; // Previous pivot y-position
-  let vx0_prev = 0; // Previous pivot x-velocity
-  let vy0_prev = 0; // Previous pivot y-velocity
   let frameCount = 0;
 
   // Physics Settings
@@ -144,8 +136,8 @@ function initMainPage() {
     isInitialized = true;
   }
 
-  // Lagrangian Equations of Motion for Triple Pendulum (Calculates angular accelerations with pivot acceleration feedback)
-  function derivatives(ang, omg, L1, L2, L3, ax = 0, ay = 0) {
+  // Lagrangian Equations of Motion for Triple Pendulum (Calculates angular accelerations)
+  function derivatives(ang, omg, L1, L2, L3) {
     const t1 = ang[0];
     const t2 = ang[1];
     const t3 = ang[2];
@@ -167,18 +159,17 @@ function initMainPage() {
     const m33 = mass[3] * L3 * L3;
 
     // Right-Hand Side (RHS) Forces Vector
-    // Incorporates fictitious inertial forces (ax, ay) from moving pivot
     const f1 = -(mass[2] + mass[3]) * L1 * L2 * w2 * w2 * Math.sin(t1 - t2)
       - mass[3] * L1 * L3 * w3 * w3 * Math.sin(t1 - t3)
-      - (mass[1] + mass[2] + mass[3]) * L1 * ((g - ay) * Math.sin(t1) + ax * Math.cos(t1));
+      - (mass[1] + mass[2] + mass[3]) * g * L1 * Math.sin(t1);
 
     const f2 = (mass[2] + mass[3]) * L1 * L2 * w1 * w1 * Math.sin(t1 - t2)
       - mass[3] * L2 * L3 * w3 * w3 * Math.sin(t2 - t3)
-      - (mass[2] + mass[3]) * L2 * ((g - ay) * Math.sin(t2) + ax * Math.cos(t2));
+      - (mass[2] + mass[3]) * g * L2 * Math.sin(t2);
 
     const f3 = mass[3] * L1 * L3 * w1 * w1 * Math.sin(t1 - t3)
       + mass[3] * L2 * L3 * w2 * w2 * Math.sin(t2 - t3)
-      - mass[3] * L3 * ((g - ay) * Math.sin(t3) + ax * Math.cos(t3));
+      - mass[3] * g * L3 * Math.sin(t3);
 
     // Solve linear system M * alpha = F using Cramer's Rule
     const detM = m11 * (m22 * m33 - m23 * m32)
@@ -242,47 +233,16 @@ function initMainPage() {
     const g_pivot = 0.08; // Visual gravity parameter for the pivot
     const a_g = g_pivot / R;
 
-    if (!isDraggingPivot) {
-      omega_phi += a_g * Math.cos(phi);
-      phi += omega_phi;
+    omega_phi += a_g * Math.cos(phi);
+    phi += omega_phi;
 
-      // Normalize phi to stay within [-2*PI, 2*PI] to prevent floating-point precision loss over long runs
-      if (Math.abs(phi) > 2 * Math.PI) {
-        phi = phi % (2 * Math.PI);
-      }
-    } else {
-      omega_phi = 0; // Hold velocity at zero while actively dragging
+    // Normalize phi to stay within [-2*PI, 2*PI] to prevent floating-point precision loss over long runs
+    if (Math.abs(phi) > 2 * Math.PI) {
+      phi = phi % (2 * Math.PI);
     }
 
     const x0 = cx + R * Math.cos(phi);
     const y0 = cy + R * Math.sin(phi);
-
-    // Initialize previous position if it is the first frame
-    if (x0_prev === null) {
-      x0_prev = x0;
-      y0_prev = y0;
-    }
-
-    // Calculate pivot velocity and acceleration (finite differences)
-    const vx0 = x0 - x0_prev;
-    const vy0 = y0 - y0_prev;
-    const ax = vx0 - vx0_prev;
-    const ay = vy0 - vy0_prev;
-
-    // Save states for the next frame
-    x0_prev = x0;
-    y0_prev = y0;
-    vx0_prev = vx0;
-    vy0_prev = vy0;
-
-    // Scale and clamp pivot acceleration to ensure responsive physics without destabilizing RK4
-    const scaleFactor = 0.08; 
-    let ax_phys = ax * scaleFactor;
-    let ay_phys = ay * scaleFactor;
-
-    const maxAccel = 3.0;
-    ax_phys = Math.max(-maxAccel, Math.min(maxAccel, ax_phys));
-    ay_phys = Math.max(-maxAccel, Math.min(maxAccel, ay_phys));
 
     // Initialize node angles if not done
     if (!isInitialized) {
@@ -304,28 +264,28 @@ function initMainPage() {
       const perturb = getChaoticPerturb(step);
 
       // k1
-      const alpha1 = derivatives(angles, omegas, L1, L2, L3, ax_phys, ay_phys);
+      const alpha1 = derivatives(angles, omegas, L1, L2, L3);
       const k1_theta = [...omegas];
       const k1_omega = alpha1.map((a, i) => a + perturb[i]);
 
       // k2
       const temp_theta2 = angles.map((theta, i) => theta + 0.5 * dt * k1_theta[i]);
       const temp_omega2 = omegas.map((omega, i) => omega + 0.5 * dt * k1_omega[i]);
-      const alpha2 = derivatives(temp_theta2, temp_omega2, L1, L2, L3, ax_phys, ay_phys);
+      const alpha2 = derivatives(temp_theta2, temp_omega2, L1, L2, L3);
       const k2_theta = [...temp_omega2];
       const k2_omega = alpha2.map((a, i) => a + perturb[i]);
 
       // k3
       const temp_theta3 = angles.map((theta, i) => theta + 0.5 * dt * k2_theta[i]);
       const temp_omega3 = omegas.map((omega, i) => omega + 0.5 * dt * k2_omega[i]);
-      const alpha3 = derivatives(temp_theta3, temp_omega3, L1, L2, L3, ax_phys, ay_phys);
+      const alpha3 = derivatives(temp_theta3, temp_omega3, L1, L2, L3);
       const k3_theta = [...temp_omega3];
       const k3_omega = alpha3.map((a, i) => a + perturb[i]);
 
       // k4
       const temp_theta4 = angles.map((theta, i) => theta + dt * k3_theta[i]);
       const temp_omega4 = omegas.map((omega, i) => omega + dt * k3_omega[i]);
-      const alpha4 = derivatives(temp_theta4, temp_omega4, L1, L2, L3, ax_phys, ay_phys);
+      const alpha4 = derivatives(temp_theta4, temp_omega4, L1, L2, L3);
       const k4_theta = [...temp_omega4];
       const k4_omega = alpha4.map((a, i) => a + perturb[i]);
 
@@ -429,71 +389,6 @@ function initMainPage() {
 
     requestAnimationFrame(updatePhysicsAndRender);
   }
-
-  // --- Dragging Interactions for Pivot (Node 0) ---
-  function getCanvasCoords(e) {
-    const rect = canvas.getBoundingClientRect();
-    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-
-    const scaleX = designSize / rect.width;
-    const scaleY = designSize / rect.height;
-    return {
-      x: (clientX - rect.left) * scaleX,
-      y: (clientY - rect.top) * scaleY
-    };
-  }
-
-  function handleDragStart(e) {
-    const coords = getCanvasCoords(e);
-    const dx = coords.x - pos[0].x;
-    const dy = coords.y - pos[0].y;
-    const dist = Math.sqrt(dx * dx + dy * dy);
-
-    // Grab target area radius of 50px
-    if (dist < 50) {
-      isDraggingPivot = true;
-      omega_phi = 0;
-      canvas.style.cursor = 'grabbing';
-    }
-  }
-
-  function handleDragMove(e) {
-    const coords = getCanvasCoords(e);
-
-    if (!isDraggingPivot) {
-      // Show pointer hover feedback near pivot
-      const dx = coords.x - pos[0].x;
-      const dy = coords.y - pos[0].y;
-      const dist = Math.sqrt(dx * dx + dy * dy);
-      if (dist < 50) {
-        canvas.style.cursor = 'grab';
-      } else {
-        canvas.style.cursor = 'default';
-      }
-      return;
-    }
-
-    canvas.style.cursor = 'grabbing';
-    e.preventDefault();
-
-    phi = Math.atan2(coords.y - cy, coords.x - cx);
-    omega_phi = 0;
-  }
-
-  function handleDragEnd() {
-    isDraggingPivot = false;
-    canvas.style.cursor = 'default';
-  }
-
-  // Bind mouse and touch events
-  canvas.addEventListener('mousedown', handleDragStart);
-  window.addEventListener('mousemove', handleDragMove, { passive: false });
-  window.addEventListener('mouseup', handleDragEnd);
-
-  canvas.addEventListener('touchstart', handleDragStart, { passive: true });
-  window.addEventListener('touchmove', handleDragMove, { passive: false });
-  window.addEventListener('touchend', handleDragEnd);
 
   updatePhysicsAndRender();
 }

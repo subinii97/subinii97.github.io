@@ -1098,7 +1098,7 @@ header.nav-header {
   transform: translate(-50%, -50%);
   width: 1300px;
   height: 1300px;
-  pointer-events: auto;
+  pointer-events: none;
   z-index: 2; /* Sits behind buttons (z-index 3) and above grey star (z-index 1) */
 }
 

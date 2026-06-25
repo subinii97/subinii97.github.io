@@ -66,12 +66,14 @@ tags: [caraccident]     # TAG names should always be lowercase
 그리고 7월 1일 퇴원을 하고 양평에 있는 재활병원으로 전원을 갔다.
 
 ![Desktop View](119.jpeg){: width="700" height="400" }
+_사설 구급차를 타고 양평 재활병원으로 이동하는 중_
 
 사실 나도 다치긴 했다.
 죄다 오른쪽을 다쳤다.
 손목, 고관절, 무릎, 발목 그리고 허리까지.
 간병할 몸은 아니었지만 더 크게 다친 곳이 마음이었기 때문에 간병을 했다.
 ![Desktop View](accident_diagnosis.png){: width="700" height="400" }
+_교통사고 부상에 대한 상해진단서_
 
 
 

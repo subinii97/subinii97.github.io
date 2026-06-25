@@ -711,13 +711,36 @@ function renderReader(post) {
     // Step 1: Strip Jekyll Kramdown attribute syntax {: width=... height=... }
     let cleanContent = post.content.replace(/\{:\s*[^}]*\}/g, '');
 
-    // Step 2: Pre-process image paths directly in the markdown text
-    //   a) Legacy absolute /assets/img/X paths → ./_posts/X
+    // Step 2: Pre-process image paths and captions directly in the markdown text
+    
+    //   a) Re-map generic 'Desktop View' alt text to the next line's caption if present
+    cleanContent = cleanContent.replace(
+      /!\[([^\]]*)\]\(([^)]+?)\)\s*\r?\n\s*[_*][ \t]*(.+?)[ \t]*[_*]/g,
+      (match, alt, imgPath, caption) => {
+        const cleanAlt = (alt === 'Desktop View' || !alt) ? caption : alt;
+        return `![${cleanAlt}](${imgPath})`;
+      }
+    );
+
+    //   b) HTML <img> tag absolute path correction: src="/assets/img/..." -> src="./_posts/..."
+    cleanContent = cleanContent.replace(
+      /<img([^>]*?)src="\/assets\/img\/([^"]+)"/g,
+      (_, before, imgPath) => `<img${before}src="./_posts/${imgPath}"`
+    );
+
+    //   c) HTML <img> tag relative path correction: src="X.jpeg" -> src="postImgBase/X.jpeg"
+    cleanContent = cleanContent.replace(
+      /<img([^>]*?)src="(?!https?:\/\/)(?!\/)(?!\.\/)([^"]+)"/g,
+      (_, before, imgPath) => `<img${before}src="${postImgBase}${imgPath}"`
+    );
+
+    //   d) Legacy absolute /assets/img/X paths in markdown → ./_posts/X
     cleanContent = cleanContent.replace(
       /!\[([^\]]*)\]\(\/assets\/img\/([^)]+)\)/g,
       (_, alt, imgPath) => `![${alt}](${'./_posts/' + imgPath})`
     );
-    //   b) Relative paths (no leading / or http) → prefix with post folder
+
+    //   e) Relative paths in markdown (no leading / or http) → prefix with post folder
     cleanContent = cleanContent.replace(
       /!\[([^\]]*)\]\((?!https?:\/\/)(?!\/)([^)]+)\)/g,
       (_, alt, imgPath) => {
@@ -729,11 +752,17 @@ function renderReader(post) {
     // Step 3: Parse with marked (no custom renderer needed — paths already resolved)
     const rawHtml = marked.parse(cleanContent);
 
-    // Step 4: Wrap standalone <img> tags in <figure> with <figcaption> from alt text
+    // Step 4: Wrap standalone markdown <img> tags (wrapped in <p>) in <figure>
+    // Alt text is used as caption. Avoid wrapping existing HTML <figure> tags.
     const wrappedHtml = rawHtml.replace(
-      /<img([^>]*?)alt="([^"]*)"([^>]*?)>/g,
+      /<p>\s*<img([^>]*?)alt="([^"]*)"([^>]*?)>\s*<\/p>/g,
       (_, before, alt, after) => {
-        return `<figure><img${before}alt="${alt}"${after} loading="lazy"><figcaption>${alt}</figcaption></figure>`;
+        const cleanAlt = alt.trim();
+        if (cleanAlt && cleanAlt !== 'Desktop View') {
+          return `<figure><img${before}alt="${alt}"${after} loading="lazy"><figcaption>${cleanAlt}</figcaption></figure>`;
+        } else {
+          return `<figure><img${before}alt="${alt}"${after} loading="lazy"></figure>`;
+        }
       }
     );
 

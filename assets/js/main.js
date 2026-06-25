@@ -238,7 +238,10 @@ function initMainPage() {
     const g_pivot = 0.08; // Visual gravity parameter for the pivot
     const a_g = g_pivot / R;
 
-    omega_phi += a_g * Math.cos(phi);
+    // Smooth momentum coupling: Node 1's velocity drags the pivot.
+    // This prevents the pivot from hovering/freezing at 12 o'clock and enables dynamic crossing.
+    const K = 0.00025;
+    omega_phi += a_g * Math.cos(phi) + K * omegas[0];
     phi += omega_phi;
 
     // Normalize phi to stay within [-2*PI, 2*PI] to prevent floating-point precision loss over long runs

@@ -100,7 +100,7 @@ function initMainPage() {
   window.addEventListener('resize', resizeCanvas);
 
   // Physics & animation states
-  let phi = 0; // Orbit angle (starts at diary (0 radians) and swings to profile (PI radians))
+  let phi = -Math.PI / 2 + 0.01; // Orbit angle (starts near 12 o'clock and swings dynamically under gravity)
   let omega_phi = 0; // Angular velocity of the pivot
   let frameCount = 0;
 

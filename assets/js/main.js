@@ -109,8 +109,8 @@ function initMainPage() {
   const damp = 1.0; // Lossless damping (kept for compatibility)
 
   // Pendulum nodes physical masses (0: Pivot, 1: Node 1, 2: Node 2, 3: Node 3)
-  // Mass ratio set strictly to 1:1:1 for dynamic nodes.
-  const mass = [Infinity, 1.0, 1.0, 1.0];
+  // Mass ratio set strictly to 2:1:1 for dynamic nodes.
+  const mass = [1.8, 2.0, 1.0, 1.0];
 
   // Runge-Kutta State Variables (angles: theta1, theta2, theta3 / omegas: omega1, omega2, omega3)
   let angles = [0, 0, 0];
@@ -127,76 +127,140 @@ function initMainPage() {
   let isInitialized = false;
 
   function initNodeAngles() {
-    // Start with moderately deflected angles to store slightly more potential energy than original.
-    // Node 1 is set to 0.5 rad, Node 2 to 2.2 rad, and Node 3 to -2.4 rad.
+    // Start with smaller deflected angles to reduce the initial potential energy.
+    // Node 1 is set to 0.3 rad, Node 2 to 1.5 rad, and Node 3 to -1.6 rad.
     // No initial velocities are set to avoid starting with an excessive initial kinetic kick.
-    angles = [0.5, 2.2, -2.4];
+    angles = [0.3, 1.5, -1.6];
     omegas = [0.0, 0.0, 0.0];
 
     isInitialized = true;
   }
 
-  // Lagrangian Equations of Motion for Triple Pendulum (Calculates angular accelerations)
-  function derivatives(ang, omg, L1, L2, L3) {
-    const t1 = ang[0];
-    const t2 = ang[1];
-    const t3 = ang[2];
-    const w1 = omg[0];
-    const w2 = omg[1];
-    const w3 = omg[2];
-
-    // Mass Matrix elements (3x3 symmetric positive-definite matrix)
-    const m11 = (mass[1] + mass[2] + mass[3]) * L1 * L1;
-    const m12 = (mass[2] + mass[3]) * L1 * L2 * Math.cos(t1 - t2);
-    const m13 = mass[3] * L1 * L3 * Math.cos(t1 - t3);
-
-    const m21 = m12;
-    const m22 = (mass[2] + mass[3]) * L2 * L2;
-    const m23 = mass[3] * L2 * L3 * Math.cos(t2 - t3);
-
-    const m31 = m13;
-    const m32 = m23;
-    const m33 = mass[3] * L3 * L3;
-
-    // Right-Hand Side (RHS) Forces Vector
-    const f1 = -(mass[2] + mass[3]) * L1 * L2 * w2 * w2 * Math.sin(t1 - t2)
-      - mass[3] * L1 * L3 * w3 * w3 * Math.sin(t1 - t3)
-      - (mass[1] + mass[2] + mass[3]) * g * L1 * Math.sin(t1);
-
-    const f2 = (mass[2] + mass[3]) * L1 * L2 * w1 * w1 * Math.sin(t1 - t2)
-      - mass[3] * L2 * L3 * w3 * w3 * Math.sin(t2 - t3)
-      - (mass[2] + mass[3]) * g * L2 * Math.sin(t2);
-
-    const f3 = mass[3] * L1 * L3 * w1 * w1 * Math.sin(t1 - t3)
-      + mass[3] * L2 * L3 * w2 * w2 * Math.sin(t2 - t3)
-      - mass[3] * g * L3 * Math.sin(t3);
-
-    // Solve linear system M * alpha = F using Cramer's Rule
-    const detM = m11 * (m22 * m33 - m23 * m32)
-      - m12 * (m21 * m33 - m23 * m31)
-      + m13 * (m21 * m32 - m22 * m31);
-
-    if (Math.abs(detM) < 1e-10) {
-      return [0, 0, 0];
+  // Gaussian elimination solver with partial pivoting for 4x4 matrix
+  function solve4x4(M, F) {
+    const n = 4;
+    const A = [];
+    for (let i = 0; i < n; i++) {
+      A.push([M[i][0], M[i][1], M[i][2], M[i][3], F[i]]);
     }
 
-    const det1 = f1 * (m22 * m33 - m23 * m32)
-      - m12 * (f2 * m33 - m23 * f3)
-      + m13 * (f2 * m32 - m22 * f3);
+    for (let i = 0; i < n; i++) {
+      let maxEl = Math.abs(A[i][i]);
+      let maxRow = i;
+      for (let k = i + 1; k < n; k++) {
+        if (Math.abs(A[k][i]) > maxEl) {
+          maxEl = Math.abs(A[k][i]);
+          maxRow = k;
+        }
+      }
 
-    const det2 = m11 * (f2 * m33 - m23 * f3)
-      - f1 * (m21 * m33 - m23 * m31)
-      + m13 * (m21 * f3 - f2 * m31);
+      const temp = A[maxRow];
+      A[maxRow] = A[i];
+      A[i] = temp;
 
-    const det3 = m11 * (m22 * f3 - f2 * m32)
-      - m12 * (m21 * f3 - f2 * m31)
-      + f1 * (m21 * m32 - m22 * m31);
+      if (Math.abs(A[i][i]) < 1e-10) {
+        return [0, 0, 0, 0];
+      }
 
-    const alpha1 = det1 / detM;
-    const alpha2 = det2 / detM;
-    const alpha3 = det3 / detM;
+      for (let k = i + 1; k < n; k++) {
+        const c = -A[k][i] / A[i][i];
+        for (let j = i; j <= n; j++) {
+          if (i === j) {
+            A[k][j] = 0;
+          } else {
+            A[k][j] += c * A[i][j];
+          }
+        }
+      }
+    }
 
-    return [alpha1, alpha2, alpha3];
+    const x = [0, 0, 0, 0];
+    for (let i = n - 1; i >= 0; i--) {
+      x[i] = A[i][n] / A[i][i];
+      for (let k = i - 1; k >= 0; k--) {
+        A[k][n] -= A[k][i] * x[i];
+      }
+    }
+    return x;
+  }
+
+  // Lagrangian Equations of Motion for the Coupled 4-DOF System
+  // q = [phi, theta1, theta2, theta3]
+  // omega = [omega_phi, omega1, omega2, omega3]
+  function derivatives(q, omega, L1, L2, L3, R) {
+    const phi = q[0];
+    const t1 = q[1];
+    const t2 = q[2];
+    const t3 = q[3];
+
+    const w0 = omega[0];
+    const w1 = omega[1];
+    const w2 = omega[2];
+    const w3 = omega[3];
+
+    // Mass parameters
+    const M_tot = mass[0] + mass[1] + mass[2] + mass[3];
+    const mu1 = mass[1] + mass[2] + mass[3];
+    const mu2 = mass[2] + mass[3];
+    const mu3 = mass[3];
+
+    // Construct 4x4 Mass Matrix M
+    const M = [
+      [
+        M_tot * R * R,
+        -mu1 * R * L1 * Math.sin(phi + t1),
+        -mu2 * R * L2 * Math.sin(phi + t2),
+        -mu3 * R * L3 * Math.sin(phi + t3)
+      ],
+      [
+        -mu1 * R * L1 * Math.sin(phi + t1),
+        mu1 * L1 * L1,
+        mu2 * L1 * L2 * Math.cos(t1 - t2),
+        mu3 * L1 * L3 * Math.cos(t1 - t3)
+      ],
+      [
+        -mu2 * R * L2 * Math.sin(phi + t2),
+        mu2 * L1 * L2 * Math.cos(t1 - t2),
+        mu2 * L2 * L2,
+        mu3 * L2 * L3 * Math.cos(t2 - t3)
+      ],
+      [
+        -mu3 * R * L3 * Math.sin(phi + t3),
+        mu3 * L1 * L3 * Math.cos(t1 - t3),
+        mu3 * L2 * L3 * Math.cos(t2 - t3),
+        mu3 * L3 * L3
+      ]
+    ];
+
+    // Construct Force Vector F
+    const F = [
+      // F0 (phi force)
+      R * (
+        mu1 * L1 * w1 * w1 * Math.cos(phi + t1) +
+        mu2 * L2 * w2 * w2 * Math.cos(phi + t2) +
+        mu3 * L3 * w3 * w3 * Math.cos(phi + t3)
+      ) + M_tot * g * R * Math.cos(phi),
+
+      // F1 (theta1 force)
+      mu1 * R * L1 * w0 * w0 * Math.cos(phi + t1)
+        - mu2 * L1 * L2 * w2 * w2 * Math.sin(t1 - t2)
+        - mu3 * L1 * L3 * w3 * w3 * Math.sin(t1 - t3)
+        - mu1 * g * L1 * Math.sin(t1),
+
+      // F2 (theta2 force)
+      mu2 * R * L2 * w0 * w0 * Math.cos(phi + t2)
+        + mu2 * L1 * L2 * w1 * w1 * Math.sin(t1 - t2)
+        - mu3 * L2 * L3 * w3 * w3 * Math.sin(t2 - t3)
+        - mu2 * g * L2 * Math.sin(t2),
+
+      // F3 (theta3 force)
+      mu3 * R * L3 * w0 * w0 * Math.cos(phi + t3)
+        + mu3 * L1 * L3 * w1 * w1 * Math.sin(t1 - t3)
+        + mu3 * L2 * L3 * w2 * w2 * Math.sin(t2 - t3)
+        - mu3 * g * L3 * Math.sin(t3)
+    ];
+
+    return solve4x4(M, F);
   }
 
   // Trails to store previous positions of the three nodes
@@ -233,76 +297,76 @@ function initMainPage() {
     const L2 = (L1 / 3) * 2; // 2l
     const L3 = L1 / 3; // l (giving 3l : 2l : l ratio)
 
-    // 2. Pendulum pivot coordinates (swings under gravity potential energy, starting near 12 o'clock)
-    // Acceleration a_g = (g_pivot / R) * cos(phi) where equilibrium is at the bottom (phi = PI/2)
-    const g_pivot = 0.08; // Visual gravity parameter for the pivot
-    const a_g = g_pivot / R;
-
-    // Smooth momentum coupling: Node 1's velocity drags the pivot.
-    // This prevents the pivot from hovering/freezing at 12 o'clock and enables dynamic crossing.
-    const K = 0.00025;
-    omega_phi += a_g * Math.cos(phi) + K * omegas[0];
-    phi += omega_phi;
-
-    // Normalize phi to stay within [-2*PI, 2*PI] to prevent floating-point precision loss over long runs
-    if (Math.abs(phi) > 2 * Math.PI) {
-      phi = phi % (2 * Math.PI);
-    }
-
-    const x0 = cx + R * Math.cos(phi);
-    const y0 = cy + R * Math.sin(phi);
-
     // Initialize node angles if not done
     if (!isInitialized) {
       initNodeAngles();
     }
 
     // 3. Runge-Kutta 4th Order (RK4) Integration Sub-stepping
-    // Feeds tiny sub-pixel chaotic perturbations directly to angular accelerations to prevent halting,
-    // while preserving natural zero-velocity swings at peaks.
+    // Unifies the pivot (Node 0) and the triple pendulum (Nodes 1, 2, 3) in a 4-DOF state vector,
+    // ensuring perfect physical coupling and energy conservation.
     const subSteps = 6;
     const dt = 0.05;
 
-    // Closed system with no external forces to conserve mechanical energy perfectly.
-    const getChaoticPerturb = (stepIdx) => {
-      return [0, 0, 0];
-    };
+    let state_q = [phi, angles[0], angles[1], angles[2]];
+    let state_w = [omega_phi, omegas[0], omegas[1], omegas[2]];
 
     for (let step = 0; step < subSteps; step++) {
-      const perturb = getChaoticPerturb(step);
-
       // k1
-      const alpha1 = derivatives(angles, omegas, L1, L2, L3);
-      const k1_theta = [...omegas];
-      const k1_omega = alpha1.map((a, i) => a + perturb[i]);
+      const alpha1 = derivatives(state_q, state_w, L1, L2, L3, R);
+      const k1_q = [...state_w];
+      const k1_w = [...alpha1];
 
       // k2
-      const temp_theta2 = angles.map((theta, i) => theta + 0.5 * dt * k1_theta[i]);
-      const temp_omega2 = omegas.map((omega, i) => omega + 0.5 * dt * k1_omega[i]);
-      const alpha2 = derivatives(temp_theta2, temp_omega2, L1, L2, L3);
-      const k2_theta = [...temp_omega2];
-      const k2_omega = alpha2.map((a, i) => a + perturb[i]);
+      const temp_q2 = state_q.map((qVal, i) => qVal + 0.5 * dt * k1_q[i]);
+      const temp_w2 = state_w.map((wVal, i) => wVal + 0.5 * dt * k1_w[i]);
+      const alpha2 = derivatives(temp_q2, temp_w2, L1, L2, L3, R);
+      const k2_q = [...temp_w2];
+      const k2_w = [...alpha2];
 
       // k3
-      const temp_theta3 = angles.map((theta, i) => theta + 0.5 * dt * k2_theta[i]);
-      const temp_omega3 = omegas.map((omega, i) => omega + 0.5 * dt * k2_omega[i]);
-      const alpha3 = derivatives(temp_theta3, temp_omega3, L1, L2, L3);
-      const k3_theta = [...temp_omega3];
-      const k3_omega = alpha3.map((a, i) => a + perturb[i]);
+      const temp_q3 = state_q.map((qVal, i) => qVal + 0.5 * dt * k2_q[i]);
+      const temp_w3 = state_w.map((wVal, i) => wVal + 0.5 * dt * k2_w[i]);
+      const alpha3 = derivatives(temp_q3, temp_w3, L1, L2, L3, R);
+      const k3_q = [...temp_w3];
+      const k3_w = [...alpha3];
 
       // k4
-      const temp_theta4 = angles.map((theta, i) => theta + dt * k3_theta[i]);
-      const temp_omega4 = omegas.map((omega, i) => omega + dt * k3_omega[i]);
-      const alpha4 = derivatives(temp_theta4, temp_omega4, L1, L2, L3);
-      const k4_theta = [...temp_omega4];
-      const k4_omega = alpha4.map((a, i) => a + perturb[i]);
+      const temp_q4 = state_q.map((qVal, i) => qVal + dt * k3_q[i]);
+      const temp_w4 = state_w.map((wVal, i) => wVal + dt * k3_w[i]);
+      const alpha4 = derivatives(temp_q4, temp_w4, L1, L2, L3, R);
+      const k4_q = [...temp_w4];
+      const k4_w = [...alpha4];
 
       // Update state vectors (No damping to preserve mechanical energy perfectly)
-      for (let i = 0; i < 3; i++) {
-        angles[i] += (dt / 6) * (k1_theta[i] + 2 * k2_theta[i] + 2 * k3_theta[i] + k4_theta[i]);
-        omegas[i] += (dt / 6) * (k1_omega[i] + 2 * k2_omega[i] + 2 * k3_omega[i] + k4_omega[i]);
+      for (let i = 0; i < 4; i++) {
+        state_q[i] += (dt / 6) * (k1_q[i] + 2 * k2_q[i] + 2 * k3_q[i] + k4_q[i]);
+        state_w[i] += (dt / 6) * (k1_w[i] + 2 * k2_w[i] + 2 * k3_w[i] + k4_w[i]);
       }
     }
+
+    // Unpack states back
+    phi = state_q[0];
+    omega_phi = state_w[0];
+    angles[0] = state_q[1];
+    angles[1] = state_q[2];
+    angles[2] = state_q[3];
+    omegas[0] = state_w[1];
+    omegas[1] = state_w[2];
+    omegas[2] = state_w[3];
+
+    // Normalize values to stay within [-2*PI, 2*PI] to prevent precision loss
+    if (Math.abs(phi) > 2 * Math.PI) {
+      phi = phi % (2 * Math.PI);
+    }
+    for (let i = 0; i < 3; i++) {
+      if (Math.abs(angles[i]) > 2 * Math.PI) {
+        angles[i] = angles[i] % (2 * Math.PI);
+      }
+    }
+
+    const x0 = cx + R * Math.cos(phi);
+    const y0 = cy + R * Math.sin(phi);
 
     // 4. Resolve Cartesian Coordinates from Angles for rendering
     const x1 = x0 + L1 * Math.sin(angles[0]);
@@ -350,9 +414,9 @@ function initMainPage() {
       ctx.stroke();
     };
 
-    drawTrail(trail1, '119, 155, 231', 1.5); // Node 1: #779be7 (Width 1.5)
-    drawTrail(trail2, '164, 128, 207', 1.5); // Node 2: #a480cf (Width 1.5)
-    drawTrail(trail3, '210, 100, 182', 1.5); // Node 3: #d264b6 (Width 1.5)
+    drawTrail(trail1, '119, 155, 231', 2.0); // Node 1: #779be7 (Width 2.0, Mass 2.0)
+    drawTrail(trail2, '164, 128, 207', 1.2); // Node 2: #a480cf (Width 1.2, Mass 1.0)
+    drawTrail(trail3, '210, 100, 182', 1.2); // Node 3: #d264b6 (Width 1.2, Mass 1.0)
 
     // 5. Draw rods
     ctx.beginPath();
@@ -375,11 +439,11 @@ function initMainPage() {
       ctx.stroke();
     };
 
-    // Pivot has a neutral size, nodes 1, 2, 3 have equal 1:1:1 mass ratio
+    // Pivot has a neutral size, nodes 1, 2, 3 scale based on 2:1:1 mass ratio
     drawNode(x0, y0, 5.0, '#000000'); // Pivot (Black)
-    drawNode(x1, y1, 5.5, '#779be7'); // Node 1 (Mass 1.0)
-    drawNode(x2, y2, 5.5, '#a480cf'); // Node 2 (Mass 1.0)
-    drawNode(x3, y3, 5.5, '#d264b6'); // Node 3 (Mass 1.0)
+    drawNode(x1, y1, 7.0, '#779be7'); // Node 1 (Mass 2.0)
+    drawNode(x2, y2, 5.0, '#a480cf'); // Node 2 (Mass 1.0)
+    drawNode(x3, y3, 5.0, '#d264b6'); // Node 3 (Mass 1.0)
 
     requestAnimationFrame(updatePhysicsAndRender);
   }
@@ -529,6 +593,30 @@ function initDiaryControls() {
       isDescOrder = !isDescOrder;
       currentPage = 1; // Reset to page 1 on sort change
       renderDiary();
+    });
+  }
+
+  // Disable drag, copy, selectstart, and right-click menu within the diary view to prevent copying content
+  const diaryView = document.getElementById('diary-view');
+  if (diaryView) {
+    diaryView.addEventListener('copy', (e) => e.preventDefault());
+    diaryView.addEventListener('selectstart', (e) => {
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+        return;
+      }
+      e.preventDefault();
+    });
+    diaryView.addEventListener('dragstart', (e) => {
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+        return;
+      }
+      e.preventDefault();
+    });
+    diaryView.addEventListener('contextmenu', (e) => {
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+        return;
+      }
+      e.preventDefault();
     });
   }
 }

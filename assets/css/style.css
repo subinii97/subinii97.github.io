@@ -451,6 +451,18 @@ header.nav-header {
   padding-top: 5.5rem;
   padding-bottom: 2rem;
   min-height: 100vh;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.diary-wrapper input,
+.diary-wrapper textarea {
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
 }
 
 .diary-header {

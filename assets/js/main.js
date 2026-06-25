@@ -203,12 +203,17 @@ function initMainPage() {
   const trail1 = [];
   const trail2 = [];
   const trail3 = [];
-  // Since phi oscillates back and forth, one complete swing cycle takes roughly 1500-1800 frames.
-  // We sample coordinates every 3 frames. ~600 points covers a full swing.
-  // We want the trail to remain solid for one full swing (600 pts) and fade out over the next half swing (300 pts).
-  // Total trail length: 900 points.
-  const maxTrailLength = 900;
+  // Constant permanent trails (cleared on page navigation/hashchange)
+  // We set a high maximum length of 20000 points as a safety limit to prevent memory leaks
+  const maxTrailLength = 20000;
   const skipFrames = 3;
+
+  // Clear trails when navigating to other pages (SPA view change)
+  window.addEventListener('hashchange', () => {
+    trail1.length = 0;
+    trail2.length = 0;
+    trail3.length = 0;
+  });
 
   function updatePhysicsAndRender() {
     ctx.clearRect(0, 0, designSize, designSize);
@@ -327,33 +332,19 @@ function initMainPage() {
       if (trail3.length > maxTrailLength) trail3.shift();
     }
 
-    // 4.5. Draw trails (fading out, with different colors for each node)
+    // 4.5. Draw trails (constant opacity, no fading out)
     const drawTrail = (trail, colorRGB, lineWidth = 1.0) => {
       if (trail.length < 2) return;
-      const fullOrbitPoints = 600; // Sample count for 1 full orbit
+      const alpha = 0.22;
 
+      ctx.beginPath();
+      ctx.moveTo(trail[0].x, trail[0].y);
       for (let i = 1; i < trail.length; i++) {
-        const p1 = trail[i - 1];
-        const p2 = trail[i];
-
-        // Reverse index from the end of the trail
-        const reverseIdx = trail.length - 1 - i;
-        let alpha = 0.22;
-
-        // If the coordinate is older than one full orbit, fade it out
-        if (reverseIdx >= fullOrbitPoints) {
-          const fadeRange = Math.max(1, trail.length - fullOrbitPoints);
-          const ratio = 1 - (reverseIdx - fullOrbitPoints) / fadeRange;
-          alpha = Math.max(0, ratio * 0.22);
-        }
-
-        ctx.beginPath();
-        ctx.moveTo(p1.x, p1.y);
-        ctx.lineTo(p2.x, p2.y);
-        ctx.strokeStyle = `rgba(${colorRGB}, ${alpha})`;
-        ctx.lineWidth = lineWidth;
-        ctx.stroke();
+        ctx.lineTo(trail[i].x, trail[i].y);
       }
+      ctx.strokeStyle = `rgba(${colorRGB}, ${alpha})`;
+      ctx.lineWidth = lineWidth;
+      ctx.stroke();
     };
 
     drawTrail(trail1, '119, 155, 231', 1.5); // Node 1: #779be7 (Width 1.5)

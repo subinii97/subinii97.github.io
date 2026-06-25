@@ -99,6 +99,7 @@ function initMainPage() {
   // Physics & animation states
   let phi = 0; // Orbit angle (starts at diary (0 radians) and swings to profile (PI radians))
   let omega_phi = 0; // Angular velocity of the pivot
+  let isDraggingPivot = false; // Tracks if Node 0 is being dragged by the mouse/touch
   let frameCount = 0;
 
   // Physics Settings
@@ -230,12 +231,16 @@ function initMainPage() {
     const g_pivot = 0.08; // Visual gravity parameter for the pivot
     const a_g = g_pivot / R;
 
-    omega_phi += a_g * Math.cos(phi);
-    phi += omega_phi;
+    if (!isDraggingPivot) {
+      omega_phi += a_g * Math.cos(phi);
+      phi += omega_phi;
 
-    // Normalize phi to stay within [-2*PI, 2*PI] to prevent floating-point precision loss over long runs
-    if (Math.abs(phi) > 2 * Math.PI) {
-      phi = phi % (2 * Math.PI);
+      // Normalize phi to stay within [-2*PI, 2*PI] to prevent floating-point precision loss over long runs
+      if (Math.abs(phi) > 2 * Math.PI) {
+        phi = phi % (2 * Math.PI);
+      }
+    } else {
+      omega_phi = 0; // Hold velocity at zero while actively dragging
     }
 
     const x0 = cx + R * Math.cos(phi);
@@ -386,6 +391,71 @@ function initMainPage() {
 
     requestAnimationFrame(updatePhysicsAndRender);
   }
+
+  // --- Dragging Interactions for Pivot (Node 0) ---
+  function getCanvasCoords(e) {
+    const rect = canvas.getBoundingClientRect();
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+    const scaleX = designSize / rect.width;
+    const scaleY = designSize / rect.height;
+    return {
+      x: (clientX - rect.left) * scaleX,
+      y: (clientY - rect.top) * scaleY
+    };
+  }
+
+  function handleDragStart(e) {
+    const coords = getCanvasCoords(e);
+    const dx = coords.x - pos[0].x;
+    const dy = coords.y - pos[0].y;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+
+    // Grab target area radius of 50px
+    if (dist < 50) {
+      isDraggingPivot = true;
+      omega_phi = 0;
+      canvas.style.cursor = 'grabbing';
+    }
+  }
+
+  function handleDragMove(e) {
+    const coords = getCanvasCoords(e);
+
+    if (!isDraggingPivot) {
+      // Show pointer hover feedback near pivot
+      const dx = coords.x - pos[0].x;
+      const dy = coords.y - pos[0].y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist < 50) {
+        canvas.style.cursor = 'grab';
+      } else {
+        canvas.style.cursor = 'default';
+      }
+      return;
+    }
+
+    canvas.style.cursor = 'grabbing';
+    e.preventDefault();
+
+    phi = Math.atan2(coords.y - cy, coords.x - cx);
+    omega_phi = 0;
+  }
+
+  function handleDragEnd() {
+    isDraggingPivot = false;
+    canvas.style.cursor = 'default';
+  }
+
+  // Bind mouse and touch events
+  canvas.addEventListener('mousedown', handleDragStart);
+  window.addEventListener('mousemove', handleDragMove, { passive: false });
+  window.addEventListener('mouseup', handleDragEnd);
+
+  canvas.addEventListener('touchstart', handleDragStart, { passive: true });
+  window.addEventListener('touchmove', handleDragMove, { passive: false });
+  window.addEventListener('touchend', handleDragEnd);
 
   updatePhysicsAndRender();
 }

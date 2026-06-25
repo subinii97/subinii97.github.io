@@ -314,7 +314,7 @@ function initMainPage() {
     }
 
     // 4.5. Draw trails (fading out, with different colors for each node)
-    const drawTrail = (trail, colorRGB) => {
+    const drawTrail = (trail, colorRGB, lineWidth = 1.0) => {
       if (trail.length < 2) return;
       const fullOrbitPoints = 600; // Sample count for 1 full orbit
 
@@ -337,14 +337,14 @@ function initMainPage() {
         ctx.moveTo(p1.x, p1.y);
         ctx.lineTo(p2.x, p2.y);
         ctx.strokeStyle = `rgba(${colorRGB}, ${alpha})`;
-        ctx.lineWidth = 1.0;
+        ctx.lineWidth = lineWidth;
         ctx.stroke();
       }
     };
 
-    drawTrail(trail1, '119, 155, 231'); // Node 1: #779be7
-    drawTrail(trail2, '164, 128, 207'); // Node 2: #a480cf
-    drawTrail(trail3, '210, 100, 182'); // Node 3: #d264b6
+    drawTrail(trail1, '119, 155, 231', 2.0); // Node 1: #779be7 (Width 2.0)
+    drawTrail(trail2, '164, 128, 207', 1.5); // Node 2: #a480cf (Width 1.5)
+    drawTrail(trail3, '210, 100, 182', 1.0); // Node 3: #d264b6 (Width 1.0)
 
     // 5. Draw rods
     ctx.beginPath();

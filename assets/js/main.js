@@ -106,8 +106,8 @@ function initMainPage() {
   const damp = 1.0; // Lossless damping (kept for compatibility)
 
   // Pendulum nodes physical masses (0: Pivot, 1: Node 1, 2: Node 2, 3: Node 3)
-  // Mass ratio set strictly to 4:2:1 for dynamic nodes.
-  const mass = [Infinity, 4.0, 2.0, 1.0];
+  // Mass ratio set strictly to 3:2:1 for dynamic nodes (Node 1 is 3 times Node 3).
+  const mass = [Infinity, 3.0, 2.0, 1.0];
 
   // Runge-Kutta State Variables (angles: theta1, theta2, theta3 / omegas: omega1, omega2, omega3)
   let angles = [0, 0, 0];
@@ -220,10 +220,10 @@ function initMainPage() {
     ctx.lineWidth = 2.0;
     ctx.stroke();
 
-    // Pendulum rod lengths (Increased slightly)
-    const L1 = isMobile ? 110 : 160;
-    const L2 = L1 / 2; // 2l
-    const L3 = L1 / 4; // l (giving 4l : 2l : l ratio)
+    // Pendulum rod lengths (Ratio set strictly to 3:2:1)
+    const L1 = isMobile ? 90 : 150;
+    const L2 = (L1 / 3) * 2; // 2l
+    const L3 = L1 / 3; // l (giving 3l : 2l : l ratio)
 
     // 2. Pendulum pivot coordinates (swings under gravity potential energy between diary (0) and profile (PI))
     // Acceleration a_g = (g_pivot / R) * cos(phi) where equilibrium is at the bottom (phi = PI/2)

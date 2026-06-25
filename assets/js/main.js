@@ -592,10 +592,6 @@ function renderDiary() {
   const endIndex = startIndex + postsPerPage;
   const paginatedPosts = filteredPosts.slice(startIndex, endIndex);
 
-  // 5. Identify the NEW posts (top 2 latest overall)
-  const sortedOverall = [...allPosts].sort((a, b) => new Date(b.date.split(' ')[0]) - new Date(a.date.split(' ')[0]));
-  const latestPostFilenames = sortedOverall.slice(0, 2).map(p => p.filename);
-
   // 6. Render paginated list items in compact format (Date, Category, Title - NO summary)
   if (paginatedPosts.length === 0) {
     postList.innerHTML = `<p class="empty-msg">조건에 부합하는 일기가 없습니다.</p>`;
@@ -605,7 +601,26 @@ function renderDiary() {
 
   postList.innerHTML = paginatedPosts.map(post => {
     const isRead = readPosts.has(post.filename);
-    const isNew = latestPostFilenames.includes(post.filename) && !isRead;
+    
+    // Check if post date is within 7 days from now
+    let postDate;
+    const parts = post.date.trim().split(/\s+/);
+    if (parts.length >= 2) {
+      const datePart = parts[0];
+      const timePart = parts[1];
+      let tzPart = parts[2] || '';
+      if (tzPart && !tzPart.includes(':') && (tzPart.startsWith('+') || tzPart.startsWith('-'))) {
+        tzPart = tzPart.slice(0, 3) + ':' + tzPart.slice(3);
+      }
+      postDate = new Date(`${datePart}T${timePart}${tzPart}`);
+    } else {
+      postDate = new Date(post.date);
+    }
+    
+    const diffMs = new Date() - postDate;
+    const diffDays = diffMs / (1000 * 60 * 60 * 24);
+    const isNew = diffDays >= 0 && diffDays <= 7 && !isRead;
+
     const formattedDate = formatPostDate(post.date);
     const categoryLabel = post.categories && post.categories.length > 0
       ? `<span class="post-category-tag">${post.categories[0]}</span>`

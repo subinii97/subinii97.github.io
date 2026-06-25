@@ -123,11 +123,11 @@ function initMainPage() {
   let isInitialized = false;
 
   function initNodeAngles() {
-    // Start with highly deflected angles and initial angular velocities to store ample mechanical (potential + kinetic) energy.
-    // Node 1 is set to 0.8 rad, Node 2 to 2.5 rad, and Node 3 to -2.8 rad.
-    // Non-zero initial angular velocities (omegas) are introduced to give an active initial kinetic kick to the system.
-    angles = [0.8, 2.5, -2.8];
-    omegas = [0.5, 1.0, -1.0];
+    // Start with moderately deflected angles to store slightly more potential energy than original.
+    // Node 1 is set to 0.5 rad, Node 2 to 2.2 rad, and Node 3 to -2.4 rad.
+    // No initial velocities are set to avoid starting with an excessive initial kinetic kick.
+    angles = [0.5, 2.2, -2.4];
+    omegas = [0.0, 0.0, 0.0];
 
     isInitialized = true;
   }

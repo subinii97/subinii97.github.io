@@ -238,7 +238,12 @@ function initMainPage() {
     const g_pivot = 0.08; // Visual gravity parameter for the pivot
     const a_g = g_pivot / R;
 
-    omega_phi += a_g * Math.cos(phi);
+    // Two-way coupling: rod 1 tension pulls the pivot.
+    // coupling_factor = 0.035 (moderate coupling)
+    const coupling_factor = 0.035;
+    const a_coupling = (coupling_factor / R) * Math.cos(phi + angles[0]);
+
+    omega_phi += a_g * Math.cos(phi) + a_coupling;
     phi += omega_phi;
 
     // Normalize phi to stay within [-2*PI, 2*PI] to prevent floating-point precision loss over long runs

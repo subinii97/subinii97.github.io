@@ -101,7 +101,7 @@ function initMainPage() {
   let frameCount = 0;
 
   // Physics Settings
-  const g = 0.3; // Gravity scaled for Runge-Kutta 4th order time step integration
+  const g = 0.9; // Gravity scaled for Runge-Kutta 4th order time step integration
   const damp = 1.0; // Lossless damping (kept for compatibility)
 
   // Pendulum nodes physical masses (0: Pivot, 1: Node 1, 2: Node 2, 3: Node 3)
@@ -123,12 +123,11 @@ function initMainPage() {
   let isInitialized = false;
 
   function initNodeAngles() {
-    // Start with highly deflected angles to store ample potential energy in the system.
-    // Node 1 is slightly offset (0.25 rad), while Node 2 (1.8 rad) and Node 3 (-2.2 rad) are highly deflected.
-    // Since the system starts from rest, Node 1 does not have enough energy to climb past the top pivot (theta1 = PI)
-    // and is physically restricted to swinging, while Node 2 and 3 can rotate chaotically.
-    angles = [0.25, 1.8, -2.2];
-    omegas = [0.0, 0.0, 0.0];
+    // Start with highly deflected angles and initial angular velocities to store ample mechanical (potential + kinetic) energy.
+    // Node 1 is set to 0.8 rad, Node 2 to 2.5 rad, and Node 3 to -2.8 rad.
+    // Non-zero initial angular velocities (omegas) are introduced to give an active initial kinetic kick to the system.
+    angles = [0.8, 2.5, -2.8];
+    omegas = [0.5, 1.0, -1.0];
 
     isInitialized = true;
   }
@@ -601,7 +600,7 @@ function renderDiary() {
 
   postList.innerHTML = paginatedPosts.map(post => {
     const isRead = readPosts.has(post.filename);
-    
+
     // Check if post date is within 7 days from now
     let postDate;
     const parts = post.date.trim().split(/\s+/);
@@ -616,7 +615,7 @@ function renderDiary() {
     } else {
       postDate = new Date(post.date);
     }
-    
+
     const diffMs = new Date() - postDate;
     const diffDays = diffMs / (1000 * 60 * 60 * 24);
     const isNew = diffDays >= 0 && diffDays <= 7 && !isRead;
@@ -732,7 +731,7 @@ function renderReader(post) {
     let cleanContent = post.content.replace(/\{:\s*[^}]*\}/g, '');
 
     // Step 2: Pre-process image paths and captions directly in the markdown text
-    
+
     //   a) Re-map generic 'Desktop View' alt text to the next line's caption if present
     cleanContent = cleanContent.replace(
       /!\[([^\]]*)\]\(([^)]+?)\)\s*\r?\n\s*[_*][ \t]*(.+?)[ \t]*[_*]/g,
@@ -818,7 +817,7 @@ function escapeHtml(unsafe) {
 // Format date relatively (within 7 days / 1 hour)
 function formatPostDate(dateStr) {
   if (!dateStr) return '';
-  
+
   let parsedDate;
   const parts = dateStr.trim().split(/\s+/);
   if (parts.length >= 2) {

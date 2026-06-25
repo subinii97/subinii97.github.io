@@ -1,6 +1,6 @@
 ---
 header:
-  teaser: "/assets/img/discharge.jpeg"
+  teaser: "discharge.jpeg"
 title: Accident Final. 퇴원
 author: subin
 date: 2025-12-12 12:00:00 +0800

@@ -5,6 +5,7 @@ let selectedCategory = 'All';
 let isDescOrder = true; // Default: Recent first (Desc)
 let searchQuery = '';
 let currentPage = 1; // Pagination state
+let currentActiveHash = window.location.hash || '#';
 
 // Initialize SPA Application
 document.addEventListener('DOMContentLoaded', async () => {
@@ -100,17 +101,17 @@ function initMainPage() {
   window.addEventListener('resize', resizeCanvas);
 
   // Physics & animation states
-  let phi = -Math.PI / 2 + 0.05; // Orbit angle (starts near 12 o'clock and swings dynamically under gravity)
+  let phi = -Math.PI / 2 + 0.02; // Orbit angle (starts near 12 o'clock and swings dynamically under gravity)
   let omega_phi = 0; // Angular velocity of the pivot
   let frameCount = 0;
 
   // Physics Settings
-  const g = 0.9; // Gravity scaled for Runge-Kutta 4th order time step integration
+  const g = 0.7; // Gravity scaled for Runge-Kutta 4th order time step integration
   const damp = 1.0; // Lossless damping (kept for compatibility)
 
   // Pendulum nodes physical masses (0: Pivot, 1: Node 1, 2: Node 2, 3: Node 3)
-  // Mass ratio set strictly to 2:1:1 for dynamic nodes.
-  const mass = [1.8, 2.0, 1.0, 1.0];
+  // Mass ratio set strictly to 4:2:2:2.
+  const mass = [4.0, 2.0, 2.0, 2.0];
 
   // Runge-Kutta State Variables (angles: theta1, theta2, theta3 / omegas: omega1, omega2, omega3)
   let angles = [0, 0, 0];
@@ -130,7 +131,7 @@ function initMainPage() {
     // Start with smaller deflected angles to reduce the initial potential energy.
     // Node 1 is set to 0.3 rad, Node 2 to 1.5 rad, and Node 3 to -1.6 rad.
     // No initial velocities are set to avoid starting with an excessive initial kinetic kick.
-    angles = [0.3, 1.5, -1.6];
+    angles = [0.1, 0.1, 0.1];
     omegas = [0.0, 0.0, 0.0];
 
     isInitialized = true;
@@ -243,21 +244,21 @@ function initMainPage() {
 
       // F1 (theta1 force)
       mu1 * R * L1 * w0 * w0 * Math.cos(phi + t1)
-        - mu2 * L1 * L2 * w2 * w2 * Math.sin(t1 - t2)
-        - mu3 * L1 * L3 * w3 * w3 * Math.sin(t1 - t3)
-        - mu1 * g * L1 * Math.sin(t1),
+      - mu2 * L1 * L2 * w2 * w2 * Math.sin(t1 - t2)
+      - mu3 * L1 * L3 * w3 * w3 * Math.sin(t1 - t3)
+      - mu1 * g * L1 * Math.sin(t1),
 
       // F2 (theta2 force)
       mu2 * R * L2 * w0 * w0 * Math.cos(phi + t2)
-        + mu2 * L1 * L2 * w1 * w1 * Math.sin(t1 - t2)
-        - mu3 * L2 * L3 * w3 * w3 * Math.sin(t2 - t3)
-        - mu2 * g * L2 * Math.sin(t2),
+      + mu2 * L1 * L2 * w1 * w1 * Math.sin(t1 - t2)
+      - mu3 * L2 * L3 * w3 * w3 * Math.sin(t2 - t3)
+      - mu2 * g * L2 * Math.sin(t2),
 
       // F3 (theta3 force)
       mu3 * R * L3 * w0 * w0 * Math.cos(phi + t3)
-        + mu3 * L1 * L3 * w1 * w1 * Math.sin(t1 - t3)
-        + mu3 * L2 * L3 * w2 * w2 * Math.sin(t2 - t3)
-        - mu3 * g * L3 * Math.sin(t3)
+      + mu3 * L1 * L3 * w1 * w1 * Math.sin(t1 - t3)
+      + mu3 * L2 * L3 * w2 * w2 * Math.sin(t2 - t3)
+      - mu3 * g * L3 * Math.sin(t3)
     ];
 
     return solve4x4(M, F);
@@ -292,10 +293,10 @@ function initMainPage() {
     ctx.lineWidth = 2.0;
     ctx.stroke();
 
-    // Pendulum rod lengths (Ratio set strictly to 3:2:1)
-    const L1 = isMobile ? 90 : 150;
-    const L2 = (L1 / 3) * 2; // 2l
-    const L3 = L1 / 3; // l (giving 3l : 2l : l ratio)
+    // Pendulum rod lengths (Ratio set strictly to 1:1:1)
+    const L1 = isMobile ? 60 : 150;
+    const L2 = L1 * 2 / 3;
+    const L3 = L1 / 3;
 
     // Initialize node angles if not done
     if (!isInitialized) {
@@ -414,9 +415,9 @@ function initMainPage() {
       ctx.stroke();
     };
 
-    drawTrail(trail1, '119, 155, 231', 2.0); // Node 1: #779be7 (Width 2.0, Mass 2.0)
-    drawTrail(trail2, '164, 128, 207', 1.2); // Node 2: #a480cf (Width 1.2, Mass 1.0)
-    drawTrail(trail3, '210, 100, 182', 1.2); // Node 3: #d264b6 (Width 1.2, Mass 1.0)
+    drawTrail(trail1, '119, 155, 231', 1.5); // Node 1: #779be7 (Width 1.5, Mass 2.0)
+    drawTrail(trail2, '164, 128, 207', 1.5); // Node 2: #a480cf (Width 1.5, Mass 2.0)
+    drawTrail(trail3, '210, 100, 182', 1.5); // Node 3: #d264b6 (Width 1.5, Mass 2.0)
 
     // 5. Draw rods
     ctx.beginPath();
@@ -439,11 +440,11 @@ function initMainPage() {
       ctx.stroke();
     };
 
-    // Pivot has a neutral size, nodes 1, 2, 3 scale based on 2:1:1 mass ratio
-    drawNode(x0, y0, 5.0, '#000000'); // Pivot (Black)
-    drawNode(x1, y1, 7.0, '#779be7'); // Node 1 (Mass 2.0)
-    drawNode(x2, y2, 5.0, '#a480cf'); // Node 2 (Mass 1.0)
-    drawNode(x3, y3, 5.0, '#d264b6'); // Node 3 (Mass 1.0)
+    // Node sizes scaled strictly according to 4:2:2:2 mass ratio (using 5.5 as base factor)
+    drawNode(x0, y0, 11.0, '#888888'); // Pivot (Mass 4.0, Grey)
+    drawNode(x1, y1, 5.5, '#779be7');  // Node 1 (Mass 2.0)
+    drawNode(x2, y2, 5.5, '#a480cf');  // Node 2 (Mass 2.0)
+    drawNode(x3, y3, 5.5, '#d264b6');  // Node 3 (Mass 2.0)
 
     requestAnimationFrame(updatePhysicsAndRender);
   }
@@ -452,7 +453,7 @@ function initMainPage() {
 }
 
 /* ----------------------------------
-   SPA VIEW CONTROL & ROUTING
+   SPA VIEW CONTROL & ROUTING & FLIP TRANSITION
 ------------------------------------- */
 function showView(viewId) {
   // Hide all views
@@ -465,42 +466,46 @@ function showView(viewId) {
   if (targetView) {
     targetView.style.display = 'block';
   }
-
-  // Header logo is always visible (fixed position overlay)
 }
 
 // Router to resolve view states based on URL hashes
 function handleRouting() {
-  const hash = window.location.hash.substring(1);
+  const hash = window.location.hash;
+  const oldHash = currentActiveHash;
+  currentActiveHash = hash;
 
-  if (!hash) {
-    showView('home');
-  } else if (hash === 'profile') {
-    showView('profile');
-    window.scrollTo(0, 0);
-  } else if (hash === 'diary') {
-    showView('diary');
-    document.getElementById('diary-list-container').style.display = 'block';
-    const readerContainer = document.getElementById('diary-reader-container');
-    if (readerContainer) readerContainer.style.display = 'none';
-    renderDiary();
-    window.scrollTo(0, 0);
-  } else if (hash.startsWith('diary/')) {
-    showView('diary');
-    // Show reader, hide list
-    document.getElementById('diary-list-container').style.display = 'none';
-    const readerContainer = document.getElementById('diary-reader-container');
-    if (readerContainer) readerContainer.style.display = 'block';
+  const performRouting = () => {
+    const cleanHash = hash.substring(1);
+    if (!cleanHash) {
+      showView('home');
+    } else if (cleanHash === 'profile') {
+      showView('profile');
+      window.scrollTo(0, 0);
+    } else if (cleanHash === 'diary') {
+      showView('diary');
+      document.getElementById('diary-list-container').style.display = 'block';
+      const readerContainer = document.getElementById('diary-reader-container');
+      if (readerContainer) readerContainer.style.display = 'none';
+      renderDiary();
+      window.scrollTo(0, 0);
+    } else if (cleanHash.startsWith('diary/')) {
+      showView('diary');
+      document.getElementById('diary-list-container').style.display = 'none';
+      const readerContainer = document.getElementById('diary-reader-container');
+      if (readerContainer) readerContainer.style.display = 'block';
 
-    const filename = decodeURIComponent(hash.substring(6));
-    const post = allPosts.find(p => p.filename === filename);
+      const filename = decodeURIComponent(cleanHash.substring(6));
+      const post = allPosts.find(p => p.filename === filename);
 
-    if (post) {
-      renderReader(post);
-    } else {
-      window.location.hash = 'diary';
+      if (post) {
+        renderReader(post);
+      } else {
+        window.location.hash = 'diary';
+      }
     }
-  }
+  };
+
+  performRouting();
 }
 
 /* ----------------------------------
@@ -558,6 +563,8 @@ function initNavigationInterceptors() {
     });
   }
 }
+
+
 
 /* ----------------------------------
    DIARY PAGE SYSTEM LOGIC

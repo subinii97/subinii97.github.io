@@ -17,7 +17,7 @@ tags: [bottomsurgery]     # TAG names should always be lowercase
 
 
 <figure>
-    <img src="/assets/img/grs/6.jpeg" alt="">
+    <img src="6.jpeg" alt="">
     <figcaption>성별 표기를 바꿔서 새로 채워준 환자 팔찌</figcaption>
 </figure>
 
@@ -44,14 +44,14 @@ tags: [bottomsurgery]     # TAG names should always be lowercase
 수술 이틀차에는 아침부터 식사를 할 수 있었다.
 미음이 나왔는데 맛이 없어서 살기 위해 먹는다는 느낌으로 5숟갈정도 먹었다.
 <figure>
-    <img src="/assets/img/grs/7.jpeg" alt="">
+    <img src="7.jpeg" alt="">
     <figcaption>맛없는 미음. 옆에는 동치미 국물</figcaption>
 </figure>
 
 첫 날과 비교해서 조금 정신을 차릴 수 있게 된 것 같았다.
 그래서 흑백요리사 시즌 2를 보기 시작했다.
 <figure>
-    <img src="/assets/img/grs/8.jpeg" alt="">
+    <img src="8.jpeg" alt="">
     <figcaption>어쩌다 찍힌 요즘 화제의 인물, 임짱</figcaption>
 </figure>
 
@@ -61,7 +61,7 @@ tags: [bottomsurgery]     # TAG names should always be lowercase
 콩나물 국이 나와서 밥 조금을 콩나물 국에 말아서 먹었다.
 
 <figure>
-    <img src="/assets/img/grs/9.jpeg" alt="">
+    <img src="9.jpeg" alt="">
     <figcaption>수술 후 처음 먹는 제대로 된 식사</figcaption>
 </figure>
 
@@ -92,7 +92,7 @@ tags: [bottomsurgery]     # TAG names should always be lowercase
 그 날 만큼은 시간이 빨리갔다.
 
 <figure>
-    <img src="/assets/img/grs/12.jpeg" alt="">
+    <img src="12.jpeg" alt="">
     <figcaption>친구가 찍은 내 침상 사진. 누워있는건 내가 그렸다.</figcaption>
 </figure>
 
@@ -107,7 +107,7 @@ tags: [bottomsurgery]     # TAG names should always be lowercase
 비유하자면 흑백요리사에서 안성재가 시식하는 만큼?
 
 <figure>
-    <img src="/assets/img/grs/14.jpeg" alt="">
+    <img src="14.jpeg" alt="">
     <figcaption>짜장면이 나오기도 했는데 오뚜기 3분 짜장 맛이다.</figcaption>
 </figure>
 
@@ -127,7 +127,7 @@ tags: [bottomsurgery]     # TAG names should always be lowercase
 나는 이론상 걸을 수 있었고 화장실을 갈 수 있었다.
 
 <figure>
-    <img src="/assets/img/grs/15.jpeg" alt="">
+    <img src="15.jpeg" alt="">
     <figcaption>일어남!</figcaption>
 </figure>
 
@@ -166,7 +166,7 @@ tags: [bottomsurgery]     # TAG names should always be lowercase
 병원에서 먹고 싶었던 귤을 마음껏 먹을 수 있었다.
 
 <figure>
-    <img src="/assets/img/grs/16.jpeg" alt="">
+    <img src="16.jpeg" alt="">
     <figcaption>오둥이와 침대에서 귤먹기</figcaption>
 </figure>
 

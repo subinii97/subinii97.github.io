@@ -225,7 +225,7 @@ function initMainPage() {
     const L2 = (L1 / 3) * 2; // 2l
     const L3 = L1 / 3; // l (giving 3l : 2l : l ratio)
 
-    // 2. Pendulum pivot coordinates (swings under gravity potential energy between diary (0) and profile (PI))
+    // 2. Pendulum pivot coordinates (swings under gravity potential energy, starting from diary (0))
     // Acceleration a_g = (g_pivot / R) * cos(phi) where equilibrium is at the bottom (phi = PI/2)
     const g_pivot = 0.08; // Visual gravity parameter for the pivot
     const a_g = g_pivot / R;
@@ -233,13 +233,9 @@ function initMainPage() {
     omega_phi += a_g * Math.cos(phi);
     phi += omega_phi;
 
-    // Enforce hard boundaries at 0 and PI to prevent numerical overshoot or energy accumulation
-    if (phi < 0) {
-      phi = 0;
-      omega_phi = 0;
-    } else if (phi > Math.PI) {
-      phi = Math.PI;
-      omega_phi = 0;
+    // Normalize phi to stay within [-2*PI, 2*PI] to prevent floating-point precision loss over long runs
+    if (Math.abs(phi) > 2 * Math.PI) {
+      phi = phi % (2 * Math.PI);
     }
 
     const x0 = cx + R * Math.cos(phi);

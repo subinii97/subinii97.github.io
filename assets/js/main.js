@@ -109,8 +109,8 @@ function initMainPage() {
   const damp = 1.0; // Lossless damping (kept for compatibility)
 
   // Pendulum nodes physical masses (0: Pivot, 1: Node 1, 2: Node 2, 3: Node 3)
-  // Mass ratio set strictly to 3:2:1 for dynamic nodes (Node 1 is 3 times Node 3).
-  const mass = [Infinity, 3.0, 2.0, 1.0];
+  // Mass ratio set strictly to 1:1:1 for dynamic nodes.
+  const mass = [Infinity, 1.0, 1.0, 1.0];
 
   // Runge-Kutta State Variables (angles: theta1, theta2, theta3 / omegas: omega1, omega2, omega3)
   let angles = [0, 0, 0];
@@ -356,9 +356,9 @@ function initMainPage() {
       }
     };
 
-    drawTrail(trail1, '119, 155, 231', 2.0); // Node 1: #779be7 (Width 2.0)
+    drawTrail(trail1, '119, 155, 231', 1.5); // Node 1: #779be7 (Width 1.5)
     drawTrail(trail2, '164, 128, 207', 1.5); // Node 2: #a480cf (Width 1.5)
-    drawTrail(trail3, '210, 100, 182', 1.0); // Node 3: #d264b6 (Width 1.0)
+    drawTrail(trail3, '210, 100, 182', 1.5); // Node 3: #d264b6 (Width 1.5)
 
     // 5. Draw rods
     ctx.beginPath();
@@ -381,11 +381,11 @@ function initMainPage() {
       ctx.stroke();
     };
 
-    // Pivot has a neutral size, nodes 1, 2, 3 scale based on 4:2:1 mass ratio
+    // Pivot has a neutral size, nodes 1, 2, 3 have equal 1:1:1 mass ratio
     drawNode(x0, y0, 5.0, '#000000'); // Pivot (Black)
-    drawNode(x1, y1, 8.0, '#779be7'); // Node 1 (Mass 4.0)
-    drawNode(x2, y2, 5.5, '#a480cf'); // Node 2 (Mass 2.0)
-    drawNode(x3, y3, 3.5, '#d264b6'); // Node 3 (Mass 1.0)
+    drawNode(x1, y1, 5.5, '#779be7'); // Node 1 (Mass 1.0)
+    drawNode(x2, y2, 5.5, '#a480cf'); // Node 2 (Mass 1.0)
+    drawNode(x3, y3, 5.5, '#d264b6'); // Node 3 (Mass 1.0)
 
     requestAnimationFrame(updatePhysicsAndRender);
   }

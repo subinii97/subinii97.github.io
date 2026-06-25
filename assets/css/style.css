@@ -302,7 +302,8 @@ header.nav-header {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  padding: 5.5rem 0 2rem 0;
+  padding-top: 5.5rem;
+  padding-bottom: 2rem;
 }
 
 .profile-container {
@@ -447,7 +448,8 @@ header.nav-header {
    DIARY PAGE (diary.html) STYLE
 ------------------------------------- */
 .diary-wrapper {
-  padding: 5.5rem 0 2rem 0;
+  padding-top: 5.5rem;
+  padding-bottom: 2rem;
   min-height: 100vh;
 }
 
@@ -584,43 +586,44 @@ header.nav-header {
 
 /* Compact board-style list items */
 .compact-post-item {
-  flex-direction: row !important;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 1.5rem;
-  padding: 1rem 1.5rem;
+  flex-direction: column !important;
+  align-items: flex-start;
+  gap: 0.6rem;
+  padding: 1.2rem 1.5rem;
 }
 
-.post-item-left {
+.compact-post-item .post-item-header {
+  width: 100%;
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 0.8rem;
-  flex-shrink: 0;
-  width: 200px; /* Align dates & tags aligned across list items */
 }
 
-.post-date {
-  font-size: 0.85rem;
-  color: var(--text-muted);
-  white-space: nowrap;
-  width: 110px; /* Fixed width to align category tags perfectly regardless of date length */
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-}
-
-.post-item-main {
+.compact-post-item .post-item-meta-row {
+  width: 100%;
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: 0.8rem;
-  flex-grow: 1;
+  margin-top: 0.2rem;
 }
 
 .compact-post-item .post-title {
-  font-size: 1.05rem;
-  font-weight: 500;
+  font-size: 1.05rem; /* Lower the font size of the title */
+  font-weight: 600;
   margin: 0;
   line-height: 1.4;
+  color: var(--text-primary);
+  text-align: left;
+}
+
+.post-date {
+  font-size: 0.8rem; /* Write the date small */
+  color: var(--text-muted);
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
 }
 
 .post-meta {
@@ -930,12 +933,55 @@ header.nav-header {
     grid-template-columns: 1fr;
   }
   .category-sidebar {
+    display: none; /* Hidden by default on mobile */
     position: static;
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem;
+  }
+  .category-sidebar.show {
+    display: block;
+    animation: slideDown 0.3s ease;
   }
   .reader-title {
     font-size: 1.8rem;
   }
+  .mouse-follower-container {
+    display: none !important;
+  }
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (min-width: 801px) {
+  .search-toggle-btn {
+    display: none !important;
+  }
+}
+
+/* Search Toggle Button Style */
+.search-toggle-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.7rem 1.2rem;
+  border-radius: 30px;
+  background: var(--bg-glass);
+  border: 1px solid var(--border-glass);
+  color: var(--text-secondary);
+  font-family: var(--font-title);
+  font-weight: 500;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+
+.search-toggle-btn:hover {
+  background: #ffffff;
+  box-shadow: var(--shadow-md);
+  color: var(--accent-primary);
+  border-color: rgba(79, 70, 229, 0.25);
 }
 
 /* Mouse Follower Concentric Circles Styles */

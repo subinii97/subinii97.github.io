@@ -477,18 +477,12 @@ function initNavigationInterceptors() {
     }
   });
 
-  // Handle smart back button in diary
-  const diaryBackBtn = document.getElementById('diary-back-btn');
-  if (diaryBackBtn) {
-    diaryBackBtn.addEventListener('click', (e) => {
+  // Handle clicking on main logo "Subin's blog" to go home
+  const mainLogo = document.querySelector('.main-logo');
+  if (mainLogo) {
+    mainLogo.addEventListener('click', (e) => {
       e.preventDefault();
-      if (window.location.hash.startsWith('#diary/')) {
-        // Detailed reader mode -> List mode (No transition ripple)
-        window.location.hash = '#diary';
-      } else {
-        // List mode -> Home mode (Triggers ripple transition)
-        triggerTransition('#', e);
-      }
+      triggerTransition('#', e);
     });
   }
 }
@@ -502,6 +496,15 @@ function initNavigationInterceptors() {
 function initDiaryControls() {
   const searchInput = document.getElementById('diary-search');
   const sortBtn = document.getElementById('diary-sort-btn');
+  const searchToggleBtn = document.getElementById('diary-search-toggle-btn');
+  const categorySidebar = document.querySelector('.category-sidebar');
+
+  // Search/Category toggle listener for mobile
+  if (searchToggleBtn && categorySidebar) {
+    searchToggleBtn.addEventListener('click', () => {
+      categorySidebar.classList.toggle('show');
+    });
+  }
 
   // Search filter listener
   if (searchInput) {
@@ -603,20 +606,22 @@ function renderDiary() {
   postList.innerHTML = paginatedPosts.map(post => {
     const isRead = readPosts.has(post.filename);
     const isNew = latestPostFilenames.includes(post.filename) && !isRead;
-    const dateOnly = post.date.split(' ')[0];
+    const formattedDate = formatPostDate(post.date);
     const categoryLabel = post.categories && post.categories.length > 0
       ? `<span class="post-category-tag">${post.categories[0]}</span>`
       : '';
 
     return `
       <a href="#diary/${encodeURIComponent(post.filename)}" class="post-item compact-post-item glass-card ${isRead ? 'read' : ''}" data-filename="${post.filename}">
-        <div class="post-item-left">
-          <span class="post-date"><i class="far fa-calendar-alt"></i> ${dateOnly}</span>
-          ${categoryLabel}
-        </div>
-        <div class="post-item-main">
+        <div class="post-item-header">
           <h2 class="post-title">${escapeHtml(post.title)}</h2>
           ${isNew ? '<span class="new-badge">NEW</span>' : ''}
+        </div>
+        <div class="post-item-meta-row">
+          <span class="post-date"><i class="far fa-calendar-alt"></i> ${formattedDate}</span>
+          <div class="post-item-category-wrapper">
+            ${categoryLabel}
+          </div>
         </div>
       </a>
     `;
@@ -793,4 +798,47 @@ function escapeHtml(unsafe) {
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#039;");
+}
+
+// Format date relatively (within 7 days / 1 hour)
+function formatPostDate(dateStr) {
+  if (!dateStr) return '';
+  
+  let parsedDate;
+  const parts = dateStr.trim().split(/\s+/);
+  if (parts.length >= 2) {
+    const datePart = parts[0];
+    const timePart = parts[1];
+    let tzPart = parts[2] || '';
+    if (tzPart && !tzPart.includes(':') && (tzPart.startsWith('+') || tzPart.startsWith('-'))) {
+      tzPart = tzPart.slice(0, 3) + ':' + tzPart.slice(3);
+    }
+    parsedDate = new Date(`${datePart}T${timePart}${tzPart}`);
+  } else {
+    parsedDate = new Date(dateStr);
+  }
+
+  const now = new Date();
+  const diffMs = now - parsedDate;
+
+  if (isNaN(diffMs) || diffMs < 0) {
+    return dateStr.split(' ')[0];
+  }
+
+  const diffMins = Math.floor(diffMs / (1000 * 60));
+  const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+  if (diffMins < 60) {
+    return '방금 전';
+  } else if (diffHours < 24) {
+    return `${diffHours}시간 전`;
+  } else if (diffDays <= 7) {
+    return `${diffDays}일 전`;
+  } else {
+    const yyyy = parsedDate.getFullYear();
+    const mm = String(parsedDate.getMonth() + 1).padStart(2, '0');
+    const dd = String(parsedDate.getDate()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}`;
+  }
 }

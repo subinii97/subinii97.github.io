@@ -54,12 +54,7 @@
   <!-- 2. PROFILE VIEW -->
   <div id="profile-view" class="view-section" style="display: none;">
     <div class="profile-wrapper container">
-      <!-- Back to home -->
-      <div style="margin-top: 1.5rem; margin-bottom: 1.5rem;">
-        <button class="back-btn" data-target="home">
-          <i class="fas fa-arrow-left"></i> 돌아가기
-        </button>
-      </div>
+      <!-- Profile card -->
 
       <!-- Profile card -->
       <div class="profile-container">
@@ -126,12 +121,7 @@
   <!-- 3. DIARY VIEW (List & Reader) -->
   <div id="diary-view" class="view-section" style="display: none;">
     <div class="diary-wrapper container">
-      <!-- Smart Header Controls -->
-      <header class="diary-header">
-        <button class="back-btn" id="diary-back-btn">
-          <i class="fas fa-arrow-left"></i> 돌아가기
-        </button>
-      </header>
+      <!-- Smart Header Controls (Removed Back Button) -->
 
       <!-- Post List Section -->
       <div id="diary-list-container">
@@ -154,9 +144,14 @@
           <div class="post-list-container-wrapper">
             <div class="post-list-header-row">
               <span class="post-list-title">목록</span>
-              <button id="diary-sort-btn" class="sort-btn">
-                <!-- Toggled by JS: "오래된순" (when Desc) or "최신순" (when Asc) -->
-              </button>
+              <div class="post-list-header-actions" style="display: flex; gap: 0.5rem; align-items: center;">
+                <button id="diary-search-toggle-btn" class="search-toggle-btn">
+                  <i class="fas fa-search"></i> 카테고리/검색
+                </button>
+                <button id="diary-sort-btn" class="sort-btn">
+                  <!-- Toggled by JS -->
+                </button>
+              </div>
             </div>
 
             <main class="post-list" id="post-list-element">

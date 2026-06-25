@@ -97,7 +97,8 @@ function initMainPage() {
   window.addEventListener('resize', resizeCanvas);
 
   // Physics & animation states
-  let phi = -Math.PI / 2; // Orbit angle (starts at 12 o'clock) for uniform circular motion
+  let phi = 0; // Orbit angle (starts at diary (0 radians) and swings to profile (PI radians))
+  let omega_phi = 0; // Angular velocity of the pivot
   let frameCount = 0;
 
   // Physics Settings
@@ -199,9 +200,9 @@ function initMainPage() {
   const trail1 = [];
   const trail2 = [];
   const trail3 = [];
-  // Since phi increases by 0.0035 rad/frame, one full orbit takes 2*PI / 0.0035 = 1795 frames.
-  // We sample coordinates every 3 frames. 1795 / 3 = ~600 points covers a full orbit.
-  // We want the trail to remain solid for one full orbit (600 pts) and fade out over the next half orbit (300 pts).
+  // Since phi oscillates back and forth, one complete swing cycle takes roughly 1500-1800 frames.
+  // We sample coordinates every 3 frames. ~600 points covers a full swing.
+  // We want the trail to remain solid for one full swing (600 pts) and fade out over the next half swing (300 pts).
   // Total trail length: 900 points.
   const maxTrailLength = 900;
   const skipFrames = 3;
@@ -224,8 +225,23 @@ function initMainPage() {
     const L2 = L1 / 2; // 2l
     const L3 = L1 / 4; // l (giving 4l : 2l : l ratio)
 
-    // 2. Pendulum pivot coordinates (moves uniformly along the orbit ring)
-    phi = (phi + 0.0035) % (2 * Math.PI);
+    // 2. Pendulum pivot coordinates (swings under gravity potential energy between diary (0) and profile (PI))
+    // Acceleration a_g = (g_pivot / R) * cos(phi) where equilibrium is at the bottom (phi = PI/2)
+    const g_pivot = 0.005; // Visual gravity parameter for the pivot
+    const a_g = g_pivot / R;
+
+    omega_phi += a_g * Math.cos(phi);
+    phi += omega_phi;
+
+    // Enforce hard boundaries at 0 and PI to prevent numerical overshoot or energy accumulation
+    if (phi < 0) {
+      phi = 0;
+      omega_phi = 0;
+    } else if (phi > Math.PI) {
+      phi = Math.PI;
+      omega_phi = 0;
+    }
+
     const x0 = cx + R * Math.cos(phi);
     const y0 = cy + R * Math.sin(phi);
 

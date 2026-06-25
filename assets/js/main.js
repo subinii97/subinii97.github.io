@@ -227,7 +227,7 @@ function initMainPage() {
 
     // 2. Pendulum pivot coordinates (swings under gravity potential energy between diary (0) and profile (PI))
     // Acceleration a_g = (g_pivot / R) * cos(phi) where equilibrium is at the bottom (phi = PI/2)
-    const g_pivot = 0.005; // Visual gravity parameter for the pivot
+    const g_pivot = 0.08; // Visual gravity parameter for the pivot
     const a_g = g_pivot / R;
 
     omega_phi += a_g * Math.cos(phi);

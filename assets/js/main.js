@@ -100,7 +100,7 @@ function initMainPage() {
   window.addEventListener('resize', resizeCanvas);
 
   // Physics & animation states
-  let phi = -Math.PI / 2 + 0.01; // Orbit angle (starts near 12 o'clock and swings dynamically under gravity)
+  let phi = -Math.PI / 2; // Orbit angle (starts at 12 o'clock and swings dynamically under gravity)
   let omega_phi = 0; // Angular velocity of the pivot
   let frameCount = 0;
 
@@ -228,12 +228,12 @@ function initMainPage() {
     const L2 = (L1 / 3) * 2; // 2l
     const L3 = L1 / 3; // l (giving 3l : 2l : l ratio)
 
-    // 2. Pendulum pivot coordinates (swings under gravity potential energy, starting from diary (0))
-    // Acceleration a_g = (g_pivot / R) * cos(phi) where equilibrium is at the bottom (phi = PI/2)
+    // 2. Pendulum pivot coordinates (swings under gravity potential energy, starting from 12 o'clock (-PI/2))
+    // Acceleration a_g = -(g_pivot / R) * cos(phi) where equilibrium is at the top (phi = -PI/2)
     const g_pivot = 0.08; // Visual gravity parameter for the pivot
     const a_g = g_pivot / R;
 
-    omega_phi += a_g * Math.cos(phi);
+    omega_phi -= a_g * Math.cos(phi);
     phi += omega_phi;
 
     // Normalize phi to stay within [-2*PI, 2*PI] to prevent floating-point precision loss over long runs
@@ -244,9 +244,12 @@ function initMainPage() {
     const x0 = cx + R * Math.cos(phi);
     const y0 = cy + R * Math.sin(phi);
 
-    // Initialize node angles if not done
+    // Initialize node angles and pivot velocity if not done
     if (!isInitialized) {
       initNodeAngles();
+      // Set initial angular velocity of the pivot to swing to 1 o'clock (PI/6 amplitude)
+      const amplitude = Math.PI / 6;
+      omega_phi = Math.sqrt(2 * a_g * (1 - Math.cos(amplitude)));
     }
 
     // 3. Runge-Kutta 4th Order (RK4) Integration Sub-stepping

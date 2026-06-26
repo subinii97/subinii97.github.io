@@ -109,17 +109,16 @@ function initMainPage() {
   const g = 0.7; // Gravity scaled for Runge-Kutta 4th order time step integration
   const damp = 1.0; // Lossless damping (kept for compatibility)
 
-  // Pendulum nodes physical masses (0: Pivot, 1: Node 1, 2: Node 2, 3: Node 3)
-  // Mass ratio set strictly to 4:2:2:2.
-  const mass = [4.0, 2.0, 2.0, 2.0];
+  // Pendulum nodes physical masses (0: Pivot, 1: Node 1, 2: Node 2)
+  // Mass ratio set strictly to 4:2:3.
+  const mass = [4.0, 2.0, 3.0];
 
-  // Runge-Kutta State Variables (angles: theta1, theta2, theta3 / omegas: omega1, omega2, omega3)
-  let angles = [0, 0, 0];
-  let omegas = [0, 0, 0];
+  // Runge-Kutta State Variables (angles: theta1, theta2 / omegas: omega1, omega2)
+  let angles = [0, 0];
+  let omegas = [0, 0];
 
   // Pendulum nodes Cartesian states for rendering compatibility
   const pos = [
-    { x: 0, y: 0 },
     { x: 0, y: 0 },
     { x: 0, y: 0 },
     { x: 0, y: 0 }
@@ -128,21 +127,19 @@ function initMainPage() {
   let isInitialized = false;
 
   function initNodeAngles() {
-    // Start with smaller deflected angles to reduce the initial potential energy.
-    // Node 1 is set to 0.3 rad, Node 2 to 1.5 rad, and Node 3 to -1.6 rad.
-    // No initial velocities are set to avoid starting with an excessive initial kinetic kick.
-    angles = [0.1, 0.1, 0.1];
-    omegas = [0.0, 0.0, 0.0];
+    // Start with small deflected angles to reduce the initial potential energy.
+    angles = [0.1, 0.1];
+    omegas = [0.0, 0.0];
 
     isInitialized = true;
   }
 
-  // Gaussian elimination solver with partial pivoting for 4x4 matrix
-  function solve4x4(M, F) {
-    const n = 4;
+  // Gaussian elimination solver with partial pivoting for 3x3 matrix
+  function solve3x3(M, F) {
+    const n = 3;
     const A = [];
     for (let i = 0; i < n; i++) {
-      A.push([M[i][0], M[i][1], M[i][2], M[i][3], F[i]]);
+      A.push([M[i][0], M[i][1], M[i][2], F[i]]);
     }
 
     for (let i = 0; i < n; i++) {
@@ -160,7 +157,7 @@ function initMainPage() {
       A[i] = temp;
 
       if (Math.abs(A[i][i]) < 1e-10) {
-        return [0, 0, 0, 0];
+        return [0, 0, 0];
       }
 
       for (let k = i + 1; k < n; k++) {
@@ -175,7 +172,7 @@ function initMainPage() {
       }
     }
 
-    const x = [0, 0, 0, 0];
+    const x = [0, 0, 0];
     for (let i = n - 1; i >= 0; i--) {
       x[i] = A[i][n] / A[i][i];
       for (let k = i - 1; k >= 0; k--) {
@@ -185,51 +182,39 @@ function initMainPage() {
     return x;
   }
 
-  // Lagrangian Equations of Motion for the Coupled 4-DOF System
-  // q = [phi, theta1, theta2, theta3]
-  // omega = [omega_phi, omega1, omega2, omega3]
-  function derivatives(q, omega, L1, L2, L3, R) {
+  // Lagrangian Equations of Motion for the Coupled 3-DOF System (Double Pendulum with revolving pivot)
+  // q = [phi, theta1, theta2]
+  // omega = [omega_phi, omega1, omega2]
+  function derivatives(q, omega, L1, L2, R) {
     const phi = q[0];
     const t1 = q[1];
     const t2 = q[2];
-    const t3 = q[3];
 
     const w0 = omega[0];
     const w1 = omega[1];
     const w2 = omega[2];
-    const w3 = omega[3];
 
     // Mass parameters
-    const M_tot = mass[0] + mass[1] + mass[2] + mass[3];
-    const mu1 = mass[1] + mass[2] + mass[3];
-    const mu2 = mass[2] + mass[3];
-    const mu3 = mass[3];
+    const M_tot = mass[0] + mass[1] + mass[2];
+    const mu1 = mass[1] + mass[2];
+    const mu2 = mass[2];
 
-    // Construct 4x4 Mass Matrix M
+    // Construct 3x3 Mass Matrix M
     const M = [
       [
         M_tot * R * R,
         -mu1 * R * L1 * Math.sin(phi + t1),
-        -mu2 * R * L2 * Math.sin(phi + t2),
-        -mu3 * R * L3 * Math.sin(phi + t3)
+        -mu2 * R * L2 * Math.sin(phi + t2)
       ],
       [
         -mu1 * R * L1 * Math.sin(phi + t1),
         mu1 * L1 * L1,
-        mu2 * L1 * L2 * Math.cos(t1 - t2),
-        mu3 * L1 * L3 * Math.cos(t1 - t3)
+        mu2 * L1 * L2 * Math.cos(t1 - t2)
       ],
       [
         -mu2 * R * L2 * Math.sin(phi + t2),
         mu2 * L1 * L2 * Math.cos(t1 - t2),
-        mu2 * L2 * L2,
-        mu3 * L2 * L3 * Math.cos(t2 - t3)
-      ],
-      [
-        -mu3 * R * L3 * Math.sin(phi + t3),
-        mu3 * L1 * L3 * Math.cos(t1 - t3),
-        mu3 * L2 * L3 * Math.cos(t2 - t3),
-        mu3 * L3 * L3
+        mu2 * L2 * L2
       ]
     ];
 
@@ -238,36 +223,26 @@ function initMainPage() {
       // F0 (phi force)
       R * (
         mu1 * L1 * w1 * w1 * Math.cos(phi + t1) +
-        mu2 * L2 * w2 * w2 * Math.cos(phi + t2) +
-        mu3 * L3 * w3 * w3 * Math.cos(phi + t3)
+        mu2 * L2 * w2 * w2 * Math.cos(phi + t2)
       ) + M_tot * g * R * Math.cos(phi),
 
       // F1 (theta1 force)
       mu1 * R * L1 * w0 * w0 * Math.cos(phi + t1)
       - mu2 * L1 * L2 * w2 * w2 * Math.sin(t1 - t2)
-      - mu3 * L1 * L3 * w3 * w3 * Math.sin(t1 - t3)
       - mu1 * g * L1 * Math.sin(t1),
 
       // F2 (theta2 force)
       mu2 * R * L2 * w0 * w0 * Math.cos(phi + t2)
       + mu2 * L1 * L2 * w1 * w1 * Math.sin(t1 - t2)
-      - mu3 * L2 * L3 * w3 * w3 * Math.sin(t2 - t3)
-      - mu2 * g * L2 * Math.sin(t2),
-
-      // F3 (theta3 force)
-      mu3 * R * L3 * w0 * w0 * Math.cos(phi + t3)
-      + mu3 * L1 * L3 * w1 * w1 * Math.sin(t1 - t3)
-      + mu3 * L2 * L3 * w2 * w2 * Math.sin(t2 - t3)
-      - mu3 * g * L3 * Math.sin(t3)
+      - mu2 * g * L2 * Math.sin(t2)
     ];
 
-    return solve4x4(M, F);
+    return solve3x3(M, F);
   }
 
-  // Trails to store previous positions of the three nodes
+  // Trails to store previous positions of the two nodes
   const trail1 = [];
   const trail2 = [];
-  const trail3 = [];
   // Constant permanent trails (cleared on page navigation/hashchange)
   // We set a high maximum length of 20000 points as a safety limit to prevent memory leaks
   const maxTrailLength = 20000;
@@ -277,7 +252,6 @@ function initMainPage() {
   window.addEventListener('hashchange', () => {
     trail1.length = 0;
     trail2.length = 0;
-    trail3.length = 0;
   });
 
   function updatePhysicsAndRender() {
@@ -293,10 +267,9 @@ function initMainPage() {
     ctx.lineWidth = 2.0;
     ctx.stroke();
 
-    // Pendulum rod lengths (Ratio set strictly to 1:1:1)
+    // Pendulum rod lengths (Ratio L1:L2 is set strictly to 2:3)
     const L1 = isMobile ? 60 : 150;
-    const L2 = L1 * 2 / 3;
-    const L3 = L1 / 3;
+    const L2 = L1 * 1.5;
 
     // Initialize node angles if not done
     if (!isInitialized) {
@@ -304,43 +277,43 @@ function initMainPage() {
     }
 
     // 3. Runge-Kutta 4th Order (RK4) Integration Sub-stepping
-    // Unifies the pivot (Node 0) and the triple pendulum (Nodes 1, 2, 3) in a 4-DOF state vector,
+    // Unifies the pivot (Node 0) and the double pendulum (Nodes 1, 2) in a 3-DOF state vector,
     // ensuring perfect physical coupling and energy conservation.
     const subSteps = 6;
     const dt = 0.05;
 
-    let state_q = [phi, angles[0], angles[1], angles[2]];
-    let state_w = [omega_phi, omegas[0], omegas[1], omegas[2]];
+    let state_q = [phi, angles[0], angles[1]];
+    let state_w = [omega_phi, omegas[0], omegas[1]];
 
     for (let step = 0; step < subSteps; step++) {
       // k1
-      const alpha1 = derivatives(state_q, state_w, L1, L2, L3, R);
+      const alpha1 = derivatives(state_q, state_w, L1, L2, R);
       const k1_q = [...state_w];
       const k1_w = [...alpha1];
 
       // k2
       const temp_q2 = state_q.map((qVal, i) => qVal + 0.5 * dt * k1_q[i]);
       const temp_w2 = state_w.map((wVal, i) => wVal + 0.5 * dt * k1_w[i]);
-      const alpha2 = derivatives(temp_q2, temp_w2, L1, L2, L3, R);
+      const alpha2 = derivatives(temp_q2, temp_w2, L1, L2, R);
       const k2_q = [...temp_w2];
       const k2_w = [...alpha2];
 
       // k3
       const temp_q3 = state_q.map((qVal, i) => qVal + 0.5 * dt * k2_q[i]);
       const temp_w3 = state_w.map((wVal, i) => wVal + 0.5 * dt * k2_w[i]);
-      const alpha3 = derivatives(temp_q3, temp_w3, L1, L2, L3, R);
+      const alpha3 = derivatives(temp_q3, temp_w3, L1, L2, R);
       const k3_q = [...temp_w3];
       const k3_w = [...alpha3];
 
       // k4
       const temp_q4 = state_q.map((qVal, i) => qVal + dt * k3_q[i]);
       const temp_w4 = state_w.map((wVal, i) => wVal + dt * k3_w[i]);
-      const alpha4 = derivatives(temp_q4, temp_w4, L1, L2, L3, R);
+      const alpha4 = derivatives(temp_q4, temp_w4, L1, L2, R);
       const k4_q = [...temp_w4];
       const k4_w = [...alpha4];
 
       // Update state vectors (No damping to preserve mechanical energy perfectly)
-      for (let i = 0; i < 4; i++) {
+      for (let i = 0; i < 3; i++) {
         state_q[i] += (dt / 6) * (k1_q[i] + 2 * k2_q[i] + 2 * k3_q[i] + k4_q[i]);
         state_w[i] += (dt / 6) * (k1_w[i] + 2 * k2_w[i] + 2 * k3_w[i] + k4_w[i]);
       }
@@ -351,16 +324,14 @@ function initMainPage() {
     omega_phi = state_w[0];
     angles[0] = state_q[1];
     angles[1] = state_q[2];
-    angles[2] = state_q[3];
     omegas[0] = state_w[1];
     omegas[1] = state_w[2];
-    omegas[2] = state_w[3];
 
     // Normalize values to stay within [-2*PI, 2*PI] to prevent precision loss
     if (Math.abs(phi) > 2 * Math.PI) {
       phi = phi % (2 * Math.PI);
     }
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < 2; i++) {
       if (Math.abs(angles[i]) > 2 * Math.PI) {
         angles[i] = angles[i] % (2 * Math.PI);
       }
@@ -376,55 +347,61 @@ function initMainPage() {
     const x2 = x1 + L2 * Math.sin(angles[1]);
     const y2 = y1 + L2 * Math.cos(angles[1]);
 
-    const x3 = x2 + L3 * Math.sin(angles[2]);
-    const y3 = y2 + L3 * Math.cos(angles[2]);
-
     pos[0].x = x0;
     pos[0].y = y0;
     pos[1].x = x1;
     pos[1].y = y1;
     pos[2].x = x2;
     pos[2].y = y2;
-    pos[3].x = x3;
-    pos[3].y = y3;
 
-    // Update trails on skip interval
+    // Update trails on skip interval (storing the current timestamp)
     frameCount++;
     if (frameCount % skipFrames === 0) {
-      trail1.push({ x: x1, y: y1 });
-      trail2.push({ x: x2, y: y2 });
-      trail3.push({ x: x3, y: y3 });
-
-      if (trail1.length > maxTrailLength) trail1.shift();
-      if (trail2.length > maxTrailLength) trail2.shift();
-      if (trail3.length > maxTrailLength) trail3.shift();
+      const now = Date.now();
+      trail1.push({ x: x1, y: y1, t: now });
+      trail2.push({ x: x2, y: y2, t: now });
     }
 
-    // 4.5. Draw trails (constant opacity, no fading out)
+    // Clean up points older than 40 seconds (30s full opacity + 10s fade-out)
+    const cutoff = Date.now() - 40000;
+    while (trail1.length > 0 && trail1[0].t < cutoff) {
+      trail1.shift();
+    }
+    while (trail2.length > 0 && trail2[0].t < cutoff) {
+      trail2.shift();
+    }
+
+    // 4.5. Draw trails (retains full opacity for 30s, then fades out over 10s)
     const drawTrail = (trail, colorRGB, lineWidth = 1.0) => {
       if (trail.length < 2) return;
-      const alpha = 0.22;
-
-      ctx.beginPath();
-      ctx.moveTo(trail[0].x, trail[0].y);
+      const now = Date.now();
       for (let i = 1; i < trail.length; i++) {
-        ctx.lineTo(trail[i].x, trail[i].y);
+        const p1 = trail[i - 1];
+        const p2 = trail[i];
+        const age = now - p2.t;
+        let alpha = 0.22;
+        if (age > 30000) {
+          alpha = Math.max(0, 0.22 * (1 - (age - 30000) / 10000));
+        }
+        if (alpha <= 0) continue;
+
+        ctx.beginPath();
+        ctx.moveTo(p1.x, p1.y);
+        ctx.lineTo(p2.x, p2.y);
+        ctx.strokeStyle = `rgba(${colorRGB}, ${alpha})`;
+        ctx.lineWidth = lineWidth;
+        ctx.stroke();
       }
-      ctx.strokeStyle = `rgba(${colorRGB}, ${alpha})`;
-      ctx.lineWidth = lineWidth;
-      ctx.stroke();
     };
 
-    drawTrail(trail1, '119, 155, 231', 1.5); // Node 1: #779be7 (Width 1.5, Mass 2.0)
-    drawTrail(trail2, '164, 128, 207', 1.5); // Node 2: #a480cf (Width 1.5, Mass 2.0)
-    drawTrail(trail3, '210, 100, 182', 1.5); // Node 3: #d264b6 (Width 1.5, Mass 2.0)
+    drawTrail(trail1, '119, 155, 231', 2.25); // Node 1: #779be7 (Width 2.25, Mass 2.0, Blue)
+    drawTrail(trail2, '138, 222, 166', 2.25); // Node 2: #8adea6 (Width 2.25, Mass 3.0, Melon Green)
 
     // 5. Draw rods
     ctx.beginPath();
     ctx.moveTo(x0, y0);
     ctx.lineTo(x1, y1);
     ctx.lineTo(x2, y2);
-    ctx.lineTo(x3, y3);
     ctx.strokeStyle = 'rgba(0, 0, 0, 0.22)';
     ctx.lineWidth = 1.5;
     ctx.stroke();
@@ -440,11 +417,10 @@ function initMainPage() {
       ctx.stroke();
     };
 
-    // Node sizes scaled strictly according to 4:2:2:2 mass ratio (using 5.5 as base factor)
+    // Node sizes scaled proportionally (Pivot mass 4.0, Node 1 mass 2.0, Node 2 mass 3.0)
     drawNode(x0, y0, 11.0, '#888888'); // Pivot (Mass 4.0, Grey)
     drawNode(x1, y1, 5.5, '#779be7');  // Node 1 (Mass 2.0)
-    drawNode(x2, y2, 5.5, '#a480cf');  // Node 2 (Mass 2.0)
-    drawNode(x3, y3, 5.5, '#d264b6');  // Node 3 (Mass 2.0)
+    drawNode(x2, y2, 8.25, '#8adea6'); // Node 2 (Mass 3.0)
 
     requestAnimationFrame(updatePhysicsAndRender);
   }
@@ -626,6 +602,17 @@ function initDiaryControls() {
         return;
       }
       e.preventDefault();
+    });
+  }
+
+  // Image preview click interceptor on reader content
+  const readerContent = document.getElementById('reader-post-content');
+  if (readerContent) {
+    readerContent.addEventListener('click', (e) => {
+      const img = e.target.closest('img');
+      if (img) {
+        openImagePreview(img.src, img.alt);
+      }
     });
   }
 }
@@ -962,3 +949,4 @@ function formatPostDate(dateStr) {
     return `${yyyy}-${mm}-${dd}`;
   }
 }
+

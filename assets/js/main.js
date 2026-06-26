@@ -395,7 +395,7 @@ function initMainPage() {
     };
 
     drawTrail(trail1, '119, 155, 231', 2.25); // Node 1: #779be7 (Width 2.25, Mass 2.0, Blue)
-    drawTrail(trail2, '138, 222, 166', 2.25); // Node 2: #8adea6 (Width 2.25, Mass 3.0, Melon Green)
+    drawTrail(trail2, '180, 214, 168', 2.25); // Node 2: #b4d6a8 (Width 2.25, Mass 3.0, Melon Green)
 
     // 5. Draw rods
     ctx.beginPath();
@@ -420,7 +420,7 @@ function initMainPage() {
     // Node sizes scaled proportionally (Pivot mass 4.0, Node 1 mass 2.0, Node 2 mass 3.0)
     drawNode(x0, y0, 11.0, '#888888'); // Pivot (Mass 4.0, Grey)
     drawNode(x1, y1, 5.5, '#779be7');  // Node 1 (Mass 2.0)
-    drawNode(x2, y2, 8.25, '#8adea6'); // Node 2 (Mass 3.0)
+    drawNode(x2, y2, 8.25, '#b4d6a8'); // Node 2 (Mass 3.0)
 
     requestAnimationFrame(updatePhysicsAndRender);
   }

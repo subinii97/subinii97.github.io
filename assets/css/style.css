@@ -186,6 +186,12 @@ header.nav-header {
   margin-top: -80px;
   margin-left: -80px;
   z-index: 3;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.orbit-satellite.moving-to-center {
+  transform: translate(0, 0) !important;
+  z-index: 9999;
 }
 
 /* Desktop positioning for satellites (Study at 9 o'clock, Diary at 3 o'clock) */
@@ -1108,6 +1114,14 @@ header.nav-header {
   pointer-events: none;
   transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.4s ease;
   opacity: 0;
+}
+
+.expanding-circle.theme-study {
+  background: #adcbf7;
+}
+
+.expanding-circle.theme-diary {
+  background: #b4d6a8;
 }
 
 .expanding-circle.active {

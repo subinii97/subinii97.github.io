@@ -489,7 +489,63 @@ function handleRouting() {
 /* ----------------------------------
    EXPANDING RIPPLE PAGE TRANSITION
 ------------------------------------- */
+let isTransitioning = false;
+
+function triggerCenterTransition(target, targetHash, satelliteEl, clickEvent) {
+  if (isTransitioning) return;
+  isTransitioning = true;
+
+  // Add class to animate slide to center
+  satelliteEl.classList.add('moving-to-center');
+
+  // Compute the center coordinates of the orbit container
+  const container = document.querySelector('.orbit-container');
+  let cx = window.innerWidth / 2;
+  let cy = window.innerHeight / 2;
+  if (container) {
+    const rect = container.getBoundingClientRect();
+    cx = rect.left + rect.width / 2;
+    cy = rect.top + rect.height / 2;
+  }
+
+  // Create the expanding ripple with theme class
+  const ripple = document.createElement('div');
+  ripple.className = `expanding-circle theme-${target}`;
+  ripple.style.left = `${cx}px`;
+  ripple.style.top = `${cy}px`;
+
+  // Wait 450ms (for the slide animation to bring the satellite near the center) before appending ripple
+  setTimeout(() => {
+    document.body.appendChild(ripple);
+    
+    // Trigger scale transition
+    requestAnimationFrame(() => {
+      ripple.classList.add('active');
+    });
+
+    // Wait another 450ms for ripple to cover screen, then perform route swap
+    setTimeout(() => {
+      window.location.hash = targetHash;
+
+      // Wait 100ms then start fading out ripple
+      setTimeout(() => {
+        ripple.style.opacity = '0';
+        
+        // Wait 400ms for fade out transition to finish, then clean up
+        setTimeout(() => {
+          ripple.remove();
+          satelliteEl.classList.remove('moving-to-center');
+          isTransitioning = false;
+        }, 400);
+      }, 100);
+    }, 450);
+  }, 450);
+}
+
 function triggerTransition(targetHash, clickEvent) {
+  if (isTransitioning) return;
+  isTransitioning = true;
+
   // Create circular transition element at coordinates of mouse click
   const ripple = document.createElement('div');
   ripple.className = 'expanding-circle';
@@ -515,6 +571,7 @@ function triggerTransition(targetHash, clickEvent) {
       ripple.style.opacity = '0';
       setTimeout(() => {
         ripple.remove();
+        isTransitioning = false;
       }, 400);
     }, 100);
   }, 450);
@@ -528,7 +585,13 @@ function initNavigationInterceptors() {
       e.preventDefault();
       const target = btn.getAttribute('data-target');
       const hash = target === 'home' ? '#' : `#${target}`;
-      triggerTransition(hash, e);
+      
+      const satellite = btn.closest('.orbit-satellite');
+      if (satellite) {
+        triggerCenterTransition(target, hash, satellite, e);
+      } else {
+        triggerTransition(hash, e);
+      }
     }
   });
 

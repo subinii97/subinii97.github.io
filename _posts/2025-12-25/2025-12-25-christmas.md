@@ -52,7 +52,6 @@ tags: [bottomsurgery]     # TAG names should always be lowercase
 그래서 흑백요리사 시즌 2를 보기 시작했다.
 <figure>
     <img src="8.jpeg" alt="">
-    <figcaption>어쩌다 찍힌 요즘 화제의 인물, 임짱</figcaption>
 </figure>
 
 점심은 죽이었는데 역시 맛이 좋지 않아서 별로 안먹었다.

@@ -234,9 +234,21 @@ header.nav-header {
 .orbit-btn:hover {
   transform: scale(1.08);
   background: #ffffff;
+  box-shadow: var(--shadow-lg);
   border-color: rgba(79, 70, 229, 0.25);
-  box-shadow: var(--shadow-lg), 0 0 25px rgba(79, 70, 229, 0.12);
   color: var(--accent-primary);
+}
+
+.satellite-study .orbit-btn:hover {
+  border-color: rgba(173, 203, 247, 0.7);
+  box-shadow: var(--shadow-lg), 0 0 25px rgba(173, 203, 247, 0.25);
+  color: #6b9eeb; /* Node 1 light blue theme */
+}
+
+.satellite-diary .orbit-btn:hover {
+  border-color: rgba(180, 214, 168, 0.7);
+  box-shadow: var(--shadow-lg), 0 0 25px rgba(180, 214, 168, 0.25);
+  color: #7ba86c; /* Node 2 melon green theme */
 }
 
 .orbit-btn:hover i {

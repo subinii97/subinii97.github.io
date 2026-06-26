@@ -514,31 +514,40 @@ function triggerCenterTransition(target, targetHash, satelliteEl, clickEvent) {
   ripple.style.left = `${cx}px`;
   ripple.style.top = `${cy}px`;
 
-  // Wait 450ms (for the slide animation to bring the satellite near the center) before appending ripple
+  // Create the centered transition text overlay
+  const textOverlay = document.createElement('div');
+  textOverlay.className = 'transition-text-overlay';
+  textOverlay.textContent = target.charAt(0).toUpperCase() + target.slice(1);
+
+  // Wait 450ms (for the slide animation to bring the satellite near the center) before appending elements
   setTimeout(() => {
     document.body.appendChild(ripple);
+    document.body.appendChild(textOverlay);
     
-    // Trigger scale transition
+    // Trigger animations
     requestAnimationFrame(() => {
       ripple.classList.add('active');
+      textOverlay.classList.add('active');
     });
 
-    // Wait another 450ms for ripple to cover screen, then perform route swap
+    // Wait 800ms (matching the smooth 0.8s transition) for ripple to cover screen, then perform route swap
     setTimeout(() => {
       window.location.hash = targetHash;
 
-      // Wait 100ms then start fading out ripple
+      // Wait 100ms then start fading out elements
       setTimeout(() => {
         ripple.style.opacity = '0';
+        textOverlay.style.opacity = '0';
         
         // Wait 400ms for fade out transition to finish, then clean up
         setTimeout(() => {
           ripple.remove();
+          textOverlay.remove();
           satelliteEl.classList.remove('moving-to-center');
           isTransitioning = false;
         }, 400);
       }, 100);
-    }, 450);
+    }, 800);
   }, 450);
 }
 

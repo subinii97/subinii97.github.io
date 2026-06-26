@@ -21,6 +21,8 @@
   --accent-primary: #4f46e5; /* Soft Violet */
   --accent-secondary: #06b6d4; /* Soft Cyan */
   --accent-pastel: #e0e7ff;
+  --accent-shadow: rgba(79, 70, 229, 0.1);
+  --accent-border-hover: rgba(79, 70, 229, 0.25);
   
   --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
   --shadow-md: 0 8px 30px rgba(0, 0, 0, 0.06);
@@ -513,7 +515,7 @@ header.nav-header {
   outline: none;
   background: #ffffff;
   border-color: var(--accent-primary);
-  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+  box-shadow: 0 0 0 3px var(--accent-shadow);
 }
 
 .search-container i {
@@ -547,7 +549,7 @@ header.nav-header {
   background: #ffffff;
   box-shadow: var(--shadow-md);
   color: var(--accent-primary);
-  border-color: rgba(79, 70, 229, 0.25);
+  border-color: var(--accent-border-hover);
 }
 
 /* Diary Grid Layout: Categories on Left, Post list on Right */
@@ -1022,7 +1024,7 @@ header.nav-header {
   background: #ffffff;
   box-shadow: var(--shadow-md);
   color: var(--accent-primary);
-  border-color: rgba(79, 70, 229, 0.25);
+  border-color: var(--accent-border-hover);
 }
 
 /* Mouse Follower Concentric Circles Styles */
@@ -1112,7 +1114,7 @@ header.nav-header {
   transform: translate(-50%, -50%) scale(0);
   z-index: 99999;
   pointer-events: none;
-  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.4s ease;
+  transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.4s ease;
   opacity: 0;
 }
 
@@ -1127,6 +1129,51 @@ header.nav-header {
 .expanding-circle.active {
   transform: translate(-50%, -50%) scale(250);
   opacity: 1;
+}
+
+/* Centered Navigation Text Overlay */
+.transition-text-overlay {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #ffffff;
+  font-family: var(--font-title);
+  font-size: 2.5rem;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  z-index: 100000;
+  pointer-events: none;
+  opacity: 0;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.transition-text-overlay.active {
+  opacity: 1;
+}
+
+@media (max-width: 600px) {
+  .transition-text-overlay {
+    font-size: 2.0rem;
+  }
+}
+
+/* Scoped Theme Overrides for Diary and Study views */
+#diary-view {
+  --accent-primary: #6c9e5f;         /* Melon Green Dark */
+  --accent-secondary: #88be7b;       /* Melon Green Medium */
+  --accent-pastel: #eaf4e6;          /* Melon Green Soft Pastel */
+  --accent-shadow: rgba(108, 158, 95, 0.15);
+  --accent-border-hover: rgba(108, 158, 95, 0.25);
+}
+
+#study-view {
+  --accent-primary: #5582c9;         /* Periwinkle/Light Blue Dark */
+  --accent-secondary: #7fa4dc;       /* Periwinkle/Light Blue Medium */
+  --accent-pastel: #e6f0fe;          /* Periwinkle/Light Blue Soft Pastel */
+  --accent-shadow: rgba(85, 130, 201, 0.15);
+  --accent-border-hover: rgba(85, 130, 201, 0.25);
 }
 
 /* Triple Pendulum Canvas Overlay */

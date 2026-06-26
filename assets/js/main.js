@@ -950,3 +950,39 @@ function formatPostDate(dateStr) {
   }
 }
 
+// Fullscreen Image Preview Lightbox Modal
+function openImagePreview(src, alt) {
+  let overlay = document.querySelector('.image-preview-overlay');
+  if (!overlay) {
+    overlay = document.createElement('div');
+    overlay.className = 'image-preview-overlay';
+    
+    const previewImg = document.createElement('img');
+    previewImg.alt = alt || '';
+    overlay.appendChild(previewImg);
+    
+    document.body.appendChild(overlay);
+    
+    // Close overlay on click
+    overlay.addEventListener('click', () => {
+      overlay.classList.remove('show');
+      setTimeout(() => {
+        overlay.style.display = 'none';
+      }, 300);
+    });
+
+    // Content copy and extraction prevention inside preview mode
+    overlay.addEventListener('copy', (e) => e.preventDefault());
+    overlay.addEventListener('selectstart', (e) => e.preventDefault());
+    overlay.addEventListener('dragstart', (e) => e.preventDefault());
+    overlay.addEventListener('contextmenu', (e) => e.preventDefault());
+  }
+
+  const previewImg = overlay.querySelector('img');
+  previewImg.src = src;
+  previewImg.alt = alt || '';
+
+  overlay.style.display = 'flex';
+  overlay.offsetHeight; // Trigger reflow for transition
+  overlay.classList.add('show');
+}

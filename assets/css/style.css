@@ -864,10 +864,13 @@ header.nav-header {
 
 .reader-content img {
   max-width: 100%;
+  max-height: 60vh;
+  width: auto;
   height: auto;
+  object-fit: contain;
   border-radius: 12px;
   box-shadow: var(--shadow-md);
-  margin: 1.5rem 0;
+  margin: 1.5rem auto;
   display: block;
 }
 
@@ -1117,4 +1120,51 @@ header.nav-header {
     width: 850px;
     height: 850px;
   }
+}
+
+/* Image zoom-in indicator inside post reader */
+#reader-post-content img {
+  cursor: zoom-in;
+  transition: transform 0.25s ease;
+}
+#reader-post-content img:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+/* Image Preview Lightbox Overlay (Premium light glassmorphism blur) */
+.image-preview-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  opacity: 0;
+  transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: zoom-out;
+}
+.image-preview-overlay.show {
+  opacity: 1;
+}
+.image-preview-overlay img {
+  max-width: 90%;
+  max-height: 90%;
+  object-fit: contain;
+  border-radius: 12px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  transform: scale(0.95);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+  -webkit-user-drag: none;
+}
+.image-preview-overlay.show img {
+  transform: scale(1);
 }

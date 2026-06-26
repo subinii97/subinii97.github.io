@@ -479,7 +479,9 @@ function handleRouting() {
     if (!cleanHash) {
       showView('home');
     } else if (cleanHash === 'profile') {
-      showView('profile');
+      window.location.hash = '#';
+    } else if (cleanHash === 'study') {
+      showView('study');
       window.scrollTo(0, 0);
     } else if (cleanHash === 'diary') {
       showView('diary');

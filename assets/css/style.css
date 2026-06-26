@@ -188,15 +188,13 @@ header.nav-header {
   z-index: 3;
 }
 
-/* Aligning them on opposite sides of the orbit line (Radius = 240px) */
-.satellite-profile {
-  /* Positioned to the left (West) of the orbit ring */
-  transform: translate(-240px, 0);
+/* Desktop positioning for satellites (Study at 9 o'clock, Diary at 3 o'clock) */
+.satellite-study {
+  transform: translate(-280px, 0);
 }
 
 .satellite-diary {
-  /* Positioned to the right (East) of the orbit ring */
-  transform: translate(240px, 0);
+  transform: translate(280px, 0);
 }
 
 
@@ -279,11 +277,11 @@ header.nav-header {
     margin-top: -55px;
     margin-left: -55px;
   }
-  .satellite-profile {
-    transform: translate(-130px, 0);
+  .satellite-study {
+    transform: translate(-140px, 0);
   }
   .satellite-diary {
-    transform: translate(130px, 0);
+    transform: translate(140px, 0);
   }
   .orbit-btn {
     font-size: 1.0rem;

@@ -1311,3 +1311,28 @@ body.theme-study {
 .image-preview-overlay.show img {
   transform: scale(1);
 }
+
+/* Header Subpage & Back to list styles */
+#header-subpage-container {
+  cursor: pointer;
+  user-select: none;
+}
+#header-subpage-container:hover .subpage-title {
+  color: var(--accent-primary);
+}
+
+.back-to-list-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+.back-to-list-btn:hover {
+  color: var(--accent-primary);
+  transform: translateX(-2px);
+}
+

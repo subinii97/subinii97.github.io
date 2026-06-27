@@ -748,6 +748,23 @@ function initNavigationInterceptors() {
       triggerTransition('#', e);
     });
   }
+
+  // Handle clicking on header subpage title area to go back to list
+  const headerSubpageContainer = document.getElementById('header-subpage-container');
+  if (headerSubpageContainer) {
+    headerSubpageContainer.addEventListener('click', (e) => {
+      e.preventDefault();
+      const titleEl = document.getElementById('header-subpage-title');
+      if (titleEl) {
+        const text = titleEl.textContent.trim().toLowerCase();
+        if (text === 'diary') {
+          triggerTransition('#diary', e);
+        } else if (text === 'study') {
+          triggerTransition('#study', e);
+        }
+      }
+    });
+  }
 }
 
 

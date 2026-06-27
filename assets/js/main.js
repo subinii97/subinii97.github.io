@@ -565,6 +565,12 @@ function triggerCenterTransition(target, targetHash, satelliteEl, clickEvent) {
 
   // Wait 600ms (slide animation of satellite completes) before expanding ripple and text
   setTimeout(() => {
+    // Hide the button's internal text element right before appending the overlay
+    const btnSpan = satelliteEl.querySelector('.orbit-btn span');
+    if (btnSpan) {
+      btnSpan.style.opacity = '0';
+    }
+
     document.body.appendChild(ripple);
     document.body.appendChild(textOverlay);
     
@@ -596,14 +602,21 @@ function triggerCenterTransition(target, targetHash, satelliteEl, clickEvent) {
         // Calculate translation coordinates from current center position (cx, cy) to the actual header subpage title position
         let deltaX = 0;
         let deltaY = 0;
+        let scaleFactor = 0.64; // Fallback
         if (headerTitle) {
           const targetRect = headerTitle.getBoundingClientRect();
           deltaX = (targetRect.left + targetRect.width / 2) - cx;
           deltaY = (targetRect.top + targetRect.height / 2) - cy;
+
+          // Dynamically compute the exact scale factor to match the header font size
+          const targetFontSize = parseFloat(window.getComputedStyle(headerTitle).fontSize);
+          const isMobile = window.innerWidth <= 600;
+          const baseFontSize = isMobile ? 16 : 20; // 1.0rem = 16px, 1.25rem = 20px
+          scaleFactor = targetFontSize / baseFontSize;
         }
 
         // Slide/shrink transition text overlay to header logo's right and change its color to green/blue
-        textOverlay.style.transform = `translate(-50%, -50%) translate(${deltaX}px, ${deltaY}px) scale(0.64)`;
+        textOverlay.style.transform = `translate(-50%, -50%) translate(${deltaX}px, ${deltaY}px) scale(${scaleFactor})`;
         textOverlay.style.color = 'var(--accent-primary)';
 
         // Fade out the background green/blue ripple to reveal the white diary page
@@ -613,6 +626,10 @@ function triggerCenterTransition(target, targetHash, satelliteEl, clickEvent) {
         setTimeout(() => {
           if (headerTitle) {
             headerTitle.classList.add('show');
+          }
+          // Restore button text opacity for future visits
+          if (btnSpan) {
+            btnSpan.style.opacity = '';
           }
           // Clean up DOM and reset state
           ripple.remove();

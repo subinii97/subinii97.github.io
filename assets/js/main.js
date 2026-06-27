@@ -93,7 +93,7 @@ function initMainPage() {
 
   // Set up High DPI scale factor dynamically
   let isMobile = window.innerWidth <= 600;
-  let designSize = isMobile ? 850 : 900;
+  let designSize = isMobile ? 850 : 1300;
   let cx = designSize / 2;
   let cy = designSize / 2;
 
@@ -101,7 +101,7 @@ function initMainPage() {
 
   function resizeCanvas() {
     isMobile = window.innerWidth <= 600;
-    designSize = isMobile ? 850 : 900;
+    designSize = isMobile ? 850 : 1300;
     cx = designSize / 2;
     cy = designSize / 2;
 
@@ -138,11 +138,11 @@ function initMainPage() {
 
   // Pendulum nodes physical masses (0: Pivot, 1: Node 1, 2: Node 2)
   // Mass ratio set strictly to 4:2:3.
-  const mass = [4.0, 4.0, 4.0];
+  const mass = [20.0, 4.0, 4.0];
 
   // Spring Pendulum Constants
-  const k_spring1 = 1;
-  const k_spring2 = 0.1;
+  const k_spring1 = 3;
+  const k_spring2 = 0.5;
   const c_damping = 0.0;
 
   // Cartesian coordinates of the nodes
@@ -280,7 +280,7 @@ function initMainPage() {
     ctx.clearRect(0, 0, designSize, designSize);
 
     // 1. Determine device dimensions
-    const R = isMobile ? 130 : 240; // Increased Orbit ring radius (Desktop 240, Mobile 130)
+    const R = isMobile ? 130 : 240; // Orbit ring radius (Desktop 240, Mobile 130)
 
     // 1.5. Draw matching static orbit ring inside canvas (ensures perfect alignment with pendulum pivot)
     ctx.beginPath();

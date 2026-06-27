@@ -47,7 +47,6 @@ body {
   line-height: 1.6;
   min-height: 100vh;
   position: relative;
-  overflow-x: hidden;
 }
 
 
@@ -138,7 +137,7 @@ header.nav-header {
 /* Cosmic Orbit Container */
 .orbit-container {
   position: relative;
-  width: 600px;
+  width: 100vw;
   height: 600px;
   display: flex;
   align-items: center;
@@ -1253,8 +1252,8 @@ body.theme-study {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 900px;
-  height: 900px;
+  width: 1300px;
+  height: 1300px;
   pointer-events: none;
   z-index: 2; /* Sits behind buttons (z-index 3) and above grey star (z-index 1) */
 }
@@ -1342,6 +1341,7 @@ body.theme-study {
 /* Home View relative containment */
 #home-view {
   position: relative;
+  overflow: hidden; /* Clip canvas overflow within home view, not at body level */
 }
 
 /* Info Toggle Button (Glassmorphic) */

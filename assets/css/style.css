@@ -1136,14 +1136,12 @@ header.nav-header {
   position: fixed;
   top: 50%;
   left: 50%;
-  width: 20px;
-  height: 20px;
   background: #ffffff;
   border-radius: 50%;
-  transform: translate(-50%, -50%) scale(0);
+  transform: translate(-50%, -50%) scale(1);
   z-index: 99999;
   pointer-events: none;
-  transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.4s ease;
+  transition: transform 1.0s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.8s ease-out;
   opacity: 0;
 }
 
@@ -1156,7 +1154,7 @@ header.nav-header {
 }
 
 .expanding-circle.active {
-  transform: translate(-50%, -50%) scale(250);
+  transform: translate(-50%, -50%) scale(35);
   opacity: 1;
 }
 
@@ -1165,7 +1163,7 @@ header.nav-header {
   position: fixed;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%) scale(1.5);
   color: #ffffff;
   font-family: var(--font-title);
   font-size: 2.5rem;
@@ -1175,11 +1173,12 @@ header.nav-header {
   pointer-events: none;
   opacity: 0;
   text-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
-  transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.8s ease, color 0.8s ease;
+  transition: transform 1.0s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.8s ease-out, color 0.8s ease-out;
 }
 
 .transition-text-overlay.active {
   opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
 }
 
 @media (max-width: 600px) {

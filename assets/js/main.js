@@ -532,19 +532,25 @@ function triggerCenterTransition(target, targetHash, satelliteEl, clickEvent) {
   // Add class to animate slide to center (takes 600ms)
   satelliteEl.classList.add('moving-to-center');
 
-  // Compute the center coordinates of the orbit container
+  // Compute the center coordinates of the orbit container and dimensions of the button
+  const rect = satelliteEl.getBoundingClientRect();
+  const w = rect.width;
+  const h = rect.height;
+
   const container = document.querySelector('.orbit-container');
   let cx = window.innerWidth / 2;
   let cy = window.innerHeight / 2;
   if (container) {
-    const rect = container.getBoundingClientRect();
-    cx = rect.left + rect.width / 2;
-    cy = rect.top + rect.height / 2;
+    const cRect = container.getBoundingClientRect();
+    cx = cRect.left + cRect.width / 2;
+    cy = cRect.top + cRect.height / 2;
   }
 
-  // Create the expanding ripple with theme class
+  // Create the expanding ripple with theme class, sized to the button container
   const ripple = document.createElement('div');
   ripple.className = `expanding-circle theme-${target}`;
+  ripple.style.width = `${w}px`;
+  ripple.style.height = `${h}px`;
   ripple.style.left = `${cx}px`;
   ripple.style.top = `${cy}px`;
 
@@ -558,13 +564,17 @@ function triggerCenterTransition(target, targetHash, satelliteEl, clickEvent) {
     document.body.appendChild(ripple);
     document.body.appendChild(textOverlay);
     
+    // Force browser reflow to ensure transitions start from initial state
+    ripple.offsetHeight;
+    textOverlay.offsetHeight;
+
     // Trigger animations
     requestAnimationFrame(() => {
       ripple.classList.add('active');
       textOverlay.classList.add('active');
     });
 
-    // Wait 800ms (matching the smooth 0.8s transition) for ripple to cover screen, then perform route swap
+    // Wait 1000ms (matching the smooth 1.0s transition) for ripple to cover screen, then perform route swap
     setTimeout(() => {
       window.location.hash = targetHash;
 
@@ -596,7 +606,7 @@ function triggerCenterTransition(target, targetHash, satelliteEl, clickEvent) {
         // Fade out the background green/blue ripple to reveal the white diary page
         ripple.style.opacity = '0';
 
-        // Wait 800ms (slide and fade-out complete) to perform the seamless handoff
+        // Wait 1000ms (slide and fade-out complete) to perform the seamless handoff
         setTimeout(() => {
           if (headerTitle) {
             headerTitle.style.opacity = '1';
@@ -606,9 +616,9 @@ function triggerCenterTransition(target, targetHash, satelliteEl, clickEvent) {
           textOverlay.remove();
           satelliteEl.classList.remove('moving-to-center');
           isTransitioning = false;
-        }, 800);
+        }, 1000);
       }, 100);
-    }, 800);
+    }, 1000);
   }, 600);
 }
 

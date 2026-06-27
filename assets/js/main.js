@@ -699,8 +699,7 @@ function triggerCenterTransition(target, targetHash, satelliteEl, clickEvent) {
 
           // Dynamically compute the exact scale factor to match the header font size
           const targetFontSize = parseFloat(window.getComputedStyle(headerTitle).fontSize);
-          const isMobile = window.innerWidth <= 600;
-          const baseFontSize = isMobile ? 16 : 20; // 1.0rem = 16px, 1.25rem = 20px
+          const baseFontSize = parseFloat(window.getComputedStyle(textOverlay).fontSize); // actual rendered size (mobile: 32px, desktop: 20px)
           scaleFactor = targetFontSize / baseFontSize;
         }
 

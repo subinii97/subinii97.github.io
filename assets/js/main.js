@@ -701,9 +701,6 @@ function triggerCenterTransition(target, targetHash, satelliteEl, clickEvent) {
           const targetFontSize = parseFloat(window.getComputedStyle(headerTitle).fontSize);
           const baseFontSize = parseFloat(window.getComputedStyle(textOverlay).fontSize);
           scaleFactor = targetFontSize / baseFontSize;
-
-          // Match font-weight immediately so the overlay matches the header title at arrival
-          textOverlay.style.fontWeight = window.getComputedStyle(headerTitle).fontWeight;
         }
 
         // Slide/shrink transition text overlay to header logo's right and change its color
@@ -713,33 +710,32 @@ function triggerCenterTransition(target, targetHash, satelliteEl, clickEvent) {
         // Fade out the background ripple to reveal the page
         ripple.style.opacity = '0';
 
-        // Wait for slide to complete (0.8s CSS transition), then do atomic handoff
+        // Start a soft cross-fade 550ms into the 800ms slide animation
+        // This blends the sub-pixel positioning differences smoothly before the overlay is removed
         setTimeout(() => {
-          // Instantly show real header title (bypass opacity transition) for seamless swap
           if (headerTitle) {
-            headerTitle.style.transition = 'none';
+            headerTitle.style.transition = 'opacity 0.25s ease-in-out';
             headerTitle.style.opacity = '1';
             headerTitle.classList.add('show');
           }
-
-          // Immediately hide and remove overlay (cross-fade in a single frame)
-          textOverlay.style.transition = 'opacity 0.06s ease';
+          textOverlay.style.transition = 'transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease-in-out';
           textOverlay.style.opacity = '0';
+        }, 550);
 
-          // Cleanup after overlay fade (60ms)
-          setTimeout(() => {
-            if (headerTitle) {
-              headerTitle.style.transition = '';
-              headerTitle.style.opacity = '';
-            }
-            if (btnSpan) {
-              btnSpan.style.opacity = '';
-            }
-            ripple.remove();
-            textOverlay.remove();
-            satelliteEl.classList.remove('moving-to-center');
-            isTransitioning = false;
-          }, 80);
+        // Wait for both the slide and cross-fade to complete (800ms from start)
+        setTimeout(() => {
+          if (headerTitle) {
+            headerTitle.style.transition = '';
+            headerTitle.style.opacity = '';
+          }
+          if (btnSpan) {
+            btnSpan.style.opacity = '';
+          }
+          // Clean up DOM and reset state
+          ripple.remove();
+          textOverlay.remove();
+          satelliteEl.classList.remove('moving-to-center');
+          isTransitioning = false;
         }, 800);
       }, 100);
     }, 1000);

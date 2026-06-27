@@ -131,3 +131,26 @@ function build() {
 }
 
 build();
+
+if (process.argv.includes('--watch') || process.argv.includes('-w')) {
+  console.log(`Watching for changes in ${postsDir}...`);
+  let debounceTimeout;
+  try {
+    fs.watch(postsDir, { recursive: true }, (eventType, filename) => {
+      if (filename) {
+        if (filename.startsWith('.') || filename.endsWith('~')) return;
+        clearTimeout(debounceTimeout);
+        debounceTimeout = setTimeout(() => {
+          console.log(`Change detected in ${filename}. Rebuilding posts.json...`);
+          try {
+            build();
+          } catch (e) {
+            console.error('Rebuild failed:', e);
+          }
+        }, 150);
+      }
+    });
+  } catch (err) {
+    console.error('Failed to start folder watch:', err);
+  }
+}

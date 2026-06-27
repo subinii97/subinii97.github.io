@@ -1,5 +1,5 @@
 ---
-title: Transition Story 5. 부모님께 커밍아웃
+title: 부모님께 커밍아웃
 author: subin
 date: 2025-01-22 12:00:00 +0800
 categories: [Transition]

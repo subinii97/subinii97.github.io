@@ -1,5 +1,5 @@
 ---
-title: Transition Story 8. 수술 후 우울
+title: 성형수술 후 우울
 author: subin
 date: 2025-06-05 12:00:00 +0800
 categories: [Transition]

@@ -1,5 +1,5 @@
 ---
-title: Transition Story 9. 성별확정수술
+title: 여러가지 수술 방법에 대한 고민
 author: subin
 date: 2025-08-04 12:00:00 +0800
 categories: [Transition]

@@ -1,5 +1,5 @@
 ---
-title: Transition Story 6. 첫 수술
+title: 첫 성형수술
 author: subin
 date: 2025-02-25 12:00:00 +0800
 categories: [Transition]

@@ -1,5 +1,5 @@
 ---
-title: Transition Story 12. 크리스마스 선물
+title: 크리스마스 선물
 author: subin
 date: 2025-12-25 12:00:00 +0800
 categories: [Transition]

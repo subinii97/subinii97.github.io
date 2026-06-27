@@ -1,5 +1,5 @@
 ---
-title: Transition Story 4. 커밍아웃의 계기
+title: 커밍아웃의 계기
 author: subin
 date: 2025-01-18 12:00:00 +0800
 categories: [Transition]

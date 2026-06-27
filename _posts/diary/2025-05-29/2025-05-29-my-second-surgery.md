@@ -1,5 +1,5 @@
 ---
-title: Transition Story 7. 조급함
+title: 조급함
 author: subin
 date: 2025-05-29 12:00:00 +0800
 categories: [Transition]

@@ -104,6 +104,7 @@ function build() {
       filename: file,
       folder: folder,   // relative folder name within _posts, e.g. "2018-01-23-norway-1"
       title: metadata.title || file.replace(/\.md$/, ''),
+      subtitle: metadata.subtitle || '',
       date: metadata.date || fileDate,
       categories: metadata.categories || [],
       tags: metadata.tags || [],

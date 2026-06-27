@@ -59,20 +59,64 @@
 
   <!-- 2.5 STUDY VIEW -->
   <div id="study-view" class="view-section" style="display: none;">
-    <div class="profile-wrapper container">
-      <div class="profile-container">
-        <div class="profile-card glass-card">
-          <div class="avatar-container"
-            style="background: rgba(79, 70, 229, 0.05); display: flex; align-items: center; justify-content: center; width: 120px; height: 120px; border-radius: 50%; margin: 0 auto 1.5rem; border: 1px solid var(--border-subtle);">
-            <i class="fas fa-graduation-cap" style="font-size: 3rem; color: var(--accent-primary);"></i>
-          </div>
-          <h1 class="profile-name">Study</h1>
-          <p class="profile-bio">Here are my study notes, project documentations, and personal learnings.
-          </p>
-          <div style="margin-top: 2rem; text-align: center; color: var(--text-muted); font-size: 0.95rem;">
-            <p>곧 업데이트될 예정입니다.</p>
+    <div class="diary-wrapper container">
+      <!-- Post List Section -->
+      <div id="study-list-container">
+        <div class="diary-grid">
+          <!-- 1. Left Sidebar: Categories & Search -->
+          <aside class="category-sidebar glass-card">
+            <h3 class="sidebar-title">Categories</h3>
+            <ul class="category-menu" id="study-category-menu-element">
+              <!-- Populated by JavaScript -->
+            </ul>
+
+            <!-- Search bar located under categories -->
+            <div class="search-container sidebar-search" style="margin-top: 1.5rem; width: 100%;">
+              <i class="fas fa-search"></i>
+              <input type="text" id="study-search" class="search-input" placeholder="검색">
+            </div>
+          </aside>
+
+          <!-- 2. Right: Post List Section -->
+          <div class="post-list-container-wrapper">
+            <div class="post-list-header-row">
+              <span class="post-list-title">Study</span>
+              <div class="post-list-header-actions" style="display: flex; gap: 0.5rem; align-items: center;">
+                <button id="study-search-toggle-btn" class="search-toggle-btn">
+                  <i class="fas fa-search"></i> 카테고리/검색
+                </button>
+                <button id="study-sort-btn" class="sort-btn">
+                  <!-- Toggled by JS -->
+                </button>
+              </div>
+            </div>
+
+            <main class="post-list" id="study-post-list-element">
+              <!-- Populated by JavaScript -->
+            </main>
+
+            <!-- Pagination Controls -->
+            <div id="study-pagination" class="pagination-container">
+              <!-- Populated by JavaScript -->
+            </div>
           </div>
         </div>
+      </div>
+
+      <!-- Detailed Post Reader View -->
+      <div id="study-reader-container" class="reader-container">
+        <article class="glass-card" style="padding: 2.5rem 2rem;">
+          <div class="reader-header">
+            <div class="reader-meta">
+              <span id="study-reader-post-date"></span>
+              <span id="study-reader-post-category"></span>
+            </div>
+            <h1 class="reader-title" id="study-reader-post-title">Loading...</h1>
+          </div>
+          <div class="reader-content" id="study-reader-post-content">
+            <!-- Rendered Markdown goes here -->
+          </div>
+        </article>
       </div>
     </div>
   </div>
@@ -148,7 +192,7 @@
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
   <!-- Main Application Script -->
-  <script src="./assets/js/main.js?v=1.1.14"></script>
+  <script src="./assets/js/main.js?v=1.1.15"></script>
 </body>
 
 </html>

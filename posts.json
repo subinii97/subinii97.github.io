@@ -1,8 +1,39 @@
 [
   {
+    "filename": "2026-06-26-algorithm-dfs.md",
+    "folder": "2026-06-26",
+    "title": "Graph Traversal: DFS & BFS",
+    "subtitle": "Understanding depth-first and breadth-first search algorithms",
+    "date": "2026-06-26 12:00:00 +0900",
+    "categories": [
+      "Algorithms"
+    ],
+    "tags": [
+      "algorithms",
+      "study"
+    ],
+    "content": "\n## Graph Traversal: DFS & BFS\n\nGraph traversals are fundamental algorithms in Computer Science, used to search or visit nodes in a graph.\n\n### 1. Depth-First Search (DFS)\nDFS explores as far as possible along each branch before backtracking.\n- **Data Structure**: Stack (or recursion).\n- **Time Complexity**: $O(V + E)$.\n\n### 2. Breadth-First Search (BFS)\nBFS explores the neighbor nodes first before moving to the next level neighbors.\n- **Data Structure**: Queue.\n- **Time Complexity**: $O(V + E)$.\n"
+  },
+  {
+    "filename": "2026-06-25-react-state.md",
+    "folder": "2026-06-25",
+    "title": "React State Management",
+    "subtitle": "Comparing Redux, Recoil, and Zustand",
+    "date": "2026-06-25 12:00:00 +0900",
+    "categories": [
+      "Frontend"
+    ],
+    "tags": [
+      "react",
+      "state"
+    ],
+    "content": "\n## React State Management\n\nChoosing the right state management library is one of the most critical decisions when building complex front-end applications.\n\n### 1. Redux (Toolkit)\n- **Pros**: Predictable, robust DevTools, large ecosystem.\n- **Cons**: High boilerplate, steep learning curve.\n\n### 2. Recoil\n- **Pros**: Atomic state, React-like syntax, fine-grained updates.\n- **Cons**: Slower development updates, experimental APIs.\n\n### 3. Zustand\n- **Pros**: Minimal boilerplate, hook-based, superb performance.\n- **Cons**: Less structured than Redux.\n"
+  },
+  {
     "filename": "2025-12-25-christmas.md",
     "folder": "2025-12-25",
     "title": "Transition Story 12. 크리스마스 선물",
+    "subtitle": "",
     "date": "2025-12-25 12:00:00 +0800",
     "categories": [
       "Transition"
@@ -16,6 +47,7 @@
     "filename": "2025-12-18-grs.md",
     "folder": "2025-12-18",
     "title": "Transition Story 11. 수술",
+    "subtitle": "",
     "date": "2025-12-18 12:00:00 +0800",
     "categories": [
       "Transition"
@@ -29,6 +61,7 @@
     "filename": "2025-12-15-thank-you.md",
     "folder": "2025-12-15",
     "title": "Transition Story 10. 감사함",
+    "subtitle": "",
     "date": "2025-12-15 10:00:00 +0800",
     "categories": [
       "Transition"
@@ -42,6 +75,7 @@
     "filename": "2025-12-12-hospital-life-fin.md",
     "folder": "2025-12-12",
     "title": "Accident Final. 퇴원",
+    "subtitle": "",
     "date": "2025-12-12 12:00:00 +0800",
     "categories": [
       "Diary"
@@ -55,6 +89,7 @@
     "filename": "2025-12-10-Hello-World.md",
     "folder": "2025-12-10",
     "title": "Hello World",
+    "subtitle": "",
     "date": "2025-12-10 16:40:00 +0800",
     "categories": [
       "Diary"
@@ -68,6 +103,7 @@
     "filename": "2025-09-01-hospital-life-2.md",
     "folder": "2025-09-01",
     "title": "Accident 3. 양평에서 여름나기",
+    "subtitle": "",
     "date": "2025-09-01 12:00:00 +0800",
     "categories": [
       "Diary"
@@ -81,6 +117,7 @@
     "filename": "2025-08-04-grs-consultation.md",
     "folder": "2025-08-04",
     "title": "Transition Story 9. 성별확정수술",
+    "subtitle": "",
     "date": "2025-08-04 12:00:00 +0800",
     "categories": [
       "Transition"
@@ -94,6 +131,7 @@
     "filename": "2025-07-01-hospital-life-1.md",
     "folder": "2025-07-01",
     "title": "Accident 2. 교통사고 이후 또 다시 무너짐",
+    "subtitle": "",
     "date": "2025-07-01 12:00:00 +0800",
     "categories": [
       "Diary"
@@ -107,6 +145,7 @@
     "filename": "2025-06-12-car-accident.md",
     "folder": "2025-06-12",
     "title": "Accident 1. 마른 하늘의 날벼락",
+    "subtitle": "",
     "date": "2025-06-12 12:00:00 +0800",
     "categories": [
       "Diary"
@@ -120,6 +159,7 @@
     "filename": "2025-06-05-depression.md",
     "folder": "2025-06-05",
     "title": "Transition Story 8. 수술 후 우울",
+    "subtitle": "",
     "date": "2025-06-05 12:00:00 +0800",
     "categories": [
       "Transition"
@@ -133,6 +173,7 @@
     "filename": "2025-05-29-my-second-surgery.md",
     "folder": "2025-05-29",
     "title": "Transition Story 7. 조급함",
+    "subtitle": "",
     "date": "2025-05-29 12:00:00 +0800",
     "categories": [
       "Transition"
@@ -146,6 +187,7 @@
     "filename": "2025-02-25-my-first-surgery.md",
     "folder": "2025-02-25",
     "title": "Transition Story 6. 첫 수술",
+    "subtitle": "",
     "date": "2025-02-25 12:00:00 +0800",
     "categories": [
       "Transition"
@@ -159,6 +201,7 @@
     "filename": "2025-01-22-coming-out-to-parents.md",
     "folder": "2025-01-22",
     "title": "Transition Story 5. 부모님께 커밍아웃",
+    "subtitle": "",
     "date": "2025-01-22 12:00:00 +0800",
     "categories": [
       "Transition"
@@ -172,6 +215,7 @@
     "filename": "2025-01-18-coming-out-of-the-closet.md",
     "folder": "2025-01-18",
     "title": "Transition Story 4. 커밍아웃의 계기",
+    "subtitle": "",
     "date": "2025-01-18 12:00:00 +0800",
     "categories": [
       "Transition"
@@ -185,6 +229,7 @@
     "filename": "2024-06-21-freedom.md",
     "folder": "2024-06-21",
     "title": "Transition Story 3. 자유",
+    "subtitle": "",
     "date": "2024-06-21 12:00:00 +0800",
     "categories": [
       "Transition"
@@ -198,6 +243,7 @@
     "filename": "2023-04-11-starting-hrt.md",
     "folder": "2023-04-11",
     "title": "Transition Story 2. 변화의 시작",
+    "subtitle": "",
     "date": "2023-04-11 12:00:00 +0800",
     "categories": [
       "Transition"
@@ -209,6 +255,7 @@
     "filename": "2023-03-31-starting-transition.md",
     "folder": "2023-03-31",
     "title": "Transition Story 1. 결심",
+    "subtitle": "",
     "date": "2023-03-31 12:00:00 +0800",
     "categories": [
       "Transition"
@@ -220,6 +267,7 @@
     "filename": "2022-01-27-chamonix.md",
     "folder": "2022-01-27",
     "title": "Chamonix. Go Skiing!",
+    "subtitle": "",
     "date": "2022-01-27 12:00:00 +0800",
     "categories": [
       "Travel"
@@ -231,6 +279,7 @@
     "filename": "2018-01-26-norway-3.md",
     "folder": "2018-01-26",
     "title": "Arctic 3. Norway - Bergen",
+    "subtitle": "",
     "date": "2018-01-26 12:00:00 +0800",
     "categories": [
       "Travel"
@@ -242,6 +291,7 @@
     "filename": "2018-01-25-norway-2.md",
     "folder": "2018-01-25",
     "title": "Arctic 2. Norway - Oslo to Bergen",
+    "subtitle": "",
     "date": "2018-01-25 12:00:00 +0800",
     "categories": [
       "Travel"
@@ -253,6 +303,7 @@
     "filename": "2018-01-23-norway-1.md",
     "folder": "2018-01-23",
     "title": "Arctic 1. Norway Oslo",
+    "subtitle": "",
     "date": "2018-01-23 12:00:00 +0800",
     "categories": [
       "Travel"

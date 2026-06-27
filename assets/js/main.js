@@ -703,39 +703,40 @@ function triggerCenterTransition(target, targetHash, satelliteEl, clickEvent) {
           scaleFactor = targetFontSize / baseFontSize;
         }
 
-        // Slide/shrink transition text overlay to header logo's right and change its color
-        textOverlay.style.transform = `translate(-50%, -50%) translate(${deltaX}px, ${deltaY}px) scale(${scaleFactor})`;
+        // Apply instant color change and clean transform transition (no color fading/graying during slide)
+        textOverlay.style.transition = 'transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), color 0s';
         textOverlay.style.color = 'var(--accent-primary)';
+
+        // Slide/shrink transition text overlay to header logo's right
+        textOverlay.style.transform = `translate(-50%, -50%) translate(${deltaX}px, ${deltaY}px) scale(${scaleFactor})`;
 
         // Fade out the background ripple to reveal the page
         ripple.style.opacity = '0';
 
-        // Start a soft cross-fade 550ms into the 800ms slide animation
-        // This blends the sub-pixel positioning differences smoothly before the overlay is removed
+        // Wait for slide to complete (800ms from start) then do an atomic seamless handoff
         setTimeout(() => {
           if (headerTitle) {
-            headerTitle.style.transition = 'opacity 0.25s ease-in-out';
+            headerTitle.style.transition = 'none';
             headerTitle.style.opacity = '1';
             headerTitle.classList.add('show');
           }
-          textOverlay.style.transition = 'transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease-in-out';
+          textOverlay.style.transition = 'none';
           textOverlay.style.opacity = '0';
-        }, 550);
 
-        // Wait for both the slide and cross-fade to complete (800ms from start)
-        setTimeout(() => {
-          if (headerTitle) {
-            headerTitle.style.transition = '';
-            headerTitle.style.opacity = '';
-          }
-          if (btnSpan) {
-            btnSpan.style.opacity = '';
-          }
-          // Clean up DOM and reset state
-          ripple.remove();
-          textOverlay.remove();
-          satelliteEl.classList.remove('moving-to-center');
-          isTransitioning = false;
+          // Clean up DOM and reset transition properties in the next frame
+          requestAnimationFrame(() => {
+            if (headerTitle) {
+              headerTitle.style.transition = '';
+              headerTitle.style.opacity = '';
+            }
+            if (btnSpan) {
+              btnSpan.style.opacity = '';
+            }
+            ripple.remove();
+            textOverlay.remove();
+            satelliteEl.classList.remove('moving-to-center');
+            isTransitioning = false;
+          });
         }, 800);
       }, 100);
     }, 1000);

@@ -4,9 +4,6 @@ on:
   push:
     branches:
       - main
-    paths:
-      - '_posts/**'
-      - 'scripts/build-posts.js'
 
 permissions:
   contents: write

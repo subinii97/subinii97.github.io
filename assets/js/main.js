@@ -831,7 +831,7 @@ function initDiaryControls() {
   }
 
   // Image preview click interceptor on reader content
-  const readerContent = document.getElementById('reader-post-content');
+  const readerContent = document.getElementById('diary-reader-post-content');
   if (readerContent) {
     readerContent.addEventListener('click', (e) => {
       const img = e.target.closest('img');

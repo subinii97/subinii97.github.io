@@ -1266,11 +1266,13 @@ body.theme-study {
 }
 
 /* Image zoom-in indicator inside post reader */
-#reader-post-content img {
+#diary-reader-post-content img,
+#study-reader-post-content img {
   cursor: zoom-in;
   transition: transform 0.25s ease;
 }
-#reader-post-content img:hover {
+#diary-reader-post-content img:hover,
+#study-reader-post-content img:hover {
   transform: translateY(-2px);
   box-shadow: var(--shadow-md);
 }

@@ -129,9 +129,15 @@ function initMainPage() {
   // Mass ratio set strictly to 4:2:3.
   const mass = [4.0, 2.0, 3.0];
 
-  // Runge-Kutta State Variables (angles: theta1, theta2 / omegas: omega1, omega2)
-  let angles = [0, 0];
-  let omegas = [0, 0];
+  // Spring Pendulum Constants
+  const k_spring = 20.0;
+  const c_damping = 0.8;
+
+  // Cartesian coordinates of the nodes
+  let x1 = 0, y1 = 0;
+  let vx1 = 0, vy1 = 0;
+  let x2 = 0, y2 = 0;
+  let vx2 = 0, vy2 = 0;
 
   // Pendulum nodes Cartesian states for rendering compatibility
   const pos = [
@@ -143,117 +149,105 @@ function initMainPage() {
   let isInitialized = false;
 
   function initNodeAngles() {
-    // Start with small deflected angles to reduce the initial potential energy.
-    angles = [0.1, 0.1];
-    omegas = [0.0, 0.0];
+    // Rest lengths
+    const L1 = isMobile ? 60 : 150;
+    const L2 = L1 * 1.5;
+
+    // Start with small deflected angles
+    const theta1 = 0.1;
+    const theta2 = 0.1;
+
+    // Node 0 (Pivot) start position
+    const x0 = cx + (isMobile ? 130 : 240) * Math.cos(phi);
+    const y0 = cy + (isMobile ? 130 : 240) * Math.sin(phi);
+
+    // Initial positions based on rest lengths and angles
+    x1 = x0 + L1 * Math.sin(theta1);
+    y1 = y0 + L1 * Math.cos(theta1);
+
+    x2 = x1 + L2 * Math.sin(theta2);
+    y2 = y1 + L2 * Math.cos(theta2);
+
+    vx1 = 0; vy1 = 0;
+    vx2 = 0; vy2 = 0;
 
     isInitialized = true;
   }
 
-  // Gaussian elimination solver with partial pivoting for 3x3 matrix
-  function solve3x3(M, F) {
-    const n = 3;
-    const A = [];
-    for (let i = 0; i < n; i++) {
-      A.push([M[i][0], M[i][1], M[i][2], F[i]]);
-    }
-
-    for (let i = 0; i < n; i++) {
-      let maxEl = Math.abs(A[i][i]);
-      let maxRow = i;
-      for (let k = i + 1; k < n; k++) {
-        if (Math.abs(A[k][i]) > maxEl) {
-          maxEl = Math.abs(A[k][i]);
-          maxRow = k;
-        }
-      }
-
-      const temp = A[maxRow];
-      A[maxRow] = A[i];
-      A[i] = temp;
-
-      if (Math.abs(A[i][i]) < 1e-10) {
-        return [0, 0, 0];
-      }
-
-      for (let k = i + 1; k < n; k++) {
-        const c = -A[k][i] / A[i][i];
-        for (let j = i; j <= n; j++) {
-          if (i === j) {
-            A[k][j] = 0;
-          } else {
-            A[k][j] += c * A[i][j];
-          }
-        }
-      }
-    }
-
-    const x = [0, 0, 0];
-    for (let i = n - 1; i >= 0; i--) {
-      x[i] = A[i][n] / A[i][i];
-      for (let k = i - 1; k >= 0; k--) {
-        A[k][n] -= A[k][i] * x[i];
-      }
-    }
-    return x;
-  }
-
-  // Lagrangian Equations of Motion for the Coupled 3-DOF System (Double Pendulum with revolving pivot)
-  // q = [phi, theta1, theta2]
-  // omega = [omega_phi, omega1, omega2]
-  function derivatives(q, omega, L1, L2, R) {
+  // Cartesian Spring-Coupled equations of motion
+  // q = [phi, x1, y1, x2, y2]
+  // w = [omega_phi, vx1, vy1, vx2, vy2]
+  function derivatives(q, w, L1_rest, L2_rest, R) {
     const phi = q[0];
-    const t1 = q[1];
-    const t2 = q[2];
+    const x_node1 = q[1];
+    const y_node1 = q[2];
+    const x_node2 = q[3];
+    const y_node2 = q[4];
 
-    const w0 = omega[0];
-    const w1 = omega[1];
-    const w2 = omega[2];
+    const omega_phi = w[0];
+    const vx1 = w[1];
+    const vy1 = w[2];
+    const vx2 = w[3];
+    const vy2 = w[4];
 
-    // Mass parameters
-    const M_tot = mass[0] + mass[1] + mass[2];
-    const mu1 = mass[1] + mass[2];
-    const mu2 = mass[2];
+    // Node 0 (Pivot) position and velocity
+    const x0 = cx + R * Math.cos(phi);
+    const y0 = cy + R * Math.sin(phi);
+    const vx0 = -R * omega_phi * Math.sin(phi);
+    const vy0 = R * omega_phi * Math.cos(phi);
 
-    // Construct 3x3 Mass Matrix M
-    const M = [
-      [
-        M_tot * R * R,
-        -mu1 * R * L1 * Math.sin(phi + t1),
-        -mu2 * R * L2 * Math.sin(phi + t2)
-      ],
-      [
-        -mu1 * R * L1 * Math.sin(phi + t1),
-        mu1 * L1 * L1,
-        mu2 * L1 * L2 * Math.cos(t1 - t2)
-      ],
-      [
-        -mu2 * R * L2 * Math.sin(phi + t2),
-        mu2 * L1 * L2 * Math.cos(t1 - t2),
-        mu2 * L2 * L2
-      ]
-    ];
+    // Vector from Node 0 to Node 1
+    const dx1 = x_node1 - x0;
+    const dy1 = y_node1 - y0;
+    const dist1 = Math.sqrt(dx1 * dx1 + dy1 * dy1) || 1e-5;
+    const udx1 = dx1 / dist1;
+    const udy1 = dy1 / dist1;
 
-    // Construct Force Vector F
-    const F = [
-      // F0 (phi force)
-      R * (
-        mu1 * L1 * w1 * w1 * Math.cos(phi + t1) +
-        mu2 * L2 * w2 * w2 * Math.cos(phi + t2)
-      ) + M_tot * g * R * Math.cos(phi),
+    // Relative velocity 1
+    const rvx1 = vx1 - vx0;
+    const rvy1 = vy1 - vy0;
+    const v_rel_spring1 = rvx1 * udx1 + rvy1 * udy1;
 
-      // F1 (theta1 force)
-      mu1 * R * L1 * w0 * w0 * Math.cos(phi + t1)
-      - mu2 * L1 * L2 * w2 * w2 * Math.sin(t1 - t2)
-      - mu1 * g * L1 * Math.sin(t1),
+    // Spring force 1 (acts on Node 1 from Node 0)
+    const F_spring1_mag = -k_spring * (dist1 - L1_rest) - c_damping * v_rel_spring1;
+    const Fs1_x = F_spring1_mag * udx1;
+    const Fs1_y = F_spring1_mag * udy1;
 
-      // F2 (theta2 force)
-      mu2 * R * L2 * w0 * w0 * Math.cos(phi + t2)
-      + mu2 * L1 * L2 * w1 * w1 * Math.sin(t1 - t2)
-      - mu2 * g * L2 * Math.sin(t2)
-    ];
+    // Vector from Node 1 to Node 2
+    const dx2 = x_node2 - x_node1;
+    const dy2 = y_node2 - y_node1;
+    const dist2 = Math.sqrt(dx2 * dx2 + dy2 * dy2) || 1e-5;
+    const udx2 = dx2 / dist2;
+    const udy2 = dy2 / dist2;
 
-    return solve3x3(M, F);
+    // Relative velocity 2
+    const rvx2 = vx2 - vx1;
+    const rvy2 = vy2 - vy1;
+    const v_rel_spring2 = rvx2 * udx2 + rvy2 * udy2;
+
+    // Spring force 2 (acts on Node 2 from Node 1)
+    const F_spring2_mag = -k_spring * (dist2 - L2_rest) - c_damping * v_rel_spring2;
+    const Fs2_x = F_spring2_mag * udx2;
+    const Fs2_y = F_spring2_mag * udy2;
+
+    const m0 = mass[0];
+    const m1 = mass[1];
+    const m2 = mass[2];
+
+    // Node 0 tangential acceleration
+    // Torque = force * tangent
+    const tau = m0 * g * R * Math.cos(phi) + Fs1_x * R * Math.sin(phi) - Fs1_y * R * Math.cos(phi);
+    const alpha_phi = tau / (m0 * R * R);
+
+    // Node 1 acceleration
+    const ax1 = (Fs1_x - Fs2_x) / m1;
+    const ay1 = g + (Fs1_y - Fs2_y) / m1;
+
+    // Node 2 acceleration
+    const ax2 = Fs2_x / m2;
+    const ay2 = g + Fs2_y / m2;
+
+    return [alpha_phi, ax1, ay1, ax2, ay2];
   }
 
   // Trails to store previous positions of the two nodes
@@ -298,8 +292,8 @@ function initMainPage() {
     const subSteps = 6;
     const dt = 0.05;
 
-    let state_q = [phi, angles[0], angles[1]];
-    let state_w = [omega_phi, omegas[0], omegas[1]];
+    let state_q = [phi, x1, y1, x2, y2];
+    let state_w = [omega_phi, vx1, vy1, vx2, vy2];
 
     for (let step = 0; step < subSteps; step++) {
       // k1
@@ -328,8 +322,8 @@ function initMainPage() {
       const k4_q = [...temp_w4];
       const k4_w = [...alpha4];
 
-      // Update state vectors (No damping to preserve mechanical energy perfectly)
-      for (let i = 0; i < 3; i++) {
+      // Update state vectors
+      for (let i = 0; i < 5; i++) {
         state_q[i] += (dt / 6) * (k1_q[i] + 2 * k2_q[i] + 2 * k3_q[i] + k4_q[i]);
         state_w[i] += (dt / 6) * (k1_w[i] + 2 * k2_w[i] + 2 * k3_w[i] + k4_w[i]);
       }
@@ -338,30 +332,22 @@ function initMainPage() {
     // Unpack states back
     phi = state_q[0];
     omega_phi = state_w[0];
-    angles[0] = state_q[1];
-    angles[1] = state_q[2];
-    omegas[0] = state_w[1];
-    omegas[1] = state_w[2];
+    x1 = state_q[1];
+    y1 = state_q[2];
+    x2 = state_q[3];
+    y2 = state_q[4];
+    vx1 = state_w[1];
+    vy1 = state_w[2];
+    vx2 = state_w[3];
+    vy2 = state_w[4];
 
     // Normalize values to stay within [-2*PI, 2*PI] to prevent precision loss
     if (Math.abs(phi) > 2 * Math.PI) {
       phi = phi % (2 * Math.PI);
     }
-    for (let i = 0; i < 2; i++) {
-      if (Math.abs(angles[i]) > 2 * Math.PI) {
-        angles[i] = angles[i] % (2 * Math.PI);
-      }
-    }
 
     const x0 = cx + R * Math.cos(phi);
     const y0 = cy + R * Math.sin(phi);
-
-    // 4. Resolve Cartesian Coordinates from Angles for rendering
-    const x1 = x0 + L1 * Math.sin(angles[0]);
-    const y1 = y0 + L1 * Math.cos(angles[0]);
-
-    const x2 = x1 + L2 * Math.sin(angles[1]);
-    const y2 = y1 + L2 * Math.cos(angles[1]);
 
     pos[0].x = x0;
     pos[0].y = y0;

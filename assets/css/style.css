@@ -230,46 +230,30 @@ header.nav-header {
 
 .orbit-satellite.moving-to-center {
   transform: translate(0, 0) scale(1.25) !important;
-  z-index: 100000 !important; /* Raised above transition ripple (99999) */
+  z-index: 9999;
   transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 
-/* Satellites lock their hover styles but transition text/icon smoothly to white over 0.8s when moving to the center */
+/* Satellites lock their hover styles when moving to the center (Preserves themed text colors and white hover backgrounds) */
 .satellite-study.moving-to-center .orbit-btn {
   border-color: rgba(173, 203, 247, 0.7) !important;
   box-shadow: var(--shadow-lg), 0 0 25px rgba(173, 203, 247, 0.25) !important;
-  color: #ffffff !important;
+  color: #6b9eeb !important;
   background: #ffffff !important;
-  transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), color 0.8s ease-out, background-color 0.8s ease-out !important;
 }
 
 .satellite-diary.moving-to-center .orbit-btn {
   border-color: rgba(180, 214, 168, 0.7) !important;
   box-shadow: var(--shadow-lg), 0 0 25px rgba(180, 214, 168, 0.25) !important;
-  color: #ffffff !important;
+  color: #7ba86c !important;
   background: #ffffff !important;
-  transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), color 0.8s ease-out, background-color 0.8s ease-out !important;
 }
 
 .satellite-finance.moving-to-center .orbit-btn {
   border-color: rgba(241, 163, 150, 0.7) !important;
   box-shadow: var(--shadow-lg), 0 0 25px rgba(241, 163, 150, 0.25) !important;
-  color: #ffffff !important;
+  color: #e26d5c !important;
   background: #ffffff !important;
-  transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), color 0.8s ease-out, background-color 0.8s ease-out !important;
-}
-
-.orbit-satellite.moving-to-center .orbit-btn i {
-  background: none !important;
-  -webkit-background-clip: initial !important;
-  -webkit-text-fill-color: #ffffff !important;
-  color: #ffffff !important;
-  transition: -webkit-text-fill-color 0.8s ease-out, color 0.8s ease-out !important;
-}
-
-.orbit-satellite.moving-to-center .orbit-btn span {
-  color: #ffffff !important;
-  transition: color 0.8s ease-out !important;
 }
 
 /* Desktop positioning for satellites (Study at 9 o'clock, Diary at 3 o'clock) */

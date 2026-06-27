@@ -738,7 +738,7 @@ function triggerCenterTransition(target, targetHash, satelliteEl, clickEvent) {
     homeView.classList.add('home-exiting');
   }
 
-  // Add class to animate slide to center (takes 800ms)
+  // Add class to animate slide to center (takes 600ms). The text remains static inside the button.
   satelliteEl.classList.add('moving-to-center');
 
   // Compute the center coordinates of the orbit container and dimensions of the button
@@ -755,115 +755,116 @@ function triggerCenterTransition(target, targetHash, satelliteEl, clickEvent) {
     cy = cRect.top + cRect.height / 2;
   }
 
-  // Create the background transition ripple pre-scaled to cover the screen
+  // Create the expanding ripple with theme class, sized to the button container
   const ripple = document.createElement('div');
   ripple.className = `expanding-circle theme-${target}`;
   ripple.style.width = `${w}px`;
   ripple.style.height = `${h}px`;
   ripple.style.left = `${cx}px`;
   ripple.style.top = `${cy}px`;
-  
-  // Set to cover the entire screen immediately, but start completely transparent (opacity 0)
-  ripple.style.transform = 'translate(-50%, -50%) scale(35)';
-  ripple.style.opacity = '0';
-  // Fade in smoothly over 0.8s in tandem with the satellite slide animation
-  ripple.style.transition = 'opacity 0.8s ease-out';
-
-  document.body.appendChild(ripple);
-
-  // Trigger the background fade-in immediately in the next animation frame
-  ripple.offsetHeight;
-  requestAnimationFrame(() => {
-    ripple.style.opacity = '1';
-  });
 
   // Declare textOverlay in parent scope to be accessed in the route swap timeout
   let textOverlay;
 
-  // Wait 850ms (the 800ms satellite slide completes and stays for 50ms) then do the swap and immediate route change
+  // Wait 600ms (slide animation of satellite completes and reaches the center) before swapping and expanding
   setTimeout(() => {
-    // 1. Hide the button's internal text element at center
+    // 1. Hide the button's internal text element at the exact moment of arrival
     const btnSpan = satelliteEl.querySelector('.orbit-btn span');
     if (btnSpan) {
       btnSpan.style.opacity = '0';
     }
 
-    // 2. Create the centered transition text overlay at center (scale 1.25, white color)
+    // 2. Create the centered transition text overlay exactly at the center (already at scale 1.25)
     textOverlay = document.createElement('div');
-    textOverlay.className = 'transition-text-overlay active';
+    textOverlay.className = 'transition-text-overlay';
     textOverlay.textContent = target.charAt(0).toUpperCase() + target.slice(1);
     textOverlay.style.left = `${cx}px`;
     textOverlay.style.top = `${cy}px`;
-    textOverlay.style.color = '#ffffff'; // Already white as background is fully colored
+    // Initialize color with its themed hover color
+    textOverlay.style.color = target === 'diary' ? '#7ba86c' : (target === 'finance' ? '#e26d5c' : '#6b9eeb');
     textOverlay.style.transform = 'translate(-50%, -50%) scale(1.25)';
 
+    document.body.appendChild(ripple);
     document.body.appendChild(textOverlay);
 
-    // 3. Immediately trigger the SPA routing hash swap (eliminating the old 1000ms delay!)
-    window.location.hash = targetHash;
+    // Force browser reflow to ensure transitions start from initial state
+    ripple.offsetHeight;
+    textOverlay.offsetHeight;
 
-    // Prepare header subpage title hidden
-    const headerContainer = document.getElementById('header-subpage-container');
-    const headerTitle = document.getElementById('header-subpage-title');
-    if (headerTitle && headerContainer) {
-      headerTitle.textContent = target.charAt(0).toUpperCase() + target.slice(1);
-      headerTitle.classList.remove('show');
-      headerContainer.classList.add('active');
-    }
+    // Trigger animations
+    requestAnimationFrame(() => {
+      ripple.classList.add('active');
+      textOverlay.classList.add('active');
+      textOverlay.style.color = '#ffffff'; // smoothly transitions to white
+    });
 
-    // Wait 100ms for route swap layout to stabilize, then trigger the slide-to-header and background fadeout
+    // Wait 1000ms (matching the smooth 1.0s transition) for ripple to cover screen, then perform route swap
     setTimeout(() => {
-      // Calculate translation coordinates from current center position (cx, cy) to the actual header subpage title position
-      let deltaX = 0;
-      let deltaY = 0;
-      let scaleFactor = 0.64; // Fallback
-      if (headerTitle) {
-        const targetRect = headerTitle.getBoundingClientRect();
-        deltaX = (targetRect.left + targetRect.width / 2) - cx;
-        deltaY = (targetRect.top + targetRect.height / 2) - cy;
+      window.location.hash = targetHash;
 
-        // Dynamically compute the exact scale factor to match the header font size
-        const targetFontSize = parseFloat(window.getComputedStyle(headerTitle).fontSize);
-        const baseFontSize = parseFloat(window.getComputedStyle(textOverlay).fontSize);
-        scaleFactor = targetFontSize / baseFontSize;
+      // Prepare header subpage title hidden
+      const headerContainer = document.getElementById('header-subpage-container');
+      const headerTitle = document.getElementById('header-subpage-title');
+      if (headerTitle && headerContainer) {
+        headerTitle.textContent = target.charAt(0).toUpperCase() + target.slice(1);
+        headerTitle.classList.remove('show');
+        headerContainer.classList.add('active');
       }
 
-      // Apply transform transition and smooth color transition (white to theme color during slide)
-      textOverlay.style.transition = 'transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), color 0.4s ease-out';
-      textOverlay.style.color = 'var(--accent-primary)';
-
-      // Slide/shrink transition text overlay to header logo's right
-      textOverlay.style.transform = `translate(-50%, -50%) translate(${deltaX}px, ${deltaY}px) scale(${scaleFactor})`;
-
-      // Fade out the background ripple to reveal the page
-      ripple.style.opacity = '0';
-
-      // Wait for slide to complete (800ms from start) then do an atomic seamless handoff
+      // Wait 100ms for route swap layout to stabilize, then trigger the slide-to-header and green-to-white fadeout
       setTimeout(() => {
+        // Calculate translation coordinates from current center position (cx, cy) to the actual header subpage title position
+        let deltaX = 0;
+        let deltaY = 0;
+        let scaleFactor = 0.64; // Fallback
         if (headerTitle) {
-          headerTitle.style.transition = 'none';
-          headerTitle.style.opacity = '1';
-          headerTitle.classList.add('show');
-        }
-        textOverlay.style.transition = 'none';
-        textOverlay.style.opacity = '0';
+          const targetRect = headerTitle.getBoundingClientRect();
+          deltaX = (targetRect.left + targetRect.width / 2) - cx;
+          deltaY = (targetRect.top + targetRect.height / 2) - cy;
 
-        // Clean up DOM and reset transition properties in the next frame
-        requestAnimationFrame(() => {
+          // Dynamically compute the exact scale factor to match the header font size
+          const targetFontSize = parseFloat(window.getComputedStyle(headerTitle).fontSize);
+          const baseFontSize = parseFloat(window.getComputedStyle(textOverlay).fontSize);
+          scaleFactor = targetFontSize / baseFontSize;
+        }
+
+        // Apply transform transition and smooth color transition (white to theme color during slide)
+        textOverlay.style.transition = 'transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), color 0.4s ease-out';
+        textOverlay.style.color = 'var(--accent-primary)';
+
+        // Slide/shrink transition text overlay to header logo's right
+        textOverlay.style.transform = `translate(-50%, -50%) translate(${deltaX}px, ${deltaY}px) scale(${scaleFactor})`;
+
+        // Fade out the background ripple to reveal the page
+        ripple.style.opacity = '0';
+
+        // Wait for slide to complete (800ms from start) then do an atomic seamless handoff
+        setTimeout(() => {
           if (headerTitle) {
-            headerTitle.style.transition = '';
-            headerTitle.style.opacity = '';
+            headerTitle.style.transition = 'none';
+            headerTitle.style.opacity = '1';
+            headerTitle.classList.add('show');
           }
-          if (btnSpan) {
-            btnSpan.style.opacity = '';
-          }
-          ripple.remove();
-          textOverlay.remove();
-          satelliteEl.classList.remove('moving-to-center');
-          isTransitioning = false;
-        });
-      }, 800);
-    }, 100);
+          textOverlay.style.transition = 'none';
+          textOverlay.style.opacity = '0';
+
+          // Clean up DOM and reset transition properties in the next frame
+          requestAnimationFrame(() => {
+            if (headerTitle) {
+              headerTitle.style.transition = '';
+              headerTitle.style.opacity = '';
+            }
+            if (btnSpan) {
+              btnSpan.style.opacity = '';
+            }
+            ripple.remove();
+            textOverlay.remove();
+            satelliteEl.classList.remove('moving-to-center');
+            isTransitioning = false;
+          });
+        }, 800);
+      }, 100);
+    }, 1000);
   }, 850);
 }
 
@@ -887,7 +888,7 @@ function triggerTransition(targetHash, clickEvent) {
   if (currentActiveView) {
     currentActiveView.style.animation = 'none';
     currentActiveView.offsetHeight; // Force layout recalculation
-    currentActiveView.style.transition = 'opacity 0.3s ease-out';
+    currentActiveView.style.transition = 'opacity 0.55s ease-out';
     currentActiveView.style.opacity = '0';
   }
 
@@ -896,7 +897,7 @@ function triggerTransition(targetHash, clickEvent) {
     ripple.classList.add('active');
   });
 
-  // Swap hash address after the screen is completely covered and fade-out completes (320ms)
+  // Swap hash address after the screen is completely covered and fade-out completes (600ms)
   setTimeout(() => {
     window.location.hash = targetHash;
 
@@ -908,7 +909,7 @@ function triggerTransition(targetHash, clickEvent) {
         isTransitioning = false;
       }, 400);
     }, 100);
-  }, 320);
+  }, 450);
 }
 
 // Intercept standard data-target button clicks to trigger expanding animations

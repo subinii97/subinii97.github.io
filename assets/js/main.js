@@ -138,7 +138,7 @@ function initMainPage() {
 
   // Pendulum nodes physical masses (0: Pivot, 1: Node 1, 2: Node 2)
   // Mass ratio set strictly to 4:2:3.
-  const mass = [20.0, 4.0, 4.0];
+  const mass = [20.0, 10.0, 5.0];
 
   // Spring Pendulum Constants
   const k_spring1 = 3;
@@ -433,8 +433,8 @@ function initMainPage() {
 
     // Node sizes scaled proportionally (Pivot mass 4.0, Node 1 mass 2.0, Node 2 mass 3.0)
     drawNode(x0, y0, 11.0, '#888888'); // Pivot (Mass 4.0, Grey)
-    drawNode(x1, y1, 8, '#adcbf7');  // Node 1 (Mass 2.0)
-    drawNode(x2, y2, 8, '#b4d6a8'); // Node 2 (Mass 3.0)
+    drawNode(x1, y1, 10, '#adcbf7');  // Node 1 (Mass 2.0)
+    drawNode(x2, y2, 7, '#b4d6a8'); // Node 2 (Mass 3.0)
 
     // 6.5 Update Energy Dashboard Panel if visible
     if (energyPanel && energyPanel.style.display !== 'none') {

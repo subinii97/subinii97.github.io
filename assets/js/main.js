@@ -624,7 +624,7 @@ function triggerCenterTransition(target, targetHash, satelliteEl, clickEvent) {
         // Fade out the background green/blue ripple to reveal the white diary page
         ripple.style.opacity = '0';
 
-        // Wait 1000ms (slide and fade-out complete) to perform the seamless handoff
+        // Wait 800ms (slide 500ms and fade-out 800ms complete) to perform the seamless handoff
         setTimeout(() => {
           if (headerTitle) {
             headerTitle.classList.add('show');
@@ -638,7 +638,7 @@ function triggerCenterTransition(target, targetHash, satelliteEl, clickEvent) {
           textOverlay.remove();
           satelliteEl.classList.remove('moving-to-center');
           isTransitioning = false;
-        }, 1000);
+        }, 800);
       }, 100);
     }, 1000);
   }, 600);

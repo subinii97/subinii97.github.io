@@ -699,31 +699,47 @@ function triggerCenterTransition(target, targetHash, satelliteEl, clickEvent) {
 
           // Dynamically compute the exact scale factor to match the header font size
           const targetFontSize = parseFloat(window.getComputedStyle(headerTitle).fontSize);
-          const baseFontSize = parseFloat(window.getComputedStyle(textOverlay).fontSize); // actual rendered size (mobile: 32px, desktop: 20px)
+          const baseFontSize = parseFloat(window.getComputedStyle(textOverlay).fontSize);
           scaleFactor = targetFontSize / baseFontSize;
+
+          // Match font-weight immediately so the overlay matches the header title at arrival
+          textOverlay.style.fontWeight = window.getComputedStyle(headerTitle).fontWeight;
         }
 
-        // Slide/shrink transition text overlay to header logo's right and change its color to green/blue
+        // Slide/shrink transition text overlay to header logo's right and change its color
         textOverlay.style.transform = `translate(-50%, -50%) translate(${deltaX}px, ${deltaY}px) scale(${scaleFactor})`;
         textOverlay.style.color = 'var(--accent-primary)';
 
-        // Fade out the background green/blue ripple to reveal the white diary page
+        // Fade out the background ripple to reveal the page
         ripple.style.opacity = '0';
 
-        // Wait 800ms (slide 500ms and fade-out 800ms complete) to perform the seamless handoff
+        // Wait for slide to complete (0.8s CSS transition), then do atomic handoff
         setTimeout(() => {
+          // Instantly show real header title (bypass opacity transition) for seamless swap
           if (headerTitle) {
+            headerTitle.style.transition = 'none';
+            headerTitle.style.opacity = '1';
             headerTitle.classList.add('show');
           }
-          // Restore button text opacity for future visits
-          if (btnSpan) {
-            btnSpan.style.opacity = '';
-          }
-          // Clean up DOM and reset state
-          ripple.remove();
-          textOverlay.remove();
-          satelliteEl.classList.remove('moving-to-center');
-          isTransitioning = false;
+
+          // Immediately hide and remove overlay (cross-fade in a single frame)
+          textOverlay.style.transition = 'opacity 0.06s ease';
+          textOverlay.style.opacity = '0';
+
+          // Cleanup after overlay fade (60ms)
+          setTimeout(() => {
+            if (headerTitle) {
+              headerTitle.style.transition = '';
+              headerTitle.style.opacity = '';
+            }
+            if (btnSpan) {
+              btnSpan.style.opacity = '';
+            }
+            ripple.remove();
+            textOverlay.remove();
+            satelliteEl.classList.remove('moving-to-center');
+            isTransitioning = false;
+          }, 80);
         }, 800);
       }, 100);
     }, 1000);

@@ -183,8 +183,8 @@ header.nav-header {
   font-size: 1.6rem;
   font-weight: 600;
   color: var(--accent-primary);
+  letter-spacing: -0.5px;
   opacity: 0;
-  transition: opacity 0.2s ease;
 }
 
 .subpage-title.show {

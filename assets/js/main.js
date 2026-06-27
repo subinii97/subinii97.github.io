@@ -562,6 +562,7 @@ function triggerCenterTransition(target, targetHash, satelliteEl, clickEvent) {
   textOverlay.textContent = target.charAt(0).toUpperCase() + target.slice(1);
   textOverlay.style.left = `${cx}px`;
   textOverlay.style.top = `${cy}px`;
+  textOverlay.style.color = target === 'diary' ? '#6c9e5f' : '#5582c9';
 
   // Wait 600ms (slide animation of satellite completes) before expanding ripple and text
   setTimeout(() => {
@@ -582,6 +583,7 @@ function triggerCenterTransition(target, targetHash, satelliteEl, clickEvent) {
     requestAnimationFrame(() => {
       ripple.classList.add('active');
       textOverlay.classList.add('active');
+      textOverlay.style.color = '#ffffff';
     });
 
     // Wait 1000ms (matching the smooth 1.0s transition) for ripple to cover screen, then perform route swap

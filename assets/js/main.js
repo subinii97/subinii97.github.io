@@ -141,7 +141,8 @@ function initMainPage() {
   const mass = [4.0, 2.0, 3.0];
 
   // Spring Pendulum Constants
-  const k_spring = 0.10;
+  const k_spring1 = 0.5;
+  const k_spring2 = 0.05;
   const c_damping = 0.0;
 
   // Cartesian coordinates of the nodes
@@ -220,7 +221,7 @@ function initMainPage() {
     const v_rel_spring1 = rvx1 * udx1 + rvy1 * udy1;
 
     // Spring force 1 (acts on Node 1 from Node 0)
-    const F_spring1_mag = -k_spring * (dist1 - L1_rest) - c_damping * v_rel_spring1;
+    const F_spring1_mag = -k_spring1 * (dist1 - L1_rest) - c_damping * v_rel_spring1;
     const Fs1_x = F_spring1_mag * udx1;
     const Fs1_y = F_spring1_mag * udy1;
 
@@ -237,7 +238,7 @@ function initMainPage() {
     const v_rel_spring2 = rvx2 * udx2 + rvy2 * udy2;
 
     // Spring force 2 (acts on Node 2 from Node 1)
-    const F_spring2_mag = -k_spring * (dist2 - L2_rest) - c_damping * v_rel_spring2;
+    const F_spring2_mag = -k_spring2 * (dist2 - L2_rest) - c_damping * v_rel_spring2;
     const Fs2_x = F_spring2_mag * udx2;
     const Fs2_y = F_spring2_mag * udy2;
 
@@ -453,7 +454,7 @@ function initMainPage() {
       const dx1 = x1 - x0;
       const dy1 = y1 - y0;
       const dist1 = Math.sqrt(dx1 * dx1 + dy1 * dy1) || 1e-5;
-      const P1_s = 0.5 * k_spring * (dist1 - L1) * (dist1 - L1);
+      const P1_s = 0.5 * k_spring1 * (dist1 - L1) * (dist1 - L1);
       const P1 = P1_g + P1_s;
 
       // Node 2 state
@@ -463,7 +464,7 @@ function initMainPage() {
       const dx2 = x2 - x1;
       const dy2 = y2 - y1;
       const dist2 = Math.sqrt(dx2 * dx2 + dy2 * dy2) || 1e-5;
-      const P2_s = 0.5 * k_spring * (dist2 - L2) * (dist2 - L2);
+      const P2_s = 0.5 * k_spring2 * (dist2 - L2) * (dist2 - L2);
       const P2 = P2_g + P2_s;
 
       // Totals

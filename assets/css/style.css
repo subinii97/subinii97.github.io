@@ -1206,7 +1206,7 @@ header.nav-header {
   position: fixed;
   color: #000000;
   font-family: var(--font-title);
-  font-size: 1.25rem;
+  font-size: 1.6rem; /* Match header subpage-title exactly */
   font-weight: 600; /* Unified with header title font-weight */
   letter-spacing: -0.5px;
   z-index: 100000;
@@ -1218,15 +1218,13 @@ header.nav-header {
 
 .transition-text-overlay.active {
   color: #ffffff;
-  transform: translate(-50%, -50%) translate(0px, 0px) scale(2);
+  transform: translate(-50%, -50%) translate(0px, 0px) scale(2.2); /* Scale up to be prominent at the center */
   font-weight: 600; /* Unified to prevent weight jumping */
   text-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
 }
 
 @media (max-width: 600px) {
-  .transition-text-overlay {
-    font-size: 2.0rem;
-  }
+  /* Removed custom font-size override to maintain 1:1 layout parity with subpage title */
 }
 
 /* Scoped Theme Overrides for Diary and Study views */

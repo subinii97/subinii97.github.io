@@ -1343,6 +1343,18 @@ function renderReader(post, prefix = 'diary') {
     document.getElementById(`${prefix}-reader-post-content`).innerHTML = `<pre>${escapeHtml(post.content)}</pre>`;
   }
 
+  // Trigger KaTeX math rendering if auto-render is loaded
+  const contentEl = document.getElementById(`${prefix}-reader-post-content`);
+  if (contentEl && window.renderMathInElement) {
+    window.renderMathInElement(contentEl, {
+      delimiters: [
+        { left: '$$', right: '$$', display: true },
+        { left: '$', right: '$', display: false }
+      ],
+      throwOnError: false
+    });
+  }
+
   // Toggle views
   listContainer.style.display = 'none';
   readerContainer.style.display = 'block';

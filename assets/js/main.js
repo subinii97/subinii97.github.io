@@ -141,7 +141,7 @@ function initMainPage() {
   const mass = [4.0, 2.0, 3.0];
 
   // Spring Pendulum Constants
-  const k_spring = 400.0;
+  const k_spring = 0.10;
   const c_damping = 0.0;
 
   // Cartesian coordinates of the nodes
@@ -476,27 +476,9 @@ function initMainPage() {
       const elKinetic = document.getElementById('energy-kinetic');
       const elPotential = document.getElementById('energy-potential');
 
-      const elK0 = document.getElementById('energy-k0');
-      const elP0 = document.getElementById('energy-p0');
-
-      const elK1 = document.getElementById('energy-k1');
-      const elP1 = document.getElementById('energy-p1');
-
-      const elK2 = document.getElementById('energy-k2');
-      const elP2 = document.getElementById('energy-p2');
-
       if (elTotal) elTotal.textContent = E_tot.toFixed(2);
       if (elKinetic) elKinetic.textContent = K_tot.toFixed(2);
       if (elPotential) elPotential.textContent = P_tot.toFixed(2);
-
-      if (elK0) elK0.textContent = K0.toFixed(2);
-      if (elP0) elP0.textContent = P0.toFixed(2);
-
-      if (elK1) elK1.textContent = K1.toFixed(2);
-      if (elP1) elP1.textContent = P1.toFixed(2);
-
-      if (elK2) elK2.textContent = K2.toFixed(2);
-      if (elP2) elP2.textContent = P2.toFixed(2);
     }
 
     requestAnimationFrame(updatePhysicsAndRender);

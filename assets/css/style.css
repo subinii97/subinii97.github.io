@@ -1407,21 +1407,5 @@ body.theme-study {
   font-size: 0.9rem;
   color: var(--accent-primary);
 }
-.energy-panel .panel-divider {
-  border: none;
-  border-top: 1px solid var(--border-subtle);
-  margin: 0.4rem 0;
-}
-.energy-panel .node-energy-block h4 {
-  margin: 0 0 0.2rem;
-  font-size: 0.8rem;
-  color: var(--text-muted);
-  font-weight: 600;
-}
-.energy-panel .sub-row {
-  padding-left: 0.5rem;
-  font-size: 0.8rem;
-  color: var(--text-muted);
-}
 
 

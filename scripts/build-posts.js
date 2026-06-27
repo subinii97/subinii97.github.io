@@ -46,33 +46,33 @@ function parseFrontMatter(fileContent) {
 }
 
 /**
- * Collect all .md files from _posts/.
- * Supports two layouts:
- *   1. _posts/YYYY-MM-DD-slug.md                 (legacy root-level)
- *   2. _posts/YYYY-MM-DD-slug/YYYY-MM-DD-slug.md (new per-post folder)
- *
- * Returns array of { filePath, folder }
- *   - filePath: absolute path to the .md file
- *   - folder: folder name relative to _posts (e.g. "2018-01-23-norway-1"), or '' for root-level files
+ * Collect all .md files from _posts/type/.
+ * Supports both root-level files and per-post folders.
  */
-function collectMdFiles() {
+function collectMdFilesForType(type) {
+  const typeDir = path.join(postsDir, type);
+  if (!fs.existsSync(typeDir)) return [];
+
   const results = [];
-  const entries = fs.readdirSync(postsDir);
+  const entries = fs.readdirSync(typeDir);
 
   for (const entry of entries) {
-    const entryPath = path.join(postsDir, entry);
+    const entryPath = path.join(typeDir, entry);
     const stat = fs.statSync(entryPath);
 
     if (stat.isFile() && (entry.endsWith('.md') || entry.endsWith('.markdown'))) {
-      // Root-level .md file
-      results.push({ filePath: entryPath, folder: '' });
+      results.push({
+        filePath: entryPath,
+        folder: type,
+        type: type
+      });
     } else if (stat.isDirectory()) {
-      // Per-post folder: find the .md inside it
       const subFiles = fs.readdirSync(entryPath).filter(f => f.endsWith('.md') || f.endsWith('.markdown'));
       for (const subFile of subFiles) {
         results.push({
           filePath: path.join(entryPath, subFile),
-          folder: entry  // e.g. "2018-01-23-norway-1"
+          folder: `${type}/${entry}`,
+          type: type
         });
       }
     }
@@ -86,10 +86,13 @@ function build() {
     return;
   }
   
-  const mdFiles = collectMdFiles();
+  const mdFiles = [
+    ...collectMdFilesForType('diary'),
+    ...collectMdFilesForType('study')
+  ];
   const posts = [];
   
-  for (const { filePath, folder } of mdFiles) {
+  for (const { filePath, folder, type } of mdFiles) {
     const file = path.basename(filePath);
     if (file === '.placeholder') continue;
 
@@ -102,7 +105,8 @@ function build() {
     
     posts.push({
       filename: file,
-      folder: folder,   // relative folder name within _posts, e.g. "2018-01-23-norway-1"
+      folder: folder,   // relative folder name within _posts, e.g. "diary/2018-01-23-norway-1"
+      type: type,       // 'diary' or 'study'
       title: metadata.title || file.replace(/\.md$/, ''),
       subtitle: metadata.subtitle || '',
       date: metadata.date || fileDate,

@@ -37,13 +37,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     allPosts = await response.json();
 
     // Partition posts into Diary and Study
-    const STUDY_CATEGORIES = ['CS', 'Algorithms', 'Frontend', 'Database', 'Backend', 'Study'];
-    studyPosts = allPosts.filter(post =>
-      post.categories && post.categories.some(cat => STUDY_CATEGORIES.includes(cat))
-    );
-    diaryPosts = allPosts.filter(post =>
-      !post.categories || !post.categories.some(cat => STUDY_CATEGORIES.includes(cat))
-    );
+    studyPosts = allPosts.filter(post => post.type === 'study');
+    diaryPosts = allPosts.filter(post => post.type === 'diary');
   } catch (err) {
     console.error(err);
     const listEl = document.getElementById('post-list-element');

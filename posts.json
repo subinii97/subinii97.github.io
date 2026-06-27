@@ -1,7 +1,8 @@
 [
   {
     "filename": "2026-06-26-algorithm-dfs.md",
-    "folder": "2026-06-26",
+    "folder": "study/2026-06-26",
+    "type": "study",
     "title": "Graph Traversal: DFS & BFS",
     "subtitle": "Understanding depth-first and breadth-first search algorithms",
     "date": "2026-06-26 12:00:00 +0900",
@@ -16,7 +17,8 @@
   },
   {
     "filename": "2026-06-25-react-state.md",
-    "folder": "2026-06-25",
+    "folder": "study/2026-06-25",
+    "type": "study",
     "title": "React State Management",
     "subtitle": "Comparing Redux, Recoil, and Zustand",
     "date": "2026-06-25 12:00:00 +0900",
@@ -31,7 +33,8 @@
   },
   {
     "filename": "2025-12-25-christmas.md",
-    "folder": "2025-12-25",
+    "folder": "diary/2025-12-25",
+    "type": "diary",
     "title": "Transition Story 12. 크리스마스 선물",
     "subtitle": "",
     "date": "2025-12-25 12:00:00 +0800",
@@ -45,7 +48,8 @@
   },
   {
     "filename": "2025-12-18-grs.md",
-    "folder": "2025-12-18",
+    "folder": "diary/2025-12-18",
+    "type": "diary",
     "title": "Transition Story 11. 수술",
     "subtitle": "",
     "date": "2025-12-18 12:00:00 +0800",
@@ -59,7 +63,8 @@
   },
   {
     "filename": "2025-12-15-thank-you.md",
-    "folder": "2025-12-15",
+    "folder": "diary/2025-12-15",
+    "type": "diary",
     "title": "Transition Story 10. 감사함",
     "subtitle": "",
     "date": "2025-12-15 10:00:00 +0800",
@@ -73,7 +78,8 @@
   },
   {
     "filename": "2025-12-12-hospital-life-fin.md",
-    "folder": "2025-12-12",
+    "folder": "diary/2025-12-12",
+    "type": "diary",
     "title": "Accident Final. 퇴원",
     "subtitle": "",
     "date": "2025-12-12 12:00:00 +0800",
@@ -87,7 +93,8 @@
   },
   {
     "filename": "2025-12-10-Hello-World.md",
-    "folder": "2025-12-10",
+    "folder": "diary/2025-12-10",
+    "type": "diary",
     "title": "Hello World",
     "subtitle": "",
     "date": "2025-12-10 16:40:00 +0800",
@@ -101,7 +108,8 @@
   },
   {
     "filename": "2025-09-01-hospital-life-2.md",
-    "folder": "2025-09-01",
+    "folder": "diary/2025-09-01",
+    "type": "diary",
     "title": "Accident 3. 양평에서 여름나기",
     "subtitle": "",
     "date": "2025-09-01 12:00:00 +0800",
@@ -115,7 +123,8 @@
   },
   {
     "filename": "2025-08-04-grs-consultation.md",
-    "folder": "2025-08-04",
+    "folder": "diary/2025-08-04",
+    "type": "diary",
     "title": "Transition Story 9. 성별확정수술",
     "subtitle": "",
     "date": "2025-08-04 12:00:00 +0800",
@@ -129,7 +138,8 @@
   },
   {
     "filename": "2025-07-01-hospital-life-1.md",
-    "folder": "2025-07-01",
+    "folder": "diary/2025-07-01",
+    "type": "diary",
     "title": "Accident 2. 교통사고 이후 또 다시 무너짐",
     "subtitle": "",
     "date": "2025-07-01 12:00:00 +0800",
@@ -143,7 +153,8 @@
   },
   {
     "filename": "2025-06-12-car-accident.md",
-    "folder": "2025-06-12",
+    "folder": "diary/2025-06-12",
+    "type": "diary",
     "title": "Accident 1. 마른 하늘의 날벼락",
     "subtitle": "",
     "date": "2025-06-12 12:00:00 +0800",
@@ -157,7 +168,8 @@
   },
   {
     "filename": "2025-06-05-depression.md",
-    "folder": "2025-06-05",
+    "folder": "diary/2025-06-05",
+    "type": "diary",
     "title": "Transition Story 8. 수술 후 우울",
     "subtitle": "",
     "date": "2025-06-05 12:00:00 +0800",
@@ -171,7 +183,8 @@
   },
   {
     "filename": "2025-05-29-my-second-surgery.md",
-    "folder": "2025-05-29",
+    "folder": "diary/2025-05-29",
+    "type": "diary",
     "title": "Transition Story 7. 조급함",
     "subtitle": "",
     "date": "2025-05-29 12:00:00 +0800",
@@ -185,7 +198,8 @@
   },
   {
     "filename": "2025-02-25-my-first-surgery.md",
-    "folder": "2025-02-25",
+    "folder": "diary/2025-02-25",
+    "type": "diary",
     "title": "Transition Story 6. 첫 수술",
     "subtitle": "",
     "date": "2025-02-25 12:00:00 +0800",
@@ -199,7 +213,8 @@
   },
   {
     "filename": "2025-01-22-coming-out-to-parents.md",
-    "folder": "2025-01-22",
+    "folder": "diary/2025-01-22",
+    "type": "diary",
     "title": "Transition Story 5. 부모님께 커밍아웃",
     "subtitle": "",
     "date": "2025-01-22 12:00:00 +0800",
@@ -213,7 +228,8 @@
   },
   {
     "filename": "2025-01-18-coming-out-of-the-closet.md",
-    "folder": "2025-01-18",
+    "folder": "diary/2025-01-18",
+    "type": "diary",
     "title": "Transition Story 4. 커밍아웃의 계기",
     "subtitle": "",
     "date": "2025-01-18 12:00:00 +0800",
@@ -227,7 +243,8 @@
   },
   {
     "filename": "2024-06-21-freedom.md",
-    "folder": "2024-06-21",
+    "folder": "diary/2024-06-21",
+    "type": "diary",
     "title": "Transition Story 3. 자유",
     "subtitle": "",
     "date": "2024-06-21 12:00:00 +0800",
@@ -241,7 +258,8 @@
   },
   {
     "filename": "2023-04-11-starting-hrt.md",
-    "folder": "2023-04-11",
+    "folder": "diary/2023-04-11",
+    "type": "diary",
     "title": "Transition Story 2. 변화의 시작",
     "subtitle": "",
     "date": "2023-04-11 12:00:00 +0800",
@@ -253,7 +271,8 @@
   },
   {
     "filename": "2023-03-31-starting-transition.md",
-    "folder": "2023-03-31",
+    "folder": "diary/2023-03-31",
+    "type": "diary",
     "title": "Transition Story 1. 결심",
     "subtitle": "",
     "date": "2023-03-31 12:00:00 +0800",
@@ -265,7 +284,8 @@
   },
   {
     "filename": "2022-01-27-chamonix.md",
-    "folder": "2022-01-27",
+    "folder": "diary/2022-01-27",
+    "type": "diary",
     "title": "Chamonix. Go Skiing!",
     "subtitle": "",
     "date": "2022-01-27 12:00:00 +0800",
@@ -277,7 +297,8 @@
   },
   {
     "filename": "2018-01-26-norway-3.md",
-    "folder": "2018-01-26",
+    "folder": "diary/2018-01-26",
+    "type": "diary",
     "title": "Arctic 3. Norway - Bergen",
     "subtitle": "",
     "date": "2018-01-26 12:00:00 +0800",
@@ -289,7 +310,8 @@
   },
   {
     "filename": "2018-01-25-norway-2.md",
-    "folder": "2018-01-25",
+    "folder": "diary/2018-01-25",
+    "type": "diary",
     "title": "Arctic 2. Norway - Oslo to Bergen",
     "subtitle": "",
     "date": "2018-01-25 12:00:00 +0800",
@@ -301,7 +323,8 @@
   },
   {
     "filename": "2018-01-23-norway-1.md",
-    "folder": "2018-01-23",
+    "folder": "diary/2018-01-23",
+    "type": "diary",
     "title": "Arctic 1. Norway Oslo",
     "subtitle": "",
     "date": "2018-01-23 12:00:00 +0800",

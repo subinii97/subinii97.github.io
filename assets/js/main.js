@@ -93,7 +93,7 @@ function initMainPage() {
 
   // Set up High DPI scale factor dynamically
   let isMobile = window.innerWidth <= 600;
-  let designSize = isMobile ? 850 : 1300;
+  let designSize = isMobile ? 850 : 900;
   let cx = designSize / 2;
   let cy = designSize / 2;
 
@@ -101,7 +101,7 @@ function initMainPage() {
 
   function resizeCanvas() {
     isMobile = window.innerWidth <= 600;
-    designSize = isMobile ? 850 : 1300;
+    designSize = isMobile ? 850 : 900;
     cx = designSize / 2;
     cy = designSize / 2;
 
@@ -138,11 +138,11 @@ function initMainPage() {
 
   // Pendulum nodes physical masses (0: Pivot, 1: Node 1, 2: Node 2)
   // Mass ratio set strictly to 4:2:3.
-  const mass = [4.0, 2.0, 3.0];
+  const mass = [4.0, 4.0, 4.0];
 
   // Spring Pendulum Constants
-  const k_spring1 = 0.5;
-  const k_spring2 = 0.05;
+  const k_spring1 = 1;
+  const k_spring2 = 0.1;
   const c_damping = 0.0;
 
   // Cartesian coordinates of the nodes
@@ -162,8 +162,8 @@ function initMainPage() {
 
   function initNodeAngles() {
     // Rest lengths
-    const L1 = isMobile ? 60 : 150;
-    const L2 = L1 * 1.5;
+    const L1 = isMobile ? 60 : 100;
+    const L2 = L1 * 1;
 
     // Start with small deflected angles
     const theta1 = 0.1;
@@ -290,8 +290,8 @@ function initMainPage() {
     ctx.stroke();
 
     // Pendulum rod lengths (Ratio L1:L2 is set strictly to 2:3)
-    const L1 = isMobile ? 60 : 150;
-    const L2 = L1 * 1.5;
+    const L1 = isMobile ? 60 : 100;
+    const L2 = L1 * 1;
 
     // Initialize node angles if not done
     if (!isInitialized) {
@@ -433,8 +433,8 @@ function initMainPage() {
 
     // Node sizes scaled proportionally (Pivot mass 4.0, Node 1 mass 2.0, Node 2 mass 3.0)
     drawNode(x0, y0, 11.0, '#888888'); // Pivot (Mass 4.0, Grey)
-    drawNode(x1, y1, 5.5, '#adcbf7');  // Node 1 (Mass 2.0)
-    drawNode(x2, y2, 8.25, '#b4d6a8'); // Node 2 (Mass 3.0)
+    drawNode(x1, y1, 8, '#adcbf7');  // Node 1 (Mass 2.0)
+    drawNode(x2, y2, 8, '#b4d6a8'); // Node 2 (Mass 3.0)
 
     // 6.5 Update Energy Dashboard Panel if visible
     if (energyPanel && energyPanel.style.display !== 'none') {

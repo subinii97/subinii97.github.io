@@ -144,6 +144,7 @@ header.nav-header {
   align-items: center;
   justify-content: center;
   margin-top: -170px; /* Shift diagram further upwards to decrease top spacing */
+  overflow: visible; /* Allow canvas to extend beyond container without clipping */
 }
 
 /* Header Title style for index.html - always visible top-left */
@@ -1252,8 +1253,8 @@ body.theme-study {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 1300px;
-  height: 1300px;
+  width: 900px;
+  height: 900px;
   pointer-events: none;
   z-index: 2; /* Sits behind buttons (z-index 3) and above grey star (z-index 1) */
 }

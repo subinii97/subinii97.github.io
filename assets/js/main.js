@@ -116,6 +116,17 @@ function initMainPage() {
   resizeCanvas();
   window.addEventListener('resize', resizeCanvas);
 
+  // Set up Info button toggle for the system energy status panel
+  const infoBtn = document.getElementById('pendulum-info-btn');
+  const energyPanel = document.getElementById('pendulum-energy-panel');
+  if (infoBtn && energyPanel) {
+    infoBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isOpen = energyPanel.style.display === 'flex';
+      energyPanel.style.display = isOpen ? 'none' : 'flex';
+    });
+  }
+
   // Physics & animation states
   let phi = -Math.PI / 2 + 0.02; // Orbit angle (starts near 12 o'clock and swings dynamically under gravity)
   let omega_phi = 0; // Angular velocity of the pivot
@@ -130,8 +141,8 @@ function initMainPage() {
   const mass = [4.0, 2.0, 3.0];
 
   // Spring Pendulum Constants
-  const k_spring = 20.0;
-  const c_damping = 0.8;
+  const k_spring = 400.0;
+  const c_damping = 0.0;
 
   // Cartesian coordinates of the nodes
   let x1 = 0, y1 = 0;
@@ -289,8 +300,8 @@ function initMainPage() {
     // 3. Runge-Kutta 4th Order (RK4) Integration Sub-stepping
     // Unifies the pivot (Node 0) and the double pendulum (Nodes 1, 2) in a 3-DOF state vector,
     // ensuring perfect physical coupling and energy conservation.
-    const subSteps = 6;
-    const dt = 0.05;
+    const subSteps = 30;
+    const dt = 0.01;
 
     let state_q = [phi, x1, y1, x2, y2];
     let state_w = [omega_phi, vx1, vy1, vx2, vy2];
@@ -423,6 +434,70 @@ function initMainPage() {
     drawNode(x0, y0, 11.0, '#888888'); // Pivot (Mass 4.0, Grey)
     drawNode(x1, y1, 5.5, '#adcbf7');  // Node 1 (Mass 2.0)
     drawNode(x2, y2, 8.25, '#b4d6a8'); // Node 2 (Mass 3.0)
+
+    // 6.5 Update Energy Dashboard Panel if visible
+    if (energyPanel && energyPanel.style.display !== 'none') {
+      const m0 = mass[0];
+      const m1 = mass[1];
+      const m2 = mass[2];
+
+      // Node 0 (Pivot) state
+      const v0_sq = R * R * omega_phi * omega_phi;
+      const K0 = 0.5 * m0 * v0_sq;
+      const P0 = -m0 * g * (y0 - cy); // Centered relative to cy
+
+      // Node 1 state
+      const v1_sq = vx1 * vx1 + vy1 * vy1;
+      const K1 = 0.5 * m1 * v1_sq;
+      const P1_g = -m1 * g * (y1 - cy);
+      const dx1 = x1 - x0;
+      const dy1 = y1 - y0;
+      const dist1 = Math.sqrt(dx1 * dx1 + dy1 * dy1) || 1e-5;
+      const P1_s = 0.5 * k_spring * (dist1 - L1) * (dist1 - L1);
+      const P1 = P1_g + P1_s;
+
+      // Node 2 state
+      const v2_sq = vx2 * vx2 + vy2 * vy2;
+      const K2 = 0.5 * m2 * v2_sq;
+      const P2_g = -m2 * g * (y2 - cy);
+      const dx2 = x2 - x1;
+      const dy2 = y2 - y1;
+      const dist2 = Math.sqrt(dx2 * dx2 + dy2 * dy2) || 1e-5;
+      const P2_s = 0.5 * k_spring * (dist2 - L2) * (dist2 - L2);
+      const P2 = P2_g + P2_s;
+
+      // Totals
+      const K_tot = K0 + K1 + K2;
+      const P_tot = P0 + P1 + P2;
+      const E_tot = K_tot + P_tot;
+
+      // Render values
+      const elTotal = document.getElementById('energy-total');
+      const elKinetic = document.getElementById('energy-kinetic');
+      const elPotential = document.getElementById('energy-potential');
+
+      const elK0 = document.getElementById('energy-k0');
+      const elP0 = document.getElementById('energy-p0');
+
+      const elK1 = document.getElementById('energy-k1');
+      const elP1 = document.getElementById('energy-p1');
+
+      const elK2 = document.getElementById('energy-k2');
+      const elP2 = document.getElementById('energy-p2');
+
+      if (elTotal) elTotal.textContent = E_tot.toFixed(2);
+      if (elKinetic) elKinetic.textContent = K_tot.toFixed(2);
+      if (elPotential) elPotential.textContent = P_tot.toFixed(2);
+
+      if (elK0) elK0.textContent = K0.toFixed(2);
+      if (elP0) elP0.textContent = P0.toFixed(2);
+
+      if (elK1) elK1.textContent = K1.toFixed(2);
+      if (elP1) elP1.textContent = P1.toFixed(2);
+
+      if (elK2) elK2.textContent = K2.toFixed(2);
+      if (elP2) elP2.textContent = P2.toFixed(2);
+    }
 
     requestAnimationFrame(updatePhysicsAndRender);
   }

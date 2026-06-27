@@ -1338,3 +1338,90 @@ body.theme-study {
   transform: translateX(-2px);
 }
 
+/* Home View relative containment */
+#home-view {
+  position: relative;
+}
+
+/* Info Toggle Button (Glassmorphic) */
+.info-toggle-btn {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  background: var(--bg-glass);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 1000;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: var(--shadow-sm);
+  outline: none;
+}
+.info-toggle-btn:hover {
+  background: var(--accent-pastel);
+  color: var(--accent-primary);
+  border-color: var(--accent-primary);
+  transform: scale(1.05);
+}
+
+/* Energy Status Dashboard Panel */
+.energy-panel {
+  position: absolute;
+  top: 5rem;
+  right: 1.5rem;
+  width: 280px;
+  padding: 1.2rem;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  font-size: 0.85rem;
+  color: var(--text-primary);
+  box-shadow: var(--shadow-lg);
+  pointer-events: auto;
+  user-select: none;
+}
+.energy-panel .panel-title {
+  margin: 0 0 0.4rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  color: var(--text-primary);
+}
+.energy-panel .energy-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 500;
+}
+.energy-panel .total-row {
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--accent-primary);
+}
+.energy-panel .panel-divider {
+  border: none;
+  border-top: 1px solid var(--border-subtle);
+  margin: 0.4rem 0;
+}
+.energy-panel .node-energy-block h4 {
+  margin: 0 0 0.2rem;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+.energy-panel .sub-row {
+  padding-left: 0.5rem;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+

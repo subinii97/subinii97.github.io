@@ -30,6 +30,62 @@
 
   <!-- 1. HOME VIEW (Orbit Layout) -->
   <div id="home-view" class="view-section">
+    <!-- Info button in the top right -->
+    <button id="pendulum-info-btn" class="info-toggle-btn" title="시스템 에너지 상태 보기">
+      <i class="fas fa-info-circle"></i>
+    </button>
+
+    <!-- Energy Status Panel (Glassmorphism layout) -->
+    <div id="pendulum-energy-panel" class="energy-panel glass-card" style="display: none;">
+      <h3 class="panel-title">System Energy Status</h3>
+      <div class="energy-row total-row">
+        <span>Total Energy (E)</span>
+        <span id="energy-total">0.00</span>
+      </div>
+      <div class="energy-row">
+        <span>Total Kinetic (K)</span>
+        <span id="energy-kinetic">0.00</span>
+      </div>
+      <div class="energy-row">
+        <span>Total Potential (P)</span>
+        <span id="energy-potential">0.00</span>
+      </div>
+      <hr class="panel-divider">
+      <div class="node-energy-block">
+        <h4>Node 0 (Pivot)</h4>
+        <div class="energy-row sub-row">
+          <span>Kinetic (K0)</span>
+          <span id="energy-k0">0.00</span>
+        </div>
+        <div class="energy-row sub-row">
+          <span>Potential (P0)</span>
+          <span id="energy-p0">0.00</span>
+        </div>
+      </div>
+      <div class="node-energy-block">
+        <h4>Node 1</h4>
+        <div class="energy-row sub-row">
+          <span>Kinetic (K1)</span>
+          <span id="energy-k1">0.00</span>
+        </div>
+        <div class="energy-row sub-row">
+          <span>Potential (P1)</span>
+          <span id="energy-p1">0.00</span>
+        </div>
+      </div>
+      <div class="node-energy-block">
+        <h4>Node 2</h4>
+        <div class="energy-row sub-row">
+          <span>Kinetic (K2)</span>
+          <span id="energy-k2">0.00</span>
+        </div>
+        <div class="energy-row sub-row">
+          <span>Potential (P2)</span>
+          <span id="energy-p2">0.00</span>
+        </div>
+      </div>
+    </div>
+
     <div class="main-wrapper">
       <div class="orbit-container">
 
@@ -209,7 +265,7 @@
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
   <!-- Main Application Script -->
-  <script src="./assets/js/main.js?v=1.1.20"></script>
+  <script src="./assets/js/main.js?v=1.1.21"></script>
 </body>
 
 </html>

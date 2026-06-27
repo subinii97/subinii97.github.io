@@ -158,29 +158,39 @@ header.nav-header {
 }
 
 .header-subpage {
-  font-family: var(--font-title);
-  font-size: 1.6rem;
-  font-weight: 600;
-  color: var(--accent-primary);
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
   opacity: 0;
   transform: translateX(-10px);
   transition: opacity 0.4s ease, transform 0.4s ease;
   pointer-events: none;
-  display: flex;
-  align-items: center;
-  gap: 0.8rem;
-}
-
-.header-subpage::before {
-  content: '/';
-  color: var(--text-muted);
-  font-weight: 300;
-  opacity: 0.35;
 }
 
 .header-subpage.active {
   opacity: 1;
   transform: translateX(0);
+}
+
+.subpage-separator {
+  font-family: var(--font-title);
+  font-size: 1.6rem;
+  font-weight: 300;
+  color: var(--text-muted);
+  opacity: 0.35;
+}
+
+.subpage-title {
+  font-family: var(--font-title);
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: var(--accent-primary);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.subpage-title.show {
+  opacity: 1;
 }
 
 .main-logo {

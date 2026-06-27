@@ -452,12 +452,14 @@ function handleRouting() {
 
   const performRouting = () => {
     const cleanHash = hash.substring(1);
+    const headerContainer = document.getElementById('header-subpage-container');
     const headerTitle = document.getElementById('header-subpage-title');
 
     if (!cleanHash) {
       document.body.classList.remove('theme-diary', 'theme-study');
-      if (headerTitle) {
-        headerTitle.classList.remove('active');
+      if (headerContainer && headerTitle) {
+        headerContainer.classList.remove('active');
+        headerTitle.classList.remove('show');
         headerTitle.textContent = '';
       }
       showView('home');
@@ -466,11 +468,11 @@ function handleRouting() {
     } else if (cleanHash === 'study') {
       document.body.classList.add('theme-study');
       document.body.classList.remove('theme-diary');
-      if (headerTitle) {
+      if (headerTitle && headerContainer) {
         headerTitle.textContent = 'Study';
         if (!isTransitioning) {
-          headerTitle.classList.add('active');
-          headerTitle.style.opacity = '1';
+          headerContainer.classList.add('active');
+          headerTitle.classList.add('show');
         }
       }
       showView('study');
@@ -478,11 +480,11 @@ function handleRouting() {
     } else if (cleanHash === 'diary') {
       document.body.classList.add('theme-diary');
       document.body.classList.remove('theme-study');
-      if (headerTitle) {
+      if (headerTitle && headerContainer) {
         headerTitle.textContent = 'Diary';
         if (!isTransitioning) {
-          headerTitle.classList.add('active');
-          headerTitle.style.opacity = '1';
+          headerContainer.classList.add('active');
+          headerTitle.classList.add('show');
         }
       }
       showView('diary');
@@ -494,11 +496,11 @@ function handleRouting() {
     } else if (cleanHash.startsWith('diary/')) {
       document.body.classList.add('theme-diary');
       document.body.classList.remove('theme-study');
-      if (headerTitle) {
+      if (headerTitle && headerContainer) {
         headerTitle.textContent = 'Diary';
         if (!isTransitioning) {
-          headerTitle.classList.add('active');
-          headerTitle.style.opacity = '1';
+          headerContainer.classList.add('active');
+          headerTitle.classList.add('show');
         }
       }
       showView('diary');
@@ -558,6 +560,8 @@ function triggerCenterTransition(target, targetHash, satelliteEl, clickEvent) {
   const textOverlay = document.createElement('div');
   textOverlay.className = 'transition-text-overlay';
   textOverlay.textContent = target.charAt(0).toUpperCase() + target.slice(1);
+  textOverlay.style.left = `${cx}px`;
+  textOverlay.style.top = `${cy}px`;
 
   // Wait 600ms (slide animation of satellite completes) before expanding ripple and text
   setTimeout(() => {
@@ -579,24 +583,23 @@ function triggerCenterTransition(target, targetHash, satelliteEl, clickEvent) {
       window.location.hash = targetHash;
 
       // Prepare header subpage title hidden
+      const headerContainer = document.getElementById('header-subpage-container');
       const headerTitle = document.getElementById('header-subpage-title');
-      if (headerTitle) {
+      if (headerTitle && headerContainer) {
         headerTitle.textContent = target.charAt(0).toUpperCase() + target.slice(1);
-        headerTitle.style.opacity = '0';
-        headerTitle.classList.add('active');
+        headerTitle.classList.remove('show');
+        headerContainer.classList.add('active');
       }
 
       // Wait 100ms for route swap layout to stabilize, then trigger the slide-to-header and green-to-white fadeout
       setTimeout(() => {
-        // Calculate translation coordinates from viewport center to the actual header subpage title position
+        // Calculate translation coordinates from current center position (cx, cy) to the actual header subpage title position
         let deltaX = 0;
         let deltaY = 0;
         if (headerTitle) {
           const targetRect = headerTitle.getBoundingClientRect();
-          const currentX = window.innerWidth / 2;
-          const currentY = window.innerHeight / 2;
-          deltaX = (targetRect.left + targetRect.width / 2) - currentX;
-          deltaY = (targetRect.top + targetRect.height / 2) - currentY;
+          deltaX = (targetRect.left + targetRect.width / 2) - cx;
+          deltaY = (targetRect.top + targetRect.height / 2) - cy;
         }
 
         // Slide/shrink transition text overlay to header logo's right and change its color to green/blue
@@ -609,7 +612,7 @@ function triggerCenterTransition(target, targetHash, satelliteEl, clickEvent) {
         // Wait 1000ms (slide and fade-out complete) to perform the seamless handoff
         setTimeout(() => {
           if (headerTitle) {
-            headerTitle.style.opacity = '1';
+            headerTitle.classList.add('show');
           }
           // Clean up DOM and reset state
           ripple.remove();

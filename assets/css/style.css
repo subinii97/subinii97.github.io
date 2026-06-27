@@ -152,6 +152,35 @@ header.nav-header {
   top: 1.5rem;
   left: 2rem;
   z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.header-subpage {
+  font-family: var(--font-title);
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: var(--accent-primary);
+  opacity: 0;
+  transform: translateX(-10px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.header-subpage::before {
+  content: '/';
+  color: var(--text-muted);
+  font-weight: 300;
+  opacity: 0.35;
+}
+
+.header-subpage.active {
+  opacity: 1;
+  transform: translateX(0);
 }
 
 .main-logo {
@@ -1146,7 +1175,7 @@ header.nav-header {
   pointer-events: none;
   opacity: 0;
   text-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
-  transition: opacity 0.4s ease, transform 0.4s ease;
+  transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.8s ease, color 0.8s ease;
 }
 
 .transition-text-overlay.active {
@@ -1160,7 +1189,7 @@ header.nav-header {
 }
 
 /* Scoped Theme Overrides for Diary and Study views */
-#diary-view {
+body.theme-diary {
   --accent-primary: #6c9e5f;         /* Melon Green Dark */
   --accent-secondary: #88be7b;       /* Melon Green Medium */
   --accent-pastel: #eaf4e6;          /* Melon Green Soft Pastel */
@@ -1168,7 +1197,7 @@ header.nav-header {
   --accent-border-hover: rgba(108, 158, 95, 0.25);
 }
 
-#study-view {
+body.theme-study {
   --accent-primary: #5582c9;         /* Periwinkle/Light Blue Dark */
   --accent-secondary: #7fa4dc;       /* Periwinkle/Light Blue Medium */
   --accent-pastel: #e6f0fe;          /* Periwinkle/Light Blue Soft Pastel */

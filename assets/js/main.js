@@ -452,14 +452,39 @@ function handleRouting() {
 
   const performRouting = () => {
     const cleanHash = hash.substring(1);
+    const headerTitle = document.getElementById('header-subpage-title');
+
     if (!cleanHash) {
+      document.body.classList.remove('theme-diary', 'theme-study');
+      if (headerTitle) {
+        headerTitle.classList.remove('active');
+        headerTitle.textContent = '';
+      }
       showView('home');
     } else if (cleanHash === 'profile') {
       window.location.hash = '#';
     } else if (cleanHash === 'study') {
+      document.body.classList.add('theme-study');
+      document.body.classList.remove('theme-diary');
+      if (headerTitle) {
+        headerTitle.textContent = 'Study';
+        if (!isTransitioning) {
+          headerTitle.classList.add('active');
+          headerTitle.style.opacity = '1';
+        }
+      }
       showView('study');
       window.scrollTo(0, 0);
     } else if (cleanHash === 'diary') {
+      document.body.classList.add('theme-diary');
+      document.body.classList.remove('theme-study');
+      if (headerTitle) {
+        headerTitle.textContent = 'Diary';
+        if (!isTransitioning) {
+          headerTitle.classList.add('active');
+          headerTitle.style.opacity = '1';
+        }
+      }
       showView('diary');
       document.getElementById('diary-list-container').style.display = 'block';
       const readerContainer = document.getElementById('diary-reader-container');
@@ -467,6 +492,15 @@ function handleRouting() {
       renderDiary();
       window.scrollTo(0, 0);
     } else if (cleanHash.startsWith('diary/')) {
+      document.body.classList.add('theme-diary');
+      document.body.classList.remove('theme-study');
+      if (headerTitle) {
+        headerTitle.textContent = 'Diary';
+        if (!isTransitioning) {
+          headerTitle.classList.add('active');
+          headerTitle.style.opacity = '1';
+        }
+      }
       showView('diary');
       document.getElementById('diary-list-container').style.display = 'none';
       const readerContainer = document.getElementById('diary-reader-container');
@@ -495,7 +529,7 @@ function triggerCenterTransition(target, targetHash, satelliteEl, clickEvent) {
   if (isTransitioning) return;
   isTransitioning = true;
 
-  // Add class to animate slide to center
+  // Add class to animate slide to center (takes 600ms)
   satelliteEl.classList.add('moving-to-center');
 
   // Compute the center coordinates of the orbit container
@@ -519,7 +553,7 @@ function triggerCenterTransition(target, targetHash, satelliteEl, clickEvent) {
   textOverlay.className = 'transition-text-overlay';
   textOverlay.textContent = target.charAt(0).toUpperCase() + target.slice(1);
 
-  // Wait 450ms (for the slide animation to bring the satellite near the center) before appending elements
+  // Wait 600ms (slide animation of satellite completes) before expanding ripple and text
   setTimeout(() => {
     document.body.appendChild(ripple);
     document.body.appendChild(textOverlay);
@@ -534,21 +568,48 @@ function triggerCenterTransition(target, targetHash, satelliteEl, clickEvent) {
     setTimeout(() => {
       window.location.hash = targetHash;
 
-      // Wait 100ms then start fading out elements
+      // Prepare header subpage title hidden
+      const headerTitle = document.getElementById('header-subpage-title');
+      if (headerTitle) {
+        headerTitle.textContent = target.charAt(0).toUpperCase() + target.slice(1);
+        headerTitle.style.opacity = '0';
+        headerTitle.classList.add('active');
+      }
+
+      // Wait 100ms for route swap layout to stabilize, then trigger the slide-to-header and green-to-white fadeout
       setTimeout(() => {
+        // Calculate translation coordinates from viewport center to the actual header subpage title position
+        let deltaX = 0;
+        let deltaY = 0;
+        if (headerTitle) {
+          const targetRect = headerTitle.getBoundingClientRect();
+          const currentX = window.innerWidth / 2;
+          const currentY = window.innerHeight / 2;
+          deltaX = (targetRect.left + targetRect.width / 2) - currentX;
+          deltaY = (targetRect.top + targetRect.height / 2) - currentY;
+        }
+
+        // Slide/shrink transition text overlay to header logo's right and change its color to green/blue
+        textOverlay.style.transform = `translate(-50%, -50%) translate(${deltaX}px, ${deltaY}px) scale(0.64)`;
+        textOverlay.style.color = 'var(--accent-primary)';
+
+        // Fade out the background green/blue ripple to reveal the white diary page
         ripple.style.opacity = '0';
-        textOverlay.style.opacity = '0';
-        
-        // Wait 400ms for fade out transition to finish, then clean up
+
+        // Wait 800ms (slide and fade-out complete) to perform the seamless handoff
         setTimeout(() => {
+          if (headerTitle) {
+            headerTitle.style.opacity = '1';
+          }
+          // Clean up DOM and reset state
           ripple.remove();
           textOverlay.remove();
           satelliteEl.classList.remove('moving-to-center');
           isTransitioning = false;
-        }, 400);
+        }, 800);
       }, 100);
     }, 800);
-  }, 450);
+  }, 600);
 }
 
 function triggerTransition(targetHash, clickEvent) {

@@ -20,7 +20,7 @@
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-Y1K0WLJYQS"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
-    function gtag(){ dataLayer.push(arguments); }
+    function gtag() { dataLayer.push(arguments); }
     gtag('js', new Date());
     gtag('config', 'G-Y1K0WLJYQS');
   </script>
@@ -39,6 +39,9 @@
 
   <!-- 1. HOME VIEW (Orbit Layout) -->
   <div id="home-view" class="view-section">
+    <!-- Entrance Animation Overlay -->
+    <div id="home-entrance-overlay"></div>
+
     <!-- Info button in the top right -->
     <button id="pendulum-info-btn" class="info-toggle-btn" title="시스템 에너지 상태 보기">
       <i class="fas fa-info-circle"></i>
@@ -67,6 +70,12 @@
         <!-- Triple Pendulum Canvas Overlay -->
         <canvas id="orbit-canvas" width="1300" height="1300"></canvas>
 
+        <!-- Center Clock & Date Display -->
+        <div id="center-datetime-container" class="center-datetime-container">
+          <div id="center-date" class="center-date">2026. 06. 28. Sun</div>
+          <div id="center-clock" class="center-clock">00:00:00</div>
+        </div>
+
         <!-- Planet Orbit Ring with child satellites -->
         <div class="orbit-line">
 
@@ -81,6 +90,13 @@
           <div class="orbit-satellite satellite-diary">
             <button class="orbit-btn" data-target="diary">
               <span>Diary</span>
+            </button>
+          </div>
+
+          <!-- Satellite Button 3: Finance -->
+          <div class="orbit-satellite satellite-finance">
+            <button class="orbit-btn" data-target="finance">
+              <span>Finance</span>
             </button>
           </div>
 
@@ -231,6 +247,56 @@
       </div>
     </div>
   </div>
+
+  <!-- 3. FINANCE VIEW -->
+  <div id="finance-view" class="view-section" style="display: none;">
+    <div class="diary-wrapper container">
+      <div class="reader-container" style="display: block;">
+        <article class="glass-card" style="padding: 3rem 2rem; text-align: center;">
+          <i class="fas fa-chart-line" style="font-size: 3.5rem; color: var(--accent-finance, #e26d5c); margin-bottom: 1.5rem;"></i>
+          <h2 style="font-family: var(--font-title); font-size: 1.8rem; font-weight: 600; margin-bottom: 1rem; color: var(--text-primary);">
+            Finance Dashboard
+          </h2>
+          <p style="color: var(--text-muted); font-size: 1.05rem; max-width: 500px; margin: 0 auto 2.5rem auto; line-height: 1.6;">
+            Coming soon. A physics-inspired financial model simulator, market dynamics analyzer, and asset portfolio visualizer.
+          </p>
+          <div style="border: 1px dashed var(--border-glass); border-radius: 12px; padding: 5rem 2rem; background: rgba(255, 255, 255, 0.02);">
+            <p style="color: var(--text-muted); font-size: 0.95rem; font-family: var(--font-body);">
+              Dynamic market simulation metrics and chart components will be integrated here.
+            </p>
+          </div>
+        </article>
+      </div>
+    </div>
+  </div>
+
+  <!-- Shared Footer -->
+  <footer class="blog-footer">
+    <div class="footer-container">
+      <div class="footer-socials">
+        <div class="footer-email-container">
+          <a href="mailto:forestsb97@gmail.com" class="email-tooltip" id="footer-email-tooltip">
+            forestsb97@gmail.com
+          </a>
+          <button class="footer-icon" id="footer-email-btn" title="Email"
+            style="background: none; border: none; padding: 0; cursor: pointer;">
+            <i class="fas fa-envelope"></i>
+          </button>
+        </div>
+        <a href="https://www.instagram.com/subin_forest" target="_blank" rel="noopener noreferrer" class="footer-icon"
+          title="Instagram">
+          <i class="fab fa-instagram"></i>
+        </a>
+        <a href="https://github.com/subinii97" target="_blank" rel="noopener noreferrer" class="footer-icon"
+          title="GitHub">
+          <i class="fab fa-github"></i>
+        </a>
+      </div>
+      <div class="footer-credits">
+        Designed by Subin, inspired by Physics
+      </div>
+    </div>
+  </footer>
 
   <!-- KaTeX Math Equation Renderers -->
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>

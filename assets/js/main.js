@@ -126,6 +126,25 @@ function initMainPage() {
       energyPanel.style.display = isOpen ? 'none' : 'flex';
     });
   }
+  // Set up Footer Email Tooltip Toggle
+  const emailBtn = document.getElementById('footer-email-btn');
+  const emailTooltip = document.getElementById('footer-email-tooltip');
+  if (emailBtn && emailTooltip) {
+    emailBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      emailTooltip.classList.toggle('active');
+    });
+
+    // Close tooltip when clicking anywhere else on the document
+    document.addEventListener('click', () => {
+      emailTooltip.classList.remove('active');
+    });
+
+    // Prevent closing tooltip when clicking inside the tooltip container itself (allowing the mailto link to trigger)
+    emailTooltip.addEventListener('click', (e) => {
+      e.stopPropagation();
+    });
+  }
 
   // Physics & animation states
   let phi = -Math.PI / 2 + 0.02; // Orbit angle (starts near 12 o'clock and swings dynamically under gravity)
@@ -133,7 +152,7 @@ function initMainPage() {
   let frameCount = 0;
 
   // Physics Settings
-  const g = 0.7; // Gravity scaled for Runge-Kutta 4th order time step integration
+  const g = 0.5; // Gravity scaled for Runge-Kutta 4th order time step integration
   const damp = 1.0; // Lossless damping (kept for compatibility)
 
   // Pendulum nodes physical masses (0: Pivot, 1: Node 1, 2: Node 2)
@@ -278,6 +297,27 @@ function initMainPage() {
 
   function updatePhysicsAndRender() {
     ctx.clearRect(0, 0, designSize, designSize);
+
+    // 0. Update Central Clock & Date Display (24-hour format with seconds + YYYY. MM. DD. Day)
+    const clockEl = document.getElementById('center-clock');
+    const dateEl = document.getElementById('center-date');
+    const now = new Date();
+
+    if (clockEl) {
+      const hrs = String(now.getHours()).padStart(2, '0');
+      const mins = String(now.getMinutes()).padStart(2, '0');
+      const secs = String(now.getSeconds()).padStart(2, '0');
+      clockEl.textContent = `${hrs}:${mins}:${secs}`;
+    }
+
+    if (dateEl) {
+      const yyyy = now.getFullYear();
+      const mm = String(now.getMonth() + 1).padStart(2, '0');
+      const dd = String(now.getDate()).padStart(2, '0');
+      const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+      const dayName = days[now.getDay()];
+      dateEl.textContent = `${yyyy}. ${mm}. ${dd}. ${dayName}`;
+    }
 
     // 1. Determine device dimensions
     const R = isMobile ? 130 : 240; // Orbit ring radius (Desktop 240, Mobile 130)
@@ -436,6 +476,19 @@ function initMainPage() {
     drawNode(x1, y1, 10, '#adcbf7');  // Node 1 (Mass 2.0)
     drawNode(x2, y2, 7, '#b4d6a8'); // Node 2 (Mass 3.0)
 
+    // 6.2 Render the red bead acting as the Sweep Second Hand of the central clock (symmetrically starts at 12 o'clock / -Math.PI / 2)
+    const seconds = now.getSeconds();
+    const ms = now.getMilliseconds();
+
+    // 60 seconds = 2 * Math.PI rad -> 1 second = PI / 30 rad -> 1 millisecond = PI / 30000 rad
+    const angle_red = -Math.PI / 2 +
+      (seconds * Math.PI / 30) +
+      (ms * Math.PI / 30000);
+
+    const red_x = cx + R * Math.cos(angle_red);
+    const red_y = cy + R * Math.sin(angle_red);
+    drawNode(red_x, red_y, 7.5, '#e26d5c'); // Red Node (Clock Sweep Second Hand Indicator)
+
     // 6.5 Update Energy Dashboard Panel if visible
     if (energyPanel && energyPanel.style.display !== 'none') {
       const m0 = mass[0];
@@ -495,6 +548,11 @@ function showView(viewId) {
   // Hide all views
   document.querySelectorAll('.view-section').forEach(view => {
     view.style.display = 'none';
+    // Clear any inline style values from page transitions
+    view.style.opacity = '';
+    view.style.transform = '';
+    view.style.transition = '';
+    view.style.animation = '';
   });
 
   // Show target view
@@ -516,18 +574,62 @@ function handleRouting() {
     const headerTitle = document.getElementById('header-subpage-title');
 
     if (!cleanHash) {
-      document.body.classList.remove('theme-diary', 'theme-study');
+      document.body.classList.remove('theme-diary', 'theme-study', 'theme-finance');
       if (headerContainer && headerTitle) {
         headerContainer.classList.remove('active');
         headerTitle.classList.remove('show');
         headerTitle.textContent = '';
       }
       showView('home');
+
+      // Home Entrance Animation Sequence (Only trigger when returning from another subpage)
+      const homeView = document.getElementById('home-view');
+      const entranceOverlay = document.getElementById('home-entrance-overlay');
+      const isReturningFromSubpage = oldHash && oldHash !== '#' && oldHash !== '';
+
+      if (homeView && entranceOverlay) {
+        // Clear any previous exiting/animation classes to restore elements cleanly
+        homeView.classList.remove('entrance-step-1', 'entrance-step-2', 'home-exiting');
+
+        if (isReturningFromSubpage) {
+          entranceOverlay.style.display = 'block';
+          entranceOverlay.style.opacity = '1';
+          homeView.classList.add('home-entrance-active');
+
+          // Force reflow
+          homeView.offsetHeight;
+
+          // Step 0: Fade out the white overlay
+          requestAnimationFrame(() => {
+            entranceOverlay.style.opacity = '0';
+          });
+
+          // Step 1: Fade-in and scale-in the center orbit line & canvas
+          setTimeout(() => {
+            homeView.classList.add('entrance-step-1');
+          }, 200);
+
+          // Step 2: Slide out the satellites from center
+          setTimeout(() => {
+            homeView.classList.add('entrance-step-2');
+          }, 600);
+
+          // Step 3: Clean up animation class properties after transition completes
+          setTimeout(() => {
+            homeView.classList.remove('home-entrance-active', 'entrance-step-1', 'entrance-step-2');
+            entranceOverlay.style.display = 'none';
+          }, 1600);
+        } else {
+          // Initial load: Hide transition elements immediately and display page in its default layout state
+          entranceOverlay.style.display = 'none';
+          entranceOverlay.style.opacity = '0';
+        }
+      }
     } else if (cleanHash === 'profile') {
       window.location.hash = '#';
     } else if (cleanHash === 'study') {
       document.body.classList.add('theme-study');
-      document.body.classList.remove('theme-diary');
+      document.body.classList.remove('theme-diary', 'theme-finance');
       if (headerTitle && headerContainer) {
         headerTitle.textContent = 'Study';
         if (!isTransitioning) {
@@ -543,7 +645,7 @@ function handleRouting() {
       window.scrollTo(0, 0);
     } else if (cleanHash === 'diary') {
       document.body.classList.add('theme-diary');
-      document.body.classList.remove('theme-study');
+      document.body.classList.remove('theme-study', 'theme-finance');
       if (headerTitle && headerContainer) {
         headerTitle.textContent = 'Diary';
         if (!isTransitioning) {
@@ -559,7 +661,7 @@ function handleRouting() {
       window.scrollTo(0, 0);
     } else if (cleanHash.startsWith('diary/')) {
       document.body.classList.add('theme-diary');
-      document.body.classList.remove('theme-study');
+      document.body.classList.remove('theme-study', 'theme-finance');
       if (headerTitle && headerContainer) {
         headerTitle.textContent = 'Diary';
         if (!isTransitioning) {
@@ -582,7 +684,7 @@ function handleRouting() {
       }
     } else if (cleanHash.startsWith('study/')) {
       document.body.classList.add('theme-study');
-      document.body.classList.remove('theme-diary');
+      document.body.classList.remove('theme-diary', 'theme-finance');
       if (headerTitle && headerContainer) {
         headerTitle.textContent = 'Study';
         if (!isTransitioning) {
@@ -603,6 +705,18 @@ function handleRouting() {
       } else {
         window.location.hash = 'study';
       }
+    } else if (cleanHash === 'finance') {
+      document.body.classList.add('theme-finance');
+      document.body.classList.remove('theme-study', 'theme-diary');
+      if (headerTitle && headerContainer) {
+        headerTitle.textContent = 'Finance';
+        if (!isTransitioning) {
+          headerContainer.classList.add('active');
+          headerTitle.classList.add('show');
+        }
+      }
+      showView('finance');
+      window.scrollTo(0, 0);
     }
   };
 
@@ -618,7 +732,13 @@ function triggerCenterTransition(target, targetHash, satelliteEl, clickEvent) {
   if (isTransitioning) return;
   isTransitioning = true;
 
-  // Add class to animate slide to center (takes 600ms)
+  // Add exiting class to home view to fade out and shrink other layout elements
+  const homeView = document.getElementById('home-view');
+  if (homeView) {
+    homeView.classList.add('home-exiting');
+  }
+
+  // Add class to animate slide to center (takes 800ms)
   satelliteEl.classList.add('moving-to-center');
 
   // Compute the center coordinates of the orbit container and dimensions of the button
@@ -635,112 +755,116 @@ function triggerCenterTransition(target, targetHash, satelliteEl, clickEvent) {
     cy = cRect.top + cRect.height / 2;
   }
 
-  // Create the expanding ripple with theme class, sized to the button container
+  // Create the background transition ripple pre-scaled to cover the screen
   const ripple = document.createElement('div');
   ripple.className = `expanding-circle theme-${target}`;
   ripple.style.width = `${w}px`;
   ripple.style.height = `${h}px`;
   ripple.style.left = `${cx}px`;
   ripple.style.top = `${cy}px`;
+  
+  // Set to cover the entire screen immediately, but start completely transparent (opacity 0)
+  ripple.style.transform = 'translate(-50%, -50%) scale(35)';
+  ripple.style.opacity = '0';
+  // Fade in smoothly over 0.8s in tandem with the satellite slide animation
+  ripple.style.transition = 'opacity 0.8s ease-out';
 
-  // Create the centered transition text overlay
-  const textOverlay = document.createElement('div');
-  textOverlay.className = 'transition-text-overlay';
-  textOverlay.textContent = target.charAt(0).toUpperCase() + target.slice(1);
-  textOverlay.style.left = `${cx}px`;
-  textOverlay.style.top = `${cy}px`;
-  textOverlay.style.color = target === 'diary' ? '#6c9e5f' : '#5582c9';
+  document.body.appendChild(ripple);
 
-  // Wait 600ms (slide animation of satellite completes) before expanding ripple and text
+  // Trigger the background fade-in immediately in the next animation frame
+  ripple.offsetHeight;
+  requestAnimationFrame(() => {
+    ripple.style.opacity = '1';
+  });
+
+  // Declare textOverlay in parent scope to be accessed in the route swap timeout
+  let textOverlay;
+
+  // Wait 850ms (the 800ms satellite slide completes and stays for 50ms) then do the swap and immediate route change
   setTimeout(() => {
-    // Hide the button's internal text element right before appending the overlay
+    // 1. Hide the button's internal text element at center
     const btnSpan = satelliteEl.querySelector('.orbit-btn span');
     if (btnSpan) {
       btnSpan.style.opacity = '0';
     }
 
-    document.body.appendChild(ripple);
+    // 2. Create the centered transition text overlay at center (scale 1.25, white color)
+    textOverlay = document.createElement('div');
+    textOverlay.className = 'transition-text-overlay active';
+    textOverlay.textContent = target.charAt(0).toUpperCase() + target.slice(1);
+    textOverlay.style.left = `${cx}px`;
+    textOverlay.style.top = `${cy}px`;
+    textOverlay.style.color = '#ffffff'; // Already white as background is fully colored
+    textOverlay.style.transform = 'translate(-50%, -50%) scale(1.25)';
+
     document.body.appendChild(textOverlay);
 
-    // Force browser reflow to ensure transitions start from initial state
-    ripple.offsetHeight;
-    textOverlay.offsetHeight;
+    // 3. Immediately trigger the SPA routing hash swap (eliminating the old 1000ms delay!)
+    window.location.hash = targetHash;
 
-    // Trigger animations
-    requestAnimationFrame(() => {
-      ripple.classList.add('active');
-      textOverlay.classList.add('active');
-      textOverlay.style.color = '#ffffff';
-    });
+    // Prepare header subpage title hidden
+    const headerContainer = document.getElementById('header-subpage-container');
+    const headerTitle = document.getElementById('header-subpage-title');
+    if (headerTitle && headerContainer) {
+      headerTitle.textContent = target.charAt(0).toUpperCase() + target.slice(1);
+      headerTitle.classList.remove('show');
+      headerContainer.classList.add('active');
+    }
 
-    // Wait 1000ms (matching the smooth 1.0s transition) for ripple to cover screen, then perform route swap
+    // Wait 100ms for route swap layout to stabilize, then trigger the slide-to-header and background fadeout
     setTimeout(() => {
-      window.location.hash = targetHash;
+      // Calculate translation coordinates from current center position (cx, cy) to the actual header subpage title position
+      let deltaX = 0;
+      let deltaY = 0;
+      let scaleFactor = 0.64; // Fallback
+      if (headerTitle) {
+        const targetRect = headerTitle.getBoundingClientRect();
+        deltaX = (targetRect.left + targetRect.width / 2) - cx;
+        deltaY = (targetRect.top + targetRect.height / 2) - cy;
 
-      // Prepare header subpage title hidden
-      const headerContainer = document.getElementById('header-subpage-container');
-      const headerTitle = document.getElementById('header-subpage-title');
-      if (headerTitle && headerContainer) {
-        headerTitle.textContent = target.charAt(0).toUpperCase() + target.slice(1);
-        headerTitle.classList.remove('show');
-        headerContainer.classList.add('active');
+        // Dynamically compute the exact scale factor to match the header font size
+        const targetFontSize = parseFloat(window.getComputedStyle(headerTitle).fontSize);
+        const baseFontSize = parseFloat(window.getComputedStyle(textOverlay).fontSize);
+        scaleFactor = targetFontSize / baseFontSize;
       }
 
-      // Wait 100ms for route swap layout to stabilize, then trigger the slide-to-header and green-to-white fadeout
+      // Apply transform transition and smooth color transition (white to theme color during slide)
+      textOverlay.style.transition = 'transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), color 0.4s ease-out';
+      textOverlay.style.color = 'var(--accent-primary)';
+
+      // Slide/shrink transition text overlay to header logo's right
+      textOverlay.style.transform = `translate(-50%, -50%) translate(${deltaX}px, ${deltaY}px) scale(${scaleFactor})`;
+
+      // Fade out the background ripple to reveal the page
+      ripple.style.opacity = '0';
+
+      // Wait for slide to complete (800ms from start) then do an atomic seamless handoff
       setTimeout(() => {
-        // Calculate translation coordinates from current center position (cx, cy) to the actual header subpage title position
-        let deltaX = 0;
-        let deltaY = 0;
-        let scaleFactor = 0.64; // Fallback
         if (headerTitle) {
-          const targetRect = headerTitle.getBoundingClientRect();
-          deltaX = (targetRect.left + targetRect.width / 2) - cx;
-          deltaY = (targetRect.top + targetRect.height / 2) - cy;
-
-          // Dynamically compute the exact scale factor to match the header font size
-          const targetFontSize = parseFloat(window.getComputedStyle(headerTitle).fontSize);
-          const baseFontSize = parseFloat(window.getComputedStyle(textOverlay).fontSize);
-          scaleFactor = targetFontSize / baseFontSize;
+          headerTitle.style.transition = 'none';
+          headerTitle.style.opacity = '1';
+          headerTitle.classList.add('show');
         }
+        textOverlay.style.transition = 'none';
+        textOverlay.style.opacity = '0';
 
-        // Apply instant color change and clean transform transition (no color fading/graying during slide)
-        textOverlay.style.transition = 'transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), color 0s';
-        textOverlay.style.color = 'var(--accent-primary)';
-
-        // Slide/shrink transition text overlay to header logo's right
-        textOverlay.style.transform = `translate(-50%, -50%) translate(${deltaX}px, ${deltaY}px) scale(${scaleFactor})`;
-
-        // Fade out the background ripple to reveal the page
-        ripple.style.opacity = '0';
-
-        // Wait for slide to complete (800ms from start) then do an atomic seamless handoff
-        setTimeout(() => {
+        // Clean up DOM and reset transition properties in the next frame
+        requestAnimationFrame(() => {
           if (headerTitle) {
-            headerTitle.style.transition = 'none';
-            headerTitle.style.opacity = '1';
-            headerTitle.classList.add('show');
+            headerTitle.style.transition = '';
+            headerTitle.style.opacity = '';
           }
-          textOverlay.style.transition = 'none';
-          textOverlay.style.opacity = '0';
-
-          // Clean up DOM and reset transition properties in the next frame
-          requestAnimationFrame(() => {
-            if (headerTitle) {
-              headerTitle.style.transition = '';
-              headerTitle.style.opacity = '';
-            }
-            if (btnSpan) {
-              btnSpan.style.opacity = '';
-            }
-            ripple.remove();
-            textOverlay.remove();
-            satelliteEl.classList.remove('moving-to-center');
-            isTransitioning = false;
-          });
-        }, 800);
-      }, 100);
-    }, 1000);
-  }, 600);
+          if (btnSpan) {
+            btnSpan.style.opacity = '';
+          }
+          ripple.remove();
+          textOverlay.remove();
+          satelliteEl.classList.remove('moving-to-center');
+          isTransitioning = false;
+        });
+      }, 800);
+    }, 100);
+  }, 850);
 }
 
 function triggerTransition(targetHash, clickEvent) {
@@ -758,12 +882,21 @@ function triggerTransition(targetHash, clickEvent) {
   ripple.style.left = `${x}px`;
   ripple.style.top = `${y}px`;
 
+  // Find the currently active view section and fade it out smoothly in place (disable CSS animation to allow inline styles to work)
+  const currentActiveView = document.querySelector('.view-section:not([style*="display: none"])');
+  if (currentActiveView) {
+    currentActiveView.style.animation = 'none';
+    currentActiveView.offsetHeight; // Force layout recalculation
+    currentActiveView.style.transition = 'opacity 0.3s ease-out';
+    currentActiveView.style.opacity = '0';
+  }
+
   // Start the expand animation
   requestAnimationFrame(() => {
     ripple.classList.add('active');
   });
 
-  // Swap hash address after the screen is completely covered (approx 450ms)
+  // Swap hash address after the screen is completely covered and fade-out completes (320ms)
   setTimeout(() => {
     window.location.hash = targetHash;
 
@@ -775,7 +908,7 @@ function triggerTransition(targetHash, clickEvent) {
         isTransitioning = false;
       }, 400);
     }, 100);
-  }, 450);
+  }, 320);
 }
 
 // Intercept standard data-target button clicks to trigger expanding animations

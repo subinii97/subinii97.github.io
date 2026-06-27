@@ -229,8 +229,47 @@ header.nav-header {
 }
 
 .orbit-satellite.moving-to-center {
-  transform: translate(0, 0) !important;
-  z-index: 9999;
+  transform: translate(0, 0) scale(1.25) !important;
+  z-index: 100000 !important; /* Raised above transition ripple (99999) */
+  transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+/* Satellites lock their hover styles but transition text/icon smoothly to white over 0.8s when moving to the center */
+.satellite-study.moving-to-center .orbit-btn {
+  border-color: rgba(173, 203, 247, 0.7) !important;
+  box-shadow: var(--shadow-lg), 0 0 25px rgba(173, 203, 247, 0.25) !important;
+  color: #ffffff !important;
+  background: #ffffff !important;
+  transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), color 0.8s ease-out, background-color 0.8s ease-out !important;
+}
+
+.satellite-diary.moving-to-center .orbit-btn {
+  border-color: rgba(180, 214, 168, 0.7) !important;
+  box-shadow: var(--shadow-lg), 0 0 25px rgba(180, 214, 168, 0.25) !important;
+  color: #ffffff !important;
+  background: #ffffff !important;
+  transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), color 0.8s ease-out, background-color 0.8s ease-out !important;
+}
+
+.satellite-finance.moving-to-center .orbit-btn {
+  border-color: rgba(241, 163, 150, 0.7) !important;
+  box-shadow: var(--shadow-lg), 0 0 25px rgba(241, 163, 150, 0.25) !important;
+  color: #ffffff !important;
+  background: #ffffff !important;
+  transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), color 0.8s ease-out, background-color 0.8s ease-out !important;
+}
+
+.orbit-satellite.moving-to-center .orbit-btn i {
+  background: none !important;
+  -webkit-background-clip: initial !important;
+  -webkit-text-fill-color: #ffffff !important;
+  color: #ffffff !important;
+  transition: -webkit-text-fill-color 0.8s ease-out, color 0.8s ease-out !important;
+}
+
+.orbit-satellite.moving-to-center .orbit-btn span {
+  color: #ffffff !important;
+  transition: color 0.8s ease-out !important;
 }
 
 /* Desktop positioning for satellites (Study at 9 o'clock, Diary at 3 o'clock) */
@@ -240,6 +279,10 @@ header.nav-header {
 
 .satellite-diary {
   transform: translate(280px, 0);
+}
+
+.satellite-finance {
+  transform: translate(0, -280px);
 }
 
 
@@ -296,6 +339,12 @@ header.nav-header {
   color: #7ba86c; /* Node 2 melon green theme */
 }
 
+.satellite-finance .orbit-btn:hover {
+  border-color: rgba(241, 163, 150, 0.7);
+  box-shadow: var(--shadow-lg), 0 0 25px rgba(241, 163, 150, 0.25);
+  color: #e26d5c; /* Coral Red theme */
+}
+
 .orbit-btn:hover i {
   transform: translateY(-3px) scale(1.1);
 }
@@ -339,6 +388,9 @@ header.nav-header {
   }
   .satellite-diary {
     transform: translate(140px, 0);
+  }
+  .satellite-finance {
+    transform: translate(0, -140px);
   }
   .orbit-btn {
     font-size: 1.0rem;
@@ -1196,6 +1248,10 @@ header.nav-header {
   background: #b4d6a8;
 }
 
+.expanding-circle.theme-finance {
+  background: #f1a396; /* Coral Red Pastel */
+}
+
 .expanding-circle.active {
   transform: translate(-50%, -50%) scale(35);
   opacity: 1;
@@ -1206,8 +1262,8 @@ header.nav-header {
   position: fixed;
   color: #000000;
   font-family: var(--font-title);
-  font-size: 1.6rem; /* Match header subpage-title exactly */
-  font-weight: 600; /* Unified with header title font-weight */
+  font-size: 1.25rem; /* Matches the orbit-btn typography exactly */
+  font-weight: 600;
   letter-spacing: -0.5px;
   z-index: 100000;
   pointer-events: none;
@@ -1218,9 +1274,9 @@ header.nav-header {
 
 .transition-text-overlay.active {
   color: #ffffff;
-  transform: translate(-50%, -50%) translate(0px, 0px) scale(2.2); /* Scale up to be prominent at the center */
-  font-weight: 600; /* Unified to prevent weight jumping */
-  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  transform: translate(-50%, -50%) translate(0px, 0px) scale(1.25); /* Maintain expanded scale(1.25) at the center */
+  font-weight: 600;
+  text-shadow: none;
 }
 
 @media (max-width: 600px) {
@@ -1242,6 +1298,14 @@ body.theme-study {
   --accent-pastel: #e6f0fe;          /* Periwinkle/Light Blue Soft Pastel */
   --accent-shadow: rgba(85, 130, 201, 0.15);
   --accent-border-hover: rgba(85, 130, 201, 0.25);
+}
+
+body.theme-finance {
+  --accent-primary: #e26d5c;         /* Coral/Red Dark */
+  --accent-secondary: #e88d7d;       /* Coral/Red Medium */
+  --accent-pastel: #fdf0ee;          /* Coral/Red Soft Pastel */
+  --accent-shadow: rgba(226, 109, 92, 0.15);
+  --accent-border-hover: rgba(226, 109, 92, 0.25);
 }
 
 /* Triple Pendulum Canvas Overlay */
@@ -1406,5 +1470,315 @@ body.theme-study {
   font-size: 0.9rem;
   color: var(--accent-primary);
 }
+
+
+/* ----------------------------------
+   SHARED FOOTER STYLE
+------------------------------------- */
+.blog-footer {
+  width: 100%;
+  padding: 2.2rem 0;
+  margin-top: auto;
+  border-top: 1px solid var(--border-glass);
+  background: var(--bg-glass);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  z-index: 10;
+  position: relative;
+}
+
+.footer-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  align-items: center;
+  justify-content: center;
+}
+
+.footer-socials {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.footer-icon {
+  font-size: 1.35rem;
+  color: var(--text-muted);
+  transition: color 0.25s ease, transform 0.25s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+
+.footer-icon:hover {
+  color: var(--accent-primary);
+  transform: translateY(-2.5px);
+}
+
+.footer-credits {
+  font-family: var(--font-title);
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: var(--text-muted);
+  letter-spacing: -0.2px;
+  opacity: 0.85;
+}
+
+/* Responsive Footer Styles for Mobile */
+@media (max-width: 600px) {
+  .blog-footer {
+    padding: 1.8rem 0;
+  }
+  .footer-container {
+    gap: 0.6rem;
+    padding: 0 1.5rem;
+  }
+}
+
+/* Home View Layout Context Override
+   Ensures no vertical scrollbar appears in Home view, keeping the footer strictly pinned and transparent. */
+body:not(.theme-diary):not(.theme-study):not(.theme-finance) .blog-footer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  border-top: none;
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  padding-bottom: 1.5rem;
+}
+
+
+/* ----------------------------------
+   HOME VIEW ENTRANCE OVERLAY STYLE
+------------------------------------- */
+#home-entrance-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: #ffffff;
+  z-index: 999999;
+  opacity: 0;
+  display: none;
+  pointer-events: none;
+  transition: opacity 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+#home-view.home-entrance-active #home-entrance-overlay {
+  display: block;
+}
+
+
+/* ----------------------------------
+   EMAIL TOOLTIP BUBBLE STYLE
+------------------------------------- */
+.footer-email-container {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.email-tooltip {
+  position: absolute;
+  bottom: 135%;
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  background: #ffffff;
+  color: #000000 !important;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 500;
+  padding: 0.5rem 0.9rem;
+  border-radius: 8px;
+  white-space: nowrap;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08), 0 2px 6px rgba(0, 0, 0, 0.04);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s cubic-bezier(0.25, 1, 0.5, 1), transform 0.2s cubic-bezier(0.25, 1, 0.5, 1);
+  text-decoration: none;
+  z-index: 10000;
+  letter-spacing: 0.2px;
+}
+
+/* Tooltip Arrow */
+.email-tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 6px;
+  border-style: solid;
+  border-color: #ffffff transparent transparent transparent;
+}
+
+/* Tooltip Active/Shown state */
+.email-tooltip.active {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(-50%) translateY(0);
+}
+
+.email-tooltip:hover {
+  background: #fcfcfc;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+
+/* ----------------------------------
+   HOME VIEW EXITING ANIMATION STYLE
+------------------------------------- */
+/* Fade out ONLY non-focused satellite, info widgets, footer during transition, keeping background orbit lines visible */
+#home-view.home-exiting .info-toggle-btn,
+#home-view.home-exiting .energy-panel,
+#home-view.home-exiting .blog-footer,
+#home-view.home-exiting .center-datetime-container,
+#home-view.home-exiting .orbit-satellite:not(.moving-to-center) {
+  opacity: 0 !important;
+  transition: opacity 0.4s ease-out;
+  pointer-events: none;
+}
+
+
+/* ----------------------------------
+   HOME VIEW ENTRANCE ANIMATION STYLE
+------------------------------------- */
+/* Base transitions: scale/opacity for orbits, slide/opacity for satellites */
+.orbit-line,
+#orbit-canvas {
+  transition: opacity 0.8s ease-out;
+}
+
+.orbit-satellite {
+  transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.8s ease-out;
+}
+
+/* Initial state: orbits are transparent; satellites are transparent and pushed slightly outwards */
+#home-view.home-entrance-active .orbit-line,
+#home-view.home-entrance-active #orbit-canvas,
+#home-view.home-entrance-active .center-datetime-container,
+#home-view.home-entrance-active .orbit-satellite {
+  opacity: 0;
+}
+
+/* Push satellites outwards before sliding in (Desktop: ±320px vs ±280px, Mobile: ±175px vs ±140px) */
+#home-view.home-entrance-active .satellite-study {
+  transform: translate(-320px, 0) scale(0.95);
+}
+#home-view.home-entrance-active .satellite-diary {
+  transform: translate(320px, 0) scale(0.95);
+}
+#home-view.home-entrance-active .satellite-finance {
+  transform: translate(0, -320px) scale(0.95);
+}
+
+@media (max-width: 600px) {
+  #home-view.home-entrance-active .satellite-study {
+    transform: translate(-175px, 0) scale(0.95);
+  }
+  #home-view.home-entrance-active .satellite-diary {
+    transform: translate(175px, 0) scale(0.95);
+  }
+  #home-view.home-entrance-active .satellite-finance {
+    transform: translate(0, -175px) scale(0.95);
+  }
+}
+
+/* Step 1: Center orbit lines and canvas fade in */
+#home-view.home-entrance-active.entrance-step-1 .orbit-line,
+#home-view.home-entrance-active.entrance-step-1 #orbit-canvas,
+#home-view.home-entrance-active.entrance-step-1 .center-datetime-container {
+  opacity: 0.85; /* Sits at correct default clock opacity */
+}
+
+/* Step 2: Satellites slide inwards to their original positions and fade in */
+#home-view.home-entrance-active.entrance-step-2 .satellite-study {
+  opacity: 1;
+  transform: translate(-280px, 0) scale(1.0);
+}
+#home-view.home-entrance-active.entrance-step-2 .satellite-diary {
+  opacity: 1;
+  transform: translate(280px, 0) scale(1.0);
+}
+#home-view.home-entrance-active.entrance-step-2 .satellite-finance {
+  opacity: 1;
+  transform: translate(0, -280px) scale(1.0);
+}
+
+@media (max-width: 600px) {
+  #home-view.home-entrance-active.entrance-step-2 .satellite-study {
+    opacity: 1;
+    transform: translate(-140px, 0) scale(1.0);
+  }
+  #home-view.home-entrance-active.entrance-step-2 .satellite-diary {
+    opacity: 1;
+    transform: translate(140px, 0) scale(1.0);
+  }
+  #home-view.home-entrance-active.entrance-step-2 .satellite-finance {
+    opacity: 1;
+    transform: translate(0, -140px) scale(1.0);
+  }
+}
+
+
+/* ----------------------------------
+   CENTER DATETIME DISPLAY STYLE
+------------------------------------- */
+.center-datetime-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  /* Restored to exact center alignment */
+  transform: translate(-50%, -50%);
+  font-family: var(--font-title);
+  text-align: center;
+  pointer-events: none;
+  z-index: 2; /* Sits at canvas level, behind active satellite buttons */
+  transition: opacity 0.8s ease-out;
+}
+
+.center-date {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  opacity: 0.8;
+  letter-spacing: 1.5px;
+  margin-bottom: 0.25rem;
+  text-transform: uppercase;
+}
+
+.center-clock {
+  font-size: 2.2rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  opacity: 0.85;
+  letter-spacing: 0.8px;
+}
+
+@media (max-width: 600px) {
+  .center-datetime-container {
+    transform: translate(-50%, -50%); /* Restored to exact center alignment on mobile */
+  }
+  .center-date {
+    font-size: 1.0rem;
+    letter-spacing: 1.0px;
+  }
+  .center-clock {
+    font-size: 1.5rem;
+    letter-spacing: 0.4px;
+  }
+}
+
+
+
+
 
 

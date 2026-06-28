@@ -172,7 +172,7 @@ function initMainPage() {
 
   function initNodeAngles() {
     // Rest lengths
-    const L1 = isMobile ? 60 : 100;
+    const L1 = isMobile ? 30 : 100;
     const L2 = L1 * 1;
 
     // Start with small deflected angles
@@ -795,31 +795,31 @@ function triggerCenterTransition(target, targetHash, satelliteEl, clickEvent) {
 
       // Wait for slide to complete (800ms from start) then do an atomic seamless handoff
       setTimeout(() => {
-          if (headerTitle) {
-            headerTitle.style.transition = 'none';
-            headerTitle.style.opacity = '1';
-            headerTitle.classList.add('show');
-          }
-          textOverlay.style.transition = 'none';
-          textOverlay.style.opacity = '0';
+        if (headerTitle) {
+          headerTitle.style.transition = 'none';
+          headerTitle.style.opacity = '1';
+          headerTitle.classList.add('show');
+        }
+        textOverlay.style.transition = 'none';
+        textOverlay.style.opacity = '0';
 
-          // Clean up DOM and reset transition properties in the next frame
-          requestAnimationFrame(() => {
-            if (headerTitle) {
-              headerTitle.style.transition = '';
-              headerTitle.style.opacity = '';
-            }
-            if (btnSpan) {
-              btnSpan.style.opacity = '';
-            }
-            ripple.remove();
-            textOverlay.remove();
-            satelliteEl.classList.remove('moving-to-center');
-            isTransitioning = false;
-          });
-        }, 800);
-      }, 50);
-    }, 600);
+        // Clean up DOM and reset transition properties in the next frame
+        requestAnimationFrame(() => {
+          if (headerTitle) {
+            headerTitle.style.transition = '';
+            headerTitle.style.opacity = '';
+          }
+          if (btnSpan) {
+            btnSpan.style.opacity = '';
+          }
+          ripple.remove();
+          textOverlay.remove();
+          satelliteEl.classList.remove('moving-to-center');
+          isTransitioning = false;
+        });
+      }, 800);
+    }, 50);
+  }, 600);
 }
 
 function triggerTransition(targetHash, clickEvent) {

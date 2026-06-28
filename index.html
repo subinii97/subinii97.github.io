@@ -11,10 +11,13 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <!-- Main Stylesheet -->
-  <link rel="stylesheet" href="./assets/css/style.css">
+  <link rel="stylesheet" href="./assets/css/style.css?v=1.2.4">
 
   <!-- KaTeX CSS for LaTeX Math Equations -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <!-- Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-Y1K0WLJYQS"></script>
@@ -42,27 +45,7 @@
     <!-- Entrance Animation Overlay -->
     <div id="home-entrance-overlay"></div>
 
-    <!-- Info button in the top right -->
-    <button id="pendulum-info-btn" class="info-toggle-btn" title="시스템 에너지 상태 보기">
-      <i class="fas fa-info-circle"></i>
-    </button>
 
-    <!-- Energy Status Panel (Glassmorphism layout) -->
-    <div id="pendulum-energy-panel" class="energy-panel glass-card" style="display: none;">
-      <h3 class="panel-title">System Energy Status</h3>
-      <div class="energy-row total-row">
-        <span>Total Energy (E)</span>
-        <span id="energy-total">0.00</span>
-      </div>
-      <div class="energy-row">
-        <span>Total Kinetic (K)</span>
-        <span id="energy-kinetic">0.00</span>
-      </div>
-      <div class="energy-row">
-        <span>Total Potential (P)</span>
-        <span id="energy-potential">0.00</span>
-      </div>
-    </div>
 
     <div class="main-wrapper">
       <div class="orbit-container">
@@ -249,26 +232,108 @@
   </div>
 
   <!-- 3. FINANCE VIEW -->
-  <div id="finance-view" class="view-section" style="display: none;">
-    <div class="diary-wrapper container">
-      <div class="reader-container" style="display: block;">
-        <article class="glass-card" style="padding: 3rem 2rem; text-align: center;">
-          <i class="fas fa-chart-line" style="font-size: 3.5rem; color: var(--accent-finance, #e26d5c); margin-bottom: 1.5rem;"></i>
-          <h2 style="font-family: var(--font-title); font-size: 1.8rem; font-weight: 600; margin-bottom: 1rem; color: var(--text-primary);">
-            Finance Dashboard
-          </h2>
-          <p style="color: var(--text-muted); font-size: 1.05rem; max-width: 500px; margin: 0 auto 2.5rem auto; line-height: 1.6;">
-            Coming soon. A physics-inspired financial model simulator, market dynamics analyzer, and asset portfolio visualizer.
-          </p>
-          <div style="border: 1px dashed var(--border-glass); border-radius: 12px; padding: 5rem 2rem; background: rgba(255, 255, 255, 0.02);">
-            <p style="color: var(--text-muted); font-size: 0.95rem; font-family: var(--font-body);">
-              Dynamic market simulation metrics and chart components will be integrated here.
-            </p>
+  <div id="finance-view" class="view-section" style="display: block;">
+    <div class="finance-wrapper container">
+
+      <!-- ───────── TOP ROW: Market Indices + Portfolio Summary ───────── -->
+      <div class="finance-top-row">
+
+        <!-- Left: Market Indices -->
+        <div class="finance-indices-wrap">
+          <div class="finance-section-title">
+            <h3>실시간 시장 지수</h3>
+            <span class="update-time-badge" id="finance-update-time">업데이트 대기 중...</span>
           </div>
-        </article>
+          <div class="market-grid">
+            <div class="market-card glass-card" id="index-kospi">
+              <div class="card-label">KOSPI</div>
+              <div class="card-value">--.--</div>
+              <div class="card-change">--.-- (--.--%)</div>
+            </div>
+            <div class="market-card glass-card" id="index-kosdaq">
+              <div class="card-label">KOSDAQ</div>
+              <div class="card-value">--.--</div>
+              <div class="card-change">--.-- (--.--%)</div>
+            </div>
+            <div class="market-card glass-card" id="index-nasdaq">
+              <div class="card-label">NASDAQ</div>
+              <div class="card-value">--.--</div>
+              <div class="card-change">--.-- (--.--%)</div>
+            </div>
+            <div class="market-card glass-card" id="index-dow">
+              <div class="card-label">DOW JONES</div>
+              <div class="card-value">--.--</div>
+              <div class="card-change">--.-- (--.--%)</div>
+            </div>
+            <div class="market-card glass-card" id="index-sp500">
+              <div class="card-label">S&amp;P 500</div>
+              <div class="card-value">--.--</div>
+              <div class="card-change">--.-- (--.--%)</div>
+            </div>
+            <div class="market-card glass-card" id="index-usdkrw">
+              <div class="card-label">USD / KRW 환율</div>
+              <div class="card-value">-,---.--</div>
+              <div class="card-change">--.-- (--.--%)</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Portfolio Summary -->
+        <div class="finance-summary-wrap glass-card" id="portfolio-summary-card">
+          <div class="summary-title">내 포트폴리오</div>
+          <div id="portfolio-summary-content">
+            <div class="summary-placeholder">보유 종목을 추가하면 요약이 표시됩니다.</div>
+          </div>
+        </div>
+
+      </div><!-- /.finance-top-row -->
+
+      <!-- ───────── Mobile nav buttons (small screens only) ───────── -->
+      <div class="mobile-nav" id="mobile-nav" style="display:none;">
+        <button id="open-holdings-btn" class="mobile-nav-btn">보유 자산 보기</button>
+        <button id="open-tx-btn" class="mobile-nav-btn">거래 기록 보기</button>
       </div>
-    </div>
-  </div>
+
+      <!-- ───────── BOTTOM ROW: Holdings Table + Transaction History ───────── -->
+      <div class="finance-bottom-row">
+
+        <!-- Left: Holdings Table -->
+        <div class="holdings-col glass-card">
+          <div class="finance-section-title">
+            <h3>보유 자산 목록</h3>
+            <button type="button" class="add-asset-btn" id="open-add-asset-modal-btn">
+              <i class="fas fa-plus"></i> 종목 추가
+            </button>
+          </div>
+          <div class="table-responsive">
+            <table id="holdings-table" class="finance-table">
+              <thead>
+                <tr>
+                  <th class="col-name">종목</th>
+                  <th class="col-weight">비중</th>
+                  <th class="col-price">현재가 / 전일대비</th>
+                  <th class="col-avgqty">평단가 / 보유수량</th>
+                  <th class="col-value">평가금액 / 평가손익</th>
+                  <th class="col-actions">거래·수정</th>
+                </tr>
+              </thead>
+              <tbody id="holdings-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Right: Transaction History -->
+        <div class="tx-history-col glass-card">
+          <div class="finance-section-title">
+            <h3>최근 매매 기록</h3>
+          </div>
+          <div id="tx-history-list-element"></div>
+        </div>
+
+      </div><!-- /.finance-bottom-row -->
+
+    </div><!-- /.finance-wrapper -->
+  </div><!-- /#finance-view -->
 
   <!-- Shared Footer -->
   <footer class="blog-footer">
@@ -304,6 +369,148 @@
 
   <!-- Marked JS Library from CDN for Client-side Markdown Compilation -->
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+  <!-- Add Asset Modal Overlay -->
+  <div id="add-asset-modal" class="finance-modal-overlay" style="display: none;">
+    <div class="finance-modal-card glass-card">
+      <div class="modal-header">
+        <h4>자산 추가 & 매매 기록</h4>
+        <button type="button" class="close-modal-btn" id="close-add-asset-modal-btn">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        
+        <!-- Type Tab -->
+        <div class="form-tabs">
+          <button type="button" class="form-tab-btn active" data-action="BUY">매수 기록</button>
+          <button type="button" class="form-tab-btn" data-action="SELL">매도 기록</button>
+        </div>
+        
+        <form id="finance-tx-form" class="tx-form">
+          <div class="form-group-row">
+            <div class="form-group">
+              <label for="tx-asset-type">시장 구분</label>
+              <select id="tx-asset-type" required>
+                <option value="DOMESTIC">국내 주식</option>
+                <option value="US">미국 주식</option>
+                <option value="DOMESTIC_ETF">국내 ETF</option>
+                <option value="US_ETF">미국 ETF</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="tx-ticker">종목 검색</label>
+              <div class="ticker-input-wrapper">
+                <input type="text" id="tx-ticker" placeholder="종목명 또는 티커 입력" autocomplete="off" required>
+                <div id="ticker-suggestions" class="suggestions-dropdown" style="display: none;"></div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="form-group-row">
+            <div class="form-group">
+              <label for="tx-name">종목명</label>
+              <input type="text" id="tx-name" placeholder="삼성전자, 애플 등 (자동완성 가능)" required>
+            </div>
+            <div class="form-group">
+              <label for="tx-date">거래 일자</label>
+              <input type="date" id="tx-date" required>
+            </div>
+          </div>
+          
+          <div class="form-group-row">
+            <div class="form-group">
+              <label for="tx-price" id="tx-price-label">매수 단가</label>
+              <input type="number" id="tx-price" step="any" placeholder="1주당 가격" required>
+            </div>
+            <div class="form-group">
+              <label for="tx-shares">거래 수량</label>
+              <input type="number" id="tx-shares" step="any" placeholder="주 수" required>
+            </div>
+          </div>
+          
+          <div class="modal-footer-row">
+            <div class="backup-restore-group">
+              <button type="button" class="backup-btn" id="backup-finance-btn" title="JSON 파일로 백업 저장">
+                <i class="fas fa-download"></i> 백업
+              </button>
+              <button type="button" class="restore-btn" id="restore-finance-btn" title="JSON 백업 파일 불러오기">
+                <i class="fas fa-upload"></i> 복원
+              </button>
+              <input type="file" id="restore-finance-file" accept=".json" style="display: none;">
+            </div>
+            <button type="button" class="clear-data-btn" id="clear-finance-data-btn" title="포트폴리오 초기화">
+              <i class="fas fa-trash-alt"></i> 전체 초기화
+            </button>
+            <button type="submit" class="submit-tx-btn">거래 기록 추가 (매수)</button>
+          </div>
+      <!-- Finance Dashboard Container -->
+<div class="finance-container">
+  <!-- Top Grid: Market Indices (2 cols) and Portfolio Summary -->
+  <div class="top-grid">
+    <div id="indices-grid" class="indices-grid"></div>
+    <div id="summary-card" class="summary-card"></div>
+  </div>
+
+  <!-- Mobile navigation (shown only on small screens) -->
+  <div class="mobile-nav hidden" id="mobile-nav">
+    <button id="open-holdings-btn" class="mobile-nav-btn">보유 자산 보기</button>
+    <button id="open-tx-btn" class="mobile-nav-btn">거래 기록 보기</button>
+  </div>
+
+  <!-- Bottom Grid: Holdings Table (left) and Transaction History (right) -->
+  <div class="bottom-grid">
+    <div class="holdings-col">
+      <table id="holdings-table" class="finance-table">
+        <thead>
+          <tr>
+            <th class="col-name">종목</th>
+            <th class="col-weight">비중</th>
+            <th class="col-price">현재가 / 전일대비</th>
+            <th class="col-avgqty">평단가 / 보유수량</th>
+            <th class="col-value">평가금액 / 평가손익</th>
+            <th class="col-actions">거래·수정</th>
+          </tr>
+        </thead>
+        <tbody id="holdings-tbody"></tbody>
+      </table>
+    </div>
+    <div class="tx-history-col">
+      <div id="tx-history-list-element"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Mobile Modals (hidden by default) -->
+<div id="mobile-holdings-modal" class="mobile-modal hidden">
+  <div class="modal-content">
+    <button class="close-modal" onclick="closeMobileHoldings()">✕</button>
+    <h3>보유 자산 목록</h3>
+    <table>
+      <thead>
+        <tr>
+          <th class="col-name">종목</th>
+          <th class="col-weight">비중</th>
+          <th class="col-price">현재가 / 전일대비</th>
+          <th class="col-avgqty">평단가 / 보유수량</th>
+          <th class="col-value">평가금액 / 평가손익</th>
+          <th class="col-actions">거래·수정</th>
+        </tr>
+      </thead>
+      <tbody id="mobile-holdings-tbody"></tbody>
+    </table>
+  </div>
+</div>
+<div id="mobile-tx-modal" class="mobile-modal hidden">
+  <div class="modal-content">
+    <button class="close-modal" onclick="closeMobileTx()">✕</button>
+    <h3>최근 매매 기록</h3>
+    <div id="mobile-tx-history-list"></div>
+  </div>
+</div>
+
+<!-- Existing Finance Dashboard Logic -->
+<script src="./assets/js/finance.js?v=1.2.6"></script>
 
   <!-- Main Application Script -->
   <script src="./assets/js/main.js?v=1.1.23"></script>

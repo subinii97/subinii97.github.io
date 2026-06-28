@@ -234,27 +234,6 @@ header.nav-header {
   transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 
-/* Satellites lock their hover styles when moving to the center (Preserves themed text colors and white hover backgrounds) */
-.satellite-study.moving-to-center .orbit-btn {
-  border-color: rgba(173, 203, 247, 0.7) !important;
-  box-shadow: var(--shadow-lg), 0 0 25px rgba(173, 203, 247, 0.25) !important;
-  color: #6b9eeb !important;
-  background: #ffffff !important;
-}
-
-.satellite-diary.moving-to-center .orbit-btn {
-  border-color: rgba(180, 214, 168, 0.7) !important;
-  box-shadow: var(--shadow-lg), 0 0 25px rgba(180, 214, 168, 0.25) !important;
-  color: #7ba86c !important;
-  background: #ffffff !important;
-}
-
-.satellite-finance.moving-to-center .orbit-btn {
-  border-color: rgba(241, 163, 150, 0.7) !important;
-  box-shadow: var(--shadow-lg), 0 0 25px rgba(241, 163, 150, 0.25) !important;
-  color: #e26d5c !important;
-  background: #ffffff !important;
-}
 
 /* Desktop positioning for satellites (Study at 9 o'clock, Diary at 3 o'clock) */
 .satellite-study {

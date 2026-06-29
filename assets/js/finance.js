@@ -160,7 +160,7 @@
     setupEventListeners();
     fetchMarketIndices();
     renderAll();
-    
+
     // Periodically update market indices (every 30s)
     setInterval(fetchMarketIndices, 30000);
   };
@@ -169,7 +169,7 @@
   function loadPortfolioState() {
     const cachedPortfolio = localStorage.getItem('finance_portfolio');
     const cachedTx = localStorage.getItem('finance_transactions');
-    
+
     portfolio = cachedPortfolio ? JSON.parse(cachedPortfolio) : {};
     transactions = cachedTx ? JSON.parse(cachedTx) : [];
   }
@@ -201,7 +201,7 @@
         tabBtns.forEach(b => b.classList.remove('active'));
         e.target.classList.add('active');
         activeTxType = e.target.getAttribute('data-action');
-        
+
         // Update label text dynamically based on action
         const priceLabel = document.getElementById('tx-price-label');
         if (priceLabel) {
@@ -228,7 +228,7 @@
         // Auto-detect asset type from input structure dynamically
         const typeSelect = document.getElementById('tx-asset-type');
         if (typeSelect) {
-          const presetMatch = tickerDictionary.find(item => 
+          const presetMatch = tickerDictionary.find(item =>
             item.ticker.toUpperCase() === query || item.name.toUpperCase() === query
           );
           if (presetMatch) {
@@ -237,17 +237,17 @@
             // Domestic stock: 6-digit numeric ticker code
             if (/^[0-9]+$/.test(query)) {
               typeSelect.value = 'DOMESTIC';
-            } 
+            }
             // US stock: standard alphabet letters ticker (e.g. MSFT)
             else if (/^[A-Z]+$/.test(query)) {
               typeSelect.value = 'US';
             }
-            
+
             // Domestic ETF keywords
             const domesticEtfKeywords = ['KODEX', 'TIGER'];
             // US ETF keywords
             const usEtfKeywords = ['ETF', 'SPY', 'QQQ', 'SOXL', 'SOXS', 'TQQQ', 'SQQQ', 'TSLL', 'TSLT', 'NVDL', 'NVDU', 'AMZU', 'GGLL', 'CONL', 'FNGU', 'BULZ', 'MSTY', 'NVDY', 'TSLY', 'SCHD', 'JEPI', 'JEPQ', 'TLT', 'TMF', 'USD', 'QLD', 'SSO'];
-            
+
             if (domesticEtfKeywords.some(keyword => query.includes(keyword))) {
               typeSelect.value = 'DOMESTIC_ETF';
             } else if (usEtfKeywords.some(keyword => query.includes(keyword))) {
@@ -256,7 +256,7 @@
           }
         }
 
-        const filtered = tickerDictionary.filter(item => 
+        const filtered = tickerDictionary.filter(item =>
           item.ticker.toUpperCase().includes(query) || item.name.toUpperCase().includes(query)
         ).slice(0, 5);
 
@@ -281,10 +281,10 @@
           tickerInput.value = item.getAttribute('data-ticker');
           const nameInput = document.getElementById('tx-name');
           if (nameInput) nameInput.value = item.getAttribute('data-name');
-          
+
           const typeSelect = document.getElementById('tx-asset-type');
           if (typeSelect) typeSelect.value = item.getAttribute('data-type');
-          
+
           suggestionBox.style.display = 'none';
         }
       });
@@ -314,7 +314,7 @@
     const modal = document.getElementById('add-asset-modal');
     const openModalBtn = document.getElementById('open-add-asset-modal-btn');
     const closeModalBtn = document.getElementById('close-add-asset-modal-btn');
-    
+
     if (modal && openModalBtn && closeModalBtn) {
       openModalBtn.addEventListener('click', () => {
         modal.style.display = 'flex';
@@ -358,7 +358,7 @@
         const file = e.target.files[0];
         if (!file) return;
         const reader = new FileReader();
-        reader.onload = function(evt) {
+        reader.onload = function (evt) {
           try {
             const imported = JSON.parse(evt.target.result);
             if (imported.portfolio && Array.isArray(imported.transactions)) {
@@ -390,11 +390,11 @@
     const now = new Date();
     const day = now.getDay();
     const isWeekend = (day === 0 || day === 6); // 0: Sunday, 6: Saturday
-    
+
     // Perform API requests
     for (const key of Object.keys(marketIndices)) {
       const idx = marketIndices[key];
-      
+
       // Special CORS-free lookup for USD/KRW Exchange Rate
       if (key === 'usdkrw') {
         try {
@@ -422,7 +422,7 @@
         const res = await fetch(`https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(idx.symbol)}?interval=1d&range=2d`);
         if (!res.ok) throw new Error('API failed');
         const data = await res.json();
-        
+
         const meta = data.chart.result[0].meta;
         const price = meta.regularMarketPrice;
         const prevClose = meta.previousClose || meta.chartPreviousClose || price;
@@ -445,7 +445,7 @@
         idx.price = price;
         idx.change = change;
         idx.changePercent = changePercent;
-        
+
         // If exchange rate updated, sync current global factor
         if (key === 'usdkrw') {
           exchangeRate = price;
@@ -458,12 +458,12 @@
           idx.change = idx.price * driftPercent * 5;
           idx.changePercent = driftPercent * 100;
         }
-        
+
         if (key === 'usdkrw') {
           exchangeRate = idx.price;
         }
       }
-      
+
       renderIndexCard(key, idx);
     }
 
@@ -474,7 +474,7 @@
         updateTimeEl.textContent = `실시간 수집중 (갱신: ${now.toLocaleTimeString()})`;
       }
     }
-    
+
     // Prices changed, recalculate current asset market values
     renderHoldingsTable();
     renderSummaryCard();
@@ -487,11 +487,11 @@
     const valEl = card.querySelector('.card-value');
     const chgEl = card.querySelector('.card-change');
 
-    const formattedPrice = key === 'usdkrw' 
+    const formattedPrice = key === 'usdkrw'
       ? data.price.toLocaleString('ko-KR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
       : data.price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
-    const formattedChange = data.change >= 0 
+    const formattedChange = data.change >= 0
       ? `▲${data.change.toFixed(2)} (+${data.changePercent.toFixed(2)}%)`
       : `▼${Math.abs(data.change).toFixed(2)} (${data.changePercent.toFixed(2)}%)`;
 
@@ -540,7 +540,7 @@
 
     // Apply average cost computations
     const currentAsset = portfolio[ticker];
-    
+
     if (activeTxType === 'BUY') {
       if (currentAsset) {
         const currentShares = currentAsset.shares;
@@ -589,7 +589,7 @@
   }
 
   // Handle transaction cancellation / deletion
-  window.deleteHolding = function(ticker) {
+  window.deleteHolding = function (ticker) {
     if (confirm(`${ticker} 종목을 포트폴리오에서 삭제하시겠습니까? (관련 거래 기록도 모두 삭제됩니다)`)) {
       delete portfolio[ticker];
       transactions = transactions.filter(tx => tx.ticker !== ticker);
@@ -602,7 +602,7 @@
   function getMarketPriceProxy(ticker, assetType, avgCost) {
     // Generate a live variance relative to the average cost or index
     let price = avgCost;
-    
+
     // Map preset indices or default assets (2026 June End Real-world Baselines)
     if (ticker === '005930') price = 339500; // Samsung Electronics
     else if (ticker === '000660') price = 2673000; // SK Hynix
@@ -618,7 +618,7 @@
       const indexDrift = marketIndices.sp500.changePercent / 100;
       price = avgCost * (1 + indexDrift + (Math.random() - 0.5) * 0.005);
     }
-    
+
     return price;
   }
 
@@ -648,7 +648,7 @@
     tbody.innerHTML = holdings.map(asset => {
       const currentPrice = getMarketPriceProxy(asset.ticker, asset.type, asset.avgCost);
       const isUS = (asset.type === 'US' || asset.type === 'US_ETF');
-      
+
       // Values in standard units (KRW or USD)
       const costValue = asset.avgCost * asset.shares;
       const currentValue = currentPrice * asset.shares;
@@ -660,7 +660,7 @@
       let formattedAvgCost = isUS
         ? `$${asset.avgCost.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
         : `₩${Math.round(asset.avgCost).toLocaleString('ko-KR')}`;
-        
+
       let formattedCurrentPrice = isUS
         ? `$${currentPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
         : `₩${Math.round(currentPrice).toLocaleString('ko-KR')}`;
@@ -744,7 +744,7 @@
     Object.values(portfolio).forEach(asset => {
       const currentPrice = getMarketPriceProxy(asset.ticker, asset.type, asset.avgCost);
       const isUS = (asset.type === 'US' || asset.type === 'US_ETF');
-      
+
       const costValue = asset.avgCost * asset.shares;
       const currentValue = currentPrice * asset.shares;
 
@@ -753,17 +753,17 @@
     });
 
     const totalProfitKRW = totalCurrentValueKRW - totalInvestedKRW;
-    const totalRoiPercent = totalInvestedKRW > 0 
+    const totalRoiPercent = totalInvestedKRW > 0
       ? (totalProfitKRW / totalInvestedKRW) * 100
       : 0.00;
 
     totalValEl.textContent = `₩${Math.round(totalCurrentValueKRW).toLocaleString('ko-KR')}`;
     totalInvestedEl.textContent = `₩${Math.round(totalInvestedKRW).toLocaleString('ko-KR')}`;
-    
+
     totalProfitEl.innerHTML = totalProfitKRW >= 0
       ? `<span class="bullish">▲₩${Math.round(totalProfitKRW).toLocaleString('ko-KR')}</span>`
       : `<span class="bearish">▼₩${Math.round(Math.abs(totalProfitKRW)).toLocaleString('ko-KR')}</span>`;
-      
+
     totalRoiEl.innerHTML = totalProfitKRW >= 0
       ? `<span class="bullish">+${totalRoiPercent.toFixed(2)}%</span>`
       : `<span class="bearish">${totalRoiPercent.toFixed(2)}%</span>`;
@@ -836,10 +836,10 @@
 
     // If portfolio is empty, load placeholder weights
     const hasAssets = totalVal > 0;
-    const dataValues = hasAssets 
+    const dataValues = hasAssets
       ? [domesticValue, usValue, domesticEtfValue, usEtfValue]
       : [1, 1, 1, 1]; // Equal placeholder slices
-      
+
     const labelLabels = hasAssets
       ? ['국내주식', '미국주식', '국내 ETF', '미국 ETF']
       : ['자산 없음', '자산 없음', '자산 없음', '자산 없음'];

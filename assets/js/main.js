@@ -512,6 +512,8 @@ function handleRouting() {
     const headerContainer = document.getElementById('header-subpage-container');
     const headerTitle = document.getElementById('header-subpage-title');
 
+    // Footer is always visible on all pages - no hide/show logic needed
+
     if (!cleanHash) {
       if (headerContainer && !headerContainer.classList.contains('exit-active')) {
         document.body.classList.remove('theme-diary', 'theme-study', 'theme-career');
@@ -562,11 +564,12 @@ function handleRouting() {
             entranceOverlay.style.display = 'none';
           }, 700);
         } else {
-          // Initial load: Hide transition elements immediately and display page in its default layout state
+          // Initial load: just ensure elements are visible normally
           entranceOverlay.style.display = 'none';
           entranceOverlay.style.opacity = '0';
         }
       }
+
     } else if (cleanHash === 'profile') {
       window.location.hash = '#';
     } else if (cleanHash === 'study') {
@@ -684,6 +687,8 @@ let isTransitioning = false;
 function triggerCenterTransition(target, targetHash, satelliteEl, clickEvent) {
   if (isTransitioning) return;
   isTransitioning = true;
+
+  // Footer is always visible - no hiding on transition
 
   // Add global transition and theme-specific transitioning classes to body
   document.body.classList.add('global-transitioning', `transitioning-${target}`);
@@ -846,6 +851,9 @@ function startHeaderWindBlow() {
   // Retain 'active' class to prevent trigger of 0.4s fadeout transition during splitting
   headerContainer.classList.add('exit-active');
   
+  // Keep footer transparent during the wind-blow animation
+  document.body.classList.add('footer-transitioning');
+  
   const titleLen = titleText.length;
   const fragment = document.createDocumentFragment();
   
@@ -911,7 +919,7 @@ function startHeaderWindBlow() {
     `;
     
     // Safely remove body theme classes here to prevent recalculating styles during animation flight
-    document.body.classList.remove('theme-diary', 'theme-study', 'theme-career');
+    document.body.classList.remove('theme-diary', 'theme-study', 'theme-career', 'footer-transitioning');
     headerContainer.classList.remove('active', 'exit-active');
     
     requestAnimationFrame(() => {
@@ -925,6 +933,11 @@ function startHeaderWindBlow() {
 function triggerTransition(targetHash, clickEvent) {
   if (isTransitioning) return;
   isTransitioning = true;
+
+  // Footer is always visible on all pages - no hide/show logic needed
+
+  // Make footer transparent for entire ripple duration
+  document.body.classList.add('footer-transitioning');
 
   if (targetHash === '#' || targetHash === '') {
     startHeaderWindBlow();
@@ -956,6 +969,7 @@ function triggerTransition(targetHash, clickEvent) {
   });
 
   // Swap hash address after the screen is completely covered and fade-out completes (600ms)
+  const goingHome = targetHash === '#' || targetHash === '';
   setTimeout(() => {
     window.location.hash = targetHash;
 
@@ -965,6 +979,11 @@ function triggerTransition(targetHash, clickEvent) {
       setTimeout(() => {
         ripple.remove();
         isTransitioning = false;
+        // For non-home transitions, remove footer-transitioning here
+        // For home, startHeaderWindBlow handles removal after 1800ms
+        if (!goingHome) {
+          document.body.classList.remove('footer-transitioning');
+        }
       }, 400);
     }, 100);
   }, 450);

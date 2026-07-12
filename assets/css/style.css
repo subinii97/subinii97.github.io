@@ -578,7 +578,7 @@ header.nav-header {
 ------------------------------------- */
 .diary-wrapper {
   padding-top: 5.5rem;
-  padding-bottom: 2rem;
+  padding-bottom: 8rem; /* Extra space so content doesn't hide behind fixed footer */
   min-height: 100vh;
   -webkit-user-select: none;
   -moz-user-select: none;
@@ -1438,13 +1438,14 @@ body.theme-career {
 .blog-footer {
   width: 100%;
   padding: 2.2rem 0;
-  margin-top: auto;
-  border-top: 1px solid var(--border-glass);
-  background: var(--bg-glass);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  z-index: 10;
-  position: relative;
+  z-index: 100;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  background: transparent;
+  border-top: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }
 
 .footer-container {
@@ -1499,18 +1500,7 @@ body.theme-career {
   }
 }
 
-/* Home View Layout Context Override
-   Ensures no vertical scrollbar appears in Home view, keeping the footer strictly pinned and transparent. */
-body:not(.theme-diary):not(.theme-study):not(.theme-career) .blog-footer {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  border-top: none;
-  background: transparent;
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
-  padding-bottom: 1.5rem;
-}
+
 
 
 /* ----------------------------------
@@ -1608,23 +1598,16 @@ body.transitioning-career {
   background-color: #f1a396 !important; /* Coral Red Pastel */
 }
 
-/* Header logo fadeout/fadein during center transition */
+/* Header logo always visible - no fade out on transition */
 .main-logo {
   transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-body.global-transitioning .main-logo {
-  opacity: 0 !important;
-  transition: opacity 0.15s ease-out !important; /* Disappear immediately when clicked */
-  pointer-events: none;
 }
 
 /* ----------------------------------
    HOME VIEW EXITING ANIMATION STYLE
 ------------------------------------- */
-/* Fade out non-focused satellite, footer, and triple pendulum canvas during transition */
+/* Fade out non-focused satellite and triple pendulum canvas during transition */
 #home-view.home-exiting #orbit-canvas,
-#home-view.home-exiting .blog-footer,
 #home-view.home-exiting .center-datetime-container,
 #home-view.home-exiting .orbit-satellite:not(.moving-to-center) {
   opacity: 0 !important;

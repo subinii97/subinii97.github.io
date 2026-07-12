@@ -1349,11 +1349,7 @@ body.theme-career {
   cursor: zoom-in;
   transition: transform 0.25s ease;
 }
-#diary-reader-post-content img:hover,
-#study-reader-post-content img:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
-}
+
 
 /* Image Preview Lightbox Overlay (Premium light glassmorphism blur) */
 .image-preview-overlay {

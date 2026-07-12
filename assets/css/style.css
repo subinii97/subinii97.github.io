@@ -3,7 +3,7 @@
 
 /* Reset and Variables */
 :root {
-  --font-title: 'Outfit', 'Inter', -apple-system, sans-serif;
+  --font-title: 'Inter', -apple-system, sans-serif;
   --font-body: 'Inter', -apple-system, sans-serif;
 
   /* Premium White Theme Palette */
@@ -165,14 +165,25 @@ header.nav-header {
   align-items: center;
   gap: 0.8rem;
   opacity: 0;
-  transition: opacity 0.4s ease;
+  transform: translateX(0);
+  transition: opacity 0.4s ease, transform 0.4s ease;
   pointer-events: none;
 }
 
 .header-subpage.active {
   opacity: 1;
+  transform: translateX(0);
   pointer-events: auto;
 }
+
+.header-subpage.exit-active {
+  opacity: 1 !important;
+  transform: none !important;
+  pointer-events: none;
+  gap: 0 !important;
+}
+
+
 
 .subpage-separator {
   font-family: var(--font-title);
@@ -276,10 +287,10 @@ header.nav-header {
 
 .satellite-career.moving-to-center .orbit-btn,
 .satellite-career.moving-to-center .orbit-btn:hover {
-  border-color: #818cf8 !important; /* Same as background to fade border boundary */
+  border-color: #f1a396 !important; /* Same as background to fade border boundary */
   box-shadow: none !important; /* Remove outer shadow/glow */
   color: #ffffff !important;
-  background: #818cf8 !important; /* Matches .expanding-circle.theme-career */
+  background: #f1a396 !important; /* Matches .expanding-circle.theme-career */
   transition: background 0.6s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.6s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.6s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 
@@ -566,7 +577,7 @@ header.nav-header {
    DIARY PAGE (diary.html) STYLE
 ------------------------------------- */
 .diary-wrapper {
-  padding-top: 2.75rem;
+  padding-top: 5.5rem;
   padding-bottom: 2rem;
   min-height: 100vh;
   -webkit-user-select: none;
@@ -1265,7 +1276,7 @@ header.nav-header {
 }
 
 .expanding-circle.theme-career {
-  background: #818cf8; /* Coral Red Pastel */
+  background: #f1a396; /* Coral Red Pastel */
 }
 
 .expanding-circle.active {
@@ -1594,7 +1605,7 @@ body.transitioning-study {
   background-color: #adcbf7 !important; /* Light Blue */
 }
 body.transitioning-career {
-  background-color: #818cf8 !important; /* Coral Red Pastel */
+  background-color: #f1a396 !important; /* Coral Red Pastel */
 }
 
 /* Header logo fadeout/fadein during center transition */

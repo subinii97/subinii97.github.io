@@ -47,108 +47,128 @@
     <div class="diary-wrapper container">
       <div class="reader-container" style="display: block;">
         <article class="glass-card" style="padding: 3rem 2rem;">
-          <h2 style="font-family: var(--font-title); font-size: 2rem; font-weight: 700; margin-bottom: 2rem; color: var(--text-primary); border-bottom: 1px solid var(--border-glass); padding-bottom: 1rem;">
-            <i class="fas fa-briefcase" style="margin-right: 0.7rem; color: var(--accent-primary);"></i>Timeline
-          </h2>
 
-          <div class="career-timeline">
-            <!-- Timeline Item 1 -->
-            <div class="timeline-item">
-              <div class="timeline-dot"></div>
-              <span class="timeline-date">2023.03 - 2026.04</span>
-              <h3 class="timeline-title">Transition</h3>
-              <p class="timeline-subtitle">Seoul, Republic of Korea</p>
-              <div class="timeline-desc">
-                <ul>
-                  <li>Diagnosed with gender dysphoria in March 2023.</li>
-                  <li>Started hormone replacement therapy (HRT) in April 2023.</li>
-                  <li>Underwent several plastic surgeries, including gender confirmation surgery in 2025.</li>
-                  <li>Changed legal name in February and gender in April 2026.</li>
-                </ul>
+          <div class="career-layout">
+            <!-- Year Sidebar -->
+            <nav class="year-sidebar" id="year-sidebar">
+              <div class="year-sidebar-inner">
+                <a class="year-link active" href="#year-2023" data-year="2023">2023</a>
+                <a class="year-link" href="#year-2022" data-year="2022">2022</a>
+                <a class="year-link" href="#year-2020" data-year="2020">2020</a>
+                <a class="year-link" href="#year-2016" data-year="2016">2016</a>
+                <a class="year-link" href="#year-2013" data-year="2013">2013</a>
+                <a class="year-link" href="#year-2010" data-year="2010">2010</a>
+                <a class="year-link" href="#year-2004" data-year="2004">2004</a>
               </div>
-            </div>
+            </nav>
 
-            <!-- Timeline Item 2 -->
-            <div class="timeline-item">
-              <div class="timeline-dot"></div>
-              <span class="timeline-date">2022.09 - 2024.06</span>
-              <h3 class="timeline-title">Social Service Personnel</h3>
-              <p class="timeline-subtitle">Seoul Metropolitan Fire and Disaster Headquarter, Seoul, Republic of Korea</p>
-              <div class="timeline-desc">
-                <ul>
-                  <li>Completed 3 weeks of basic military training.</li>
-                  <li>Served as a social service personnel for 21 months at the Seoul Civil Safety Experience Center in Gwangnaru.</li>
-                </ul>
+            <!-- Timeline column: heading + items -->
+            <div class="career-timeline-wrapper">
+              <h2 style="font-family: var(--font-title); font-size: 2rem; font-weight: 700; margin-bottom: 2rem; color: var(--text-primary); border-bottom: 1px solid var(--border-glass); padding-bottom: 1rem;">
+                <i class="fas fa-briefcase" style="margin-right: 0.7rem; color: var(--accent-primary);"></i>Timeline
+              </h2>
+
+              <div class="career-timeline">
+                <!-- Timeline Item 1 -->
+                <div class="timeline-item" id="year-2023">
+                  <div class="timeline-dot"></div>
+                  <span class="timeline-date">2023.03 - 2026.04</span>
+                  <h3 class="timeline-title">Transition</h3>
+                  <p class="timeline-subtitle">Seoul, Republic of Korea</p>
+                  <div class="timeline-desc">
+                    <ul>
+                      <li>Diagnosed with gender dysphoria in March 2023.</li>
+                      <li>Started hormone replacement therapy (HRT) in April 2023.</li>
+                      <li>Underwent several plastic surgeries, including gender confirmation surgery in 2025.</li>
+                      <li>Changed legal name in February and gender in April 2026.</li>
+                    </ul>
+                  </div>
+                </div>
+
+                <!-- Timeline Item 2 -->
+                <div class="timeline-item" id="year-2022">
+                  <div class="timeline-dot"></div>
+                  <span class="timeline-date">2022.09 - 2024.06</span>
+                  <h3 class="timeline-title">Social Service Personnel</h3>
+                  <p class="timeline-subtitle">Seoul Metropolitan Fire and Disaster Headquarter, Seoul, Republic of Korea</p>
+                  <div class="timeline-desc">
+                    <ul>
+                      <li>Completed 3 weeks of basic military training.</li>
+                      <li>Served as a social service personnel for 21 months at the Seoul Civil Safety Experience Center in Gwangnaru.</li>
+                    </ul>
+                  </div>
+                </div>
+
+                <!-- Timeline Item 3 -->
+                <div class="timeline-item" id="year-2020">
+                  <div class="timeline-dot"></div>
+                  <span class="timeline-date">2020.03 - 2022.08</span>
+                  <h3 class="timeline-title">Master of Science in Physics</h3>
+                  <p class="timeline-subtitle">Hanyang University, Seoul, Republic of Korea</p>
+                  <div class="timeline-desc">
+                    <ul>
+                      <li>Master's Dissertation: "Search for charged lepton flavor violation in top quark sector with hadronic tau final state using CMS Run 2 data at √s = 13 TeV"</li>
+                      <li>Honored with a Best Dissertation Award.</li>
+                    </ul>
+                  </div>
+                </div>
+
+                <!-- Timeline Item 4 -->
+                <div class="timeline-item" id="year-2016">
+                  <div class="timeline-dot"></div>
+                  <span class="timeline-date">2016.03 - 2020.02</span>
+                  <h3 class="timeline-title">B.S. in Physics and B.S. in Mechanical Engineering</h3>
+                  <p class="timeline-subtitle">Hanyang University, Seoul, Republic of Korea</p>
+                  <div class="timeline-desc">
+                    <ul>
+                      <li>Bachelor's Thesis (Physics): "Study of identification of b-jets in the ttbb using Deep Neural Networks"</li>
+                      <li>Dual degree program in Mechanical Engineering</li>
+                      <li>Graduate Project (Mechanical Engineering): "Design of collision warning and braking system using Region-based Convolutional Neural Network (RCNN)"</li>
+                    </ul>
+                  </div>
+                </div>
+
+                <!-- Timeline Item 5 -->
+                <div class="timeline-item" id="year-2013">
+                  <div class="timeline-dot"></div>
+                  <span class="timeline-date">2013.03 - 2015.02</span>
+                  <h3 class="timeline-title">Guri High School</h3>
+                  <p class="timeline-subtitle">Guri, Gyeonggi-do, Republic of Korea</p>
+                  <div class="timeline-desc">
+                    <ul>
+                      <li>Science oriented track. Complete all science subjects (physics, chemistry, biology, earth science) of I and II.</li>
+                    </ul>
+                  </div>
+                </div>
+
+                <!-- Timeline Item 6 -->
+                <div class="timeline-item" id="year-2010">
+                  <div class="timeline-dot"></div>
+                  <span class="timeline-date">2010.03 - 2013.02</span>
+                  <h3 class="timeline-title">Seoul Sahmyook Middle School</h3>
+                  <p class="timeline-subtitle">Guri, Gyeonggi-do, Republic of Korea</p>
+                  <div class="timeline-desc"></div>
+                </div>
+
+                <!-- Timeline Item 7 -->
+                <div class="timeline-item" id="year-2004">
+                  <div class="timeline-dot"></div>
+                  <span class="timeline-date">2004.03 - 2010.02</span>
+                  <h3 class="timeline-title">Topyeong Elementary School</h3>
+                  <p class="timeline-subtitle">Guri, Gyeonggi-do, Republic of Korea</p>
+                  <div class="timeline-desc"></div>
+                </div>
+              </div><!-- /.career-timeline -->
+
+              <!-- Resume Link -->
+              <div style="margin-top: 3rem; text-align: center; border-top: 1px dashed var(--border-glass); padding-top: 2rem;">
+                <a href="https://github.com/subinii97" target="_blank" rel="noopener noreferrer" class="back-to-list-btn" style="padding: 0.8rem 1.5rem; background: var(--bg-glass); border: 1px solid var(--border-glass); border-radius: 30px; font-weight: 600;">
+                  <i class="fab fa-github" style="margin-right: 0.5rem;"></i> Visit GitHub Profile
+                </a>
               </div>
-            </div>
+            </div><!-- /.career-timeline-wrapper -->
 
-            <!-- Timeline Item 3 -->
-            <div class="timeline-item">
-              <div class="timeline-dot"></div>
-              <span class="timeline-date">2020.03 - 2022.08</span>
-              <h3 class="timeline-title">Master of Science in Physics</h3>
-              <p class="timeline-subtitle">Hanyang University, Seoul, Republic of Korea</p>
-              <div class="timeline-desc">
-                <ul>
-                  <li>Master's Dissertation: "Search for charged lepton flavor violation in top quark sector with hadronic tau final state using CMS Run 2 data at √s = 13 TeV"</li>
-                  <li>Honored with a Best Dissertation Award.</li>
-                </ul>
-              </div>
-            </div>
-
-            <!-- Timeline Item 4 -->
-            <div class="timeline-item">
-              <div class="timeline-dot"></div>
-              <span class="timeline-date">2016.03 - 2020.02</span>
-              <h3 class="timeline-title">B.S. in Physics and B.S. in Mechanical Engineering</h3>
-              <p class="timeline-subtitle">Hanyang University, Seoul, Republic of Korea</p>
-              <div class="timeline-desc">
-                <ul>
-                  <li>Bachelor's Thesis (Physics): "Study of identification of b-jets in the ttbb using Deep Neural Networks"</li>
-                  <li>Dual degree program in Mechanical Engineering</li>
-                  <li>Graduate Project (Mechanical Engineering): "Design of collision warning and braking system using Region-based Convolutional Neural Network (RCNN)"</li>
-                </ul>
-              </div>
-            </div>
-
-            <!-- Timeline Item 5 -->
-            <div class="timeline-item">
-              <div class="timeline-dot"></div>
-              <span class="timeline-date">2013.03 - 2015.02</span>
-              <h3 class="timeline-title">Guri High School</h3>
-              <p class="timeline-subtitle">Guri, Gyeonggi-do, Republic of Korea</p>
-              <div class="timeline-desc">
-                <ul>
-                  <li>Science oriented track. Complete all science subjects (physics, chemistry, biology, earth science) of I and II.</li>
-                </ul>
-              </div>
-            </div>
-
-            <!-- Timeline Item 6 -->
-            <div class="timeline-item">
-              <div class="timeline-dot"></div>
-              <span class="timeline-date">2010.03 - 2013.02</span>
-              <h3 class="timeline-title">Seoul Sahmyook Middle School</h3>
-              <p class="timeline-subtitle">Guri, Gyeonggi-do, Republic of Korea</p>
-              <div class="timeline-desc"></div>
-            </div>
-
-            <!-- Timeline Item 7 -->
-            <div class="timeline-item">
-              <div class="timeline-dot"></div>
-              <span class="timeline-date">2004.03 - 2010.02</span>
-              <h3 class="timeline-title">Topyeong Elementary School</h3>
-              <p class="timeline-subtitle">Guri, Gyeonggi-do, Republic of Korea</p>
-              <div class="timeline-desc"></div>
-            </div>
-          </div>
-
-          <!-- Resume Link / Downloader -->
-          <div style="margin-top: 3rem; text-align: center; border-top: 1px dashed var(--border-glass); padding-top: 2rem;">
-            <a href="https://github.com/subinii97" target="_blank" rel="noopener noreferrer" class="back-to-list-btn" style="padding: 0.8rem 1.5rem; background: var(--bg-glass); border: 1px solid var(--border-glass); border-radius: 30px; font-weight: 600;">
-              <i class="fab fa-github" style="margin-right: 0.5rem;"></i> Visit GitHub Profile
-            </a>
-          </div>
+          </div><!-- /.career-layout -->
         </article>
       </div>
     </div>

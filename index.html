@@ -7,17 +7,14 @@
   <title>Subin's blog</title>
   <meta name="description" content="Subin Lim's personal blog. Profile and Diary.">
 
+  <!-- Tailwind CSS v4 Browser Compiler -->
+  <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+
   <!-- FontAwesome for Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <!-- Main Stylesheet -->
   <link rel="stylesheet" href="./assets/css/style.css?v=1.2.4">
-
-  <!-- KaTeX CSS for LaTeX Math Equations -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
-
-  <!-- Chart.js CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <!-- Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-Y1K0WLJYQS"></script>
@@ -33,7 +30,7 @@
 
   <!-- Header Logo (Shared or Home Only) -->
   <header class="main-header" id="blog-logo-header">
-    <h1 class="main-logo">Subin's blog</h1>
+    <a href="index.html" class="main-logo">Subin's blog</a>
     <div class="header-subpage" id="header-subpage-container">
       <span class="subpage-separator">/</span>
       <span class="subpage-title" id="header-subpage-title"></span>
@@ -44,8 +41,6 @@
   <div id="home-view" class="view-section">
     <!-- Entrance Animation Overlay -->
     <div id="home-entrance-overlay"></div>
-
-
 
     <div class="main-wrapper">
       <div class="orbit-container">
@@ -88,248 +83,36 @@
     </div>
   </div>
 
-
-
-  <!-- 2.5 STUDY VIEW -->
-  <div id="study-view" class="view-section" style="display: none;">
-    <div class="diary-wrapper container">
-      <!-- Post List Section -->
-      <div id="study-list-container">
-        <div class="diary-grid">
-          <!-- 1. Left Sidebar: Categories & Search -->
-          <aside class="category-sidebar glass-card">
-            <h3 class="sidebar-title">Categories</h3>
-            <ul class="category-menu" id="study-category-menu-element">
-              <!-- Populated by JavaScript -->
-            </ul>
-
-            <!-- Search bar located under categories -->
-            <div class="search-container sidebar-search" style="margin-top: 1.5rem; width: 100%;">
-              <i class="fas fa-search"></i>
-              <input type="text" id="study-search" class="search-input" placeholder="검색">
-            </div>
-          </aside>
-
-          <!-- 2. Right: Post List Section -->
-          <div class="post-list-container-wrapper">
-            <div class="post-list-header-row">
-              <span class="post-list-title">목록</span>
-              <div class="post-list-header-actions" style="display: flex; gap: 0.5rem; align-items: center;">
-                <button id="study-search-toggle-btn" class="search-toggle-btn">
-                  <i class="fas fa-search"></i> 카테고리/검색
-                </button>
-                <button id="study-sort-btn" class="sort-btn">
-                  <!-- Toggled by JS -->
-                </button>
-              </div>
-            </div>
-
-            <main class="post-list" id="study-post-list-element">
-              <!-- Populated by JavaScript -->
-            </main>
-
-            <!-- Pagination Controls -->
-            <div id="study-pagination" class="pagination-container">
-              <!-- Populated by JavaScript -->
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Detailed Post Reader View -->
-      <div id="study-reader-container" class="reader-container">
-        <article class="glass-card" style="padding: 2.5rem 2rem;">
-          <div class="reader-header">
-            <div class="reader-back-row" style="margin-bottom: 1.5rem;">
-              <a href="#study" class="back-to-list-btn">
-                <i class="fas fa-arrow-left"></i> back to study
-              </a>
-            </div>
-            <div class="reader-category-row" style="margin-bottom: 0.6rem;">
-              <span id="study-reader-post-category"></span>
-            </div>
-            <h1 class="reader-title" id="study-reader-post-title" style="margin-top: 0.4rem; margin-bottom: 0.8rem;">Loading...</h1>
-            <div class="reader-meta">
-              <span id="study-reader-post-date"></span>
-            </div>
-          </div>
-          <div class="reader-content" id="study-reader-post-content">
-            <!-- Rendered Markdown goes here -->
-          </div>
-        </article>
-      </div>
-    </div>
-  </div>
-
-  <!-- 3. DIARY VIEW (List & Reader) -->
-  <div id="diary-view" class="view-section" style="display: none;">
-
-    <div class="diary-wrapper container">
-      <!-- Smart Header Controls (Removed Back Button) -->
-
-      <!-- Post List Section -->
-      <div id="diary-list-container">
-        <div class="diary-grid">
-          <!-- 1. Left Sidebar: Categories & Search -->
-          <aside class="category-sidebar glass-card">
-            <h3 class="sidebar-title">Categories</h3>
-            <ul class="category-menu" id="category-menu-element">
-              <!-- Populated by JavaScript -->
-            </ul>
-
-            <!-- Search bar located under categories -->
-            <div class="search-container sidebar-search" style="margin-top: 1.5rem; width: 100%;">
-              <i class="fas fa-search"></i>
-              <input type="text" id="diary-search" class="search-input" placeholder="검색">
-            </div>
-          </aside>
-
-          <!-- 2. Right: Post List Section -->
-          <div class="post-list-container-wrapper">
-            <div class="post-list-header-row">
-              <span class="post-list-title">최근 게시물</span>
-            </div>
-
-            <!-- Recent Updates Card Section -->
-            <div id="diary-recent-updates" class="recent-updates-section">
-              <!-- Populated by JavaScript -->
-            </div>
-
-            <div class="post-list-header-row" style="margin-top: 0.75rem;">
-              <span class="post-list-title">목록</span>
-              <div class="post-list-header-actions" style="display: flex; gap: 0.5rem; align-items: center;">
-                <button id="diary-search-toggle-btn" class="search-toggle-btn">
-                  <i class="fas fa-search"></i> 카테고리/검색
-                </button>
-                <button id="diary-sort-btn" class="sort-btn">
-                  <!-- Toggled by JS -->
-                </button>
-              </div>
-            </div>
-
-            <main class="post-list" id="post-list-element">
-              <!-- Populated by JavaScript -->
-            </main>
-
-            <!-- Pagination Controls -->
-            <div id="diary-pagination" class="pagination-container">
-              <!-- Populated by JavaScript -->
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Detailed Post Reader View -->
-      <div id="diary-reader-container" class="reader-container">
-        <article class="glass-card" style="padding: 2.5rem 2rem;">
-          <div class="reader-header">
-            <div class="reader-back-row" style="margin-bottom: 1.5rem;">
-              <a href="#diary" class="back-to-list-btn">
-                <i class="fas fa-arrow-left"></i> back to diary
-              </a>
-            </div>
-            <div class="reader-category-row" style="margin-bottom: 0.6rem;">
-              <span id="diary-reader-post-category"></span>
-            </div>
-            <h1 class="reader-title" id="diary-reader-post-title" style="margin-top: 0.4rem; margin-bottom: 0.8rem;">Loading...</h1>
-            <div class="reader-meta">
-              <span id="diary-reader-post-date"></span>
-            </div>
-          </div>
-          <div class="reader-content" id="diary-reader-post-content">
-            <!-- Rendered Markdown goes here -->
-          </div>
-        </article>
-      </div>
-    </div>
-  </div>
-
-  <!-- 3. CAREER VIEW -->
-  <div id="career-view" class="view-section" style="display: none;">
-    <div class="diary-wrapper container">
-      <div class="reader-container" style="display: block;">
-        <article class="glass-card" style="padding: 3rem 2rem;">
-          <h2 style="font-family: var(--font-title); font-size: 2rem; font-weight: 700; margin-bottom: 2rem; color: var(--text-primary); border-bottom: 1px solid var(--border-glass); padding-bottom: 1rem;">
-            <i class="fas fa-briefcase" style="margin-right: 0.7rem; color: var(--accent-primary);"></i> Career
-          </h2>
-          
-          <div class="career-timeline">
-            <!-- Timeline Item 1 -->
-            <div class="timeline-item" style="margin-bottom: 2.5rem; position: relative; padding-left: 2rem; border-left: 2px solid var(--border-glass);">
-              <div class="timeline-dot" style="position: absolute; left: -6px; top: 0.2rem; width: 10px; height: 10px; border-radius: 50%; background: var(--accent-primary); box-shadow: 0 0 10px var(--accent-primary);"></div>
-              <span class="timeline-date" style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600;">2023.03 - Present</span>
-              <h3 class="timeline-title" style="font-size: 1.2rem; font-weight: 600; margin: 0.3rem 0; color: var(--text-primary);">Graduate Researcher / Physics PhD Candidate</h3>
-              <p class="timeline-subtitle" style="font-size: 0.95rem; color: var(--accent-primary); font-weight: 500; margin-bottom: 0.5rem;">Physics Lab / University</p>
-              <p class="timeline-desc" style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; margin: 0;">
-                Conducting physics-inspired simulation modeling, computational dynamics analysis, and data visualization. 
-                Developing research software architectures and numerical solver designs.
-              </p>
-            </div>
-
-            <!-- Timeline Item 2 -->
-            <div class="timeline-item" style="margin-bottom: 2.5rem; position: relative; padding-left: 2rem; border-left: 2px solid var(--border-glass);">
-              <div class="timeline-dot" style="position: absolute; left: -6px; top: 0.2rem; width: 10px; height: 10px; border-radius: 50%; background: var(--accent-primary);"></div>
-              <span class="timeline-date" style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600;">2018.03 - 2023.02</span>
-              <h3 class="timeline-title" style="font-size: 1.2rem; font-weight: 600; margin: 0.3rem 0; color: var(--text-primary);">B.S. in Physics</h3>
-              <p class="timeline-subtitle" style="font-size: 0.95rem; color: var(--text-muted); margin-bottom: 0.5rem;">Major in Physics / University</p>
-              <p class="timeline-desc" style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; margin: 0;">
-                Acquired solid foundations in mathematics and classical/quantum physics. Completed projects on wave mechanics simulation and data modeling.
-              </p>
-            </div>
-          </div>
-
-          <!-- Resume Link / Downloader -->
-          <div style="margin-top: 3rem; text-align: center; border-top: 1px dashed var(--border-glass); padding-top: 2rem;">
-             <a href="https://github.com/subinii97" target="_blank" rel="noopener noreferrer" class="back-to-list-btn" style="padding: 0.8rem 1.5rem; background: var(--bg-glass); border: 1px solid var(--border-glass); border-radius: 30px; font-weight: 600;">
-               <i class="fab fa-github" style="margin-right: 0.5rem;"></i> Visit GitHub Profile
-             </a>
-          </div>
-        </article>
-      </div>
-    </div>
-  </div>
-    <!-- Shared Footer -->
-    <footer class="blog-footer">
-      <div class="footer-container">
-        <div class="footer-socials">
-          <div class="footer-email-container">
-            <a href="mailto:forestsb97@gmail.com" class="email-tooltip" id="footer-email-tooltip">
-              forestsb97@gmail.com
-            </a>
-            <button class="footer-icon" id="footer-email-btn" title="Email"
-              style="background: none; border: none; padding: 0; cursor: pointer;">
-              <i class="fas fa-envelope"></i>
-            </button>
-          </div>
-          <a href="https://www.instagram.com/subin_forest" target="_blank" rel="noopener noreferrer" class="footer-icon"
-            title="Instagram">
-            <i class="fab fa-instagram"></i>
+  <!-- Shared Footer -->
+  <footer class="blog-footer">
+    <div class="footer-container">
+      <div class="footer-socials">
+        <div class="footer-email-container">
+          <a href="mailto:forestsb97@gmail.com" class="email-tooltip" id="footer-email-tooltip">
+            forestsb97@gmail.com
           </a>
-          <a href="https://github.com/subinii97" target="_blank" rel="noopener noreferrer" class="footer-icon"
-            title="GitHub">
-            <i class="fab fa-github"></i>
-          </a>
+          <button class="footer-icon" id="footer-email-btn" title="Email"
+            style="background: none; border: none; padding: 0; cursor: pointer;">
+            <i class="fas fa-envelope"></i>
+          </button>
         </div>
-        <div class="footer-credits">
-          Designed by Subin, inspired by Physics
-        </div>
+        <a href="https://www.instagram.com/subin_forest" target="_blank" rel="noopener noreferrer" class="footer-icon"
+          title="Instagram">
+          <i class="fab fa-instagram"></i>
+        </a>
+        <a href="https://github.com/subinii97" target="_blank" rel="noopener noreferrer" class="footer-icon"
+          title="GitHub">
+          <i class="fab fa-github"></i>
+        </a>
       </div>
-    </footer>
+      <div class="footer-credits">
+        Designed by Subin, inspired by Physics
+      </div>
+    </div>
+  </footer>
 
-    <!-- KaTeX Math Equation Renderers -->
-    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
-
-    <!-- Marked JS Library from CDN for Client-side Markdown Compilation -->
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-
-
-
-            <!-- Application Scripts -->
-            <script src="./assets/js/diary.js"></script>
-            <script src="./assets/js/study.js"></script>
-            <script src="./assets/js/career.js"></script>
-            <script src="./assets/js/main.js?v=1.1.23"></script>
+  <!-- Application Scripts -->
+  <script src="./assets/js/main.js?v=1.1.23"></script>
 </body>
 
 </html>

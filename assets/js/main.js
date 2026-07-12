@@ -41,14 +41,24 @@ document.addEventListener('DOMContentLoaded', async () => {
   // 3. Initialize common script components
   initMouseFollower();
   initMainPage();
-  initDiaryControls();
-  initStudyControls();
-  initCareerControls();
+  if (typeof initDiaryControls === 'function') initDiaryControls();
+  if (typeof initStudyControls === 'function') initStudyControls();
+  if (typeof initCareerControls === 'function') initCareerControls();
   initNavigationInterceptors();
 
   // 4. Handle initial routing based on URL Hash
   handleRouting();
   window.addEventListener('hashchange', handleRouting);
+
+  // 5. Play subpage entrance transition on load
+  const pathName = window.location.pathname;
+  if (pathName.includes('diary')) {
+    playSubpageEntranceAnimation('diary');
+  } else if (pathName.includes('study')) {
+    playSubpageEntranceAnimation('study');
+  } else if (pathName.includes('career')) {
+    playSubpageEntranceAnimation('career');
+  }
 });
 
 /* ----------------------------------
@@ -501,7 +511,7 @@ function showView(viewId) {
   }
 }
 
-// Router to resolve view states based on URL hashes
+// Router to resolve view states based on URL hashes and filenames
 function handleRouting() {
   const hash = window.location.hash;
   const oldHash = currentActiveHash;
@@ -512,41 +522,49 @@ function handleRouting() {
     const headerContainer = document.getElementById('header-subpage-container');
     const headerTitle = document.getElementById('header-subpage-title');
 
-    // Footer is always visible on all pages - no hide/show logic needed
+    // Page checks
+    const pathName = window.location.pathname;
+    const isDiaryPage = pathName.includes('diary');
+    const isStudyPage = pathName.includes('study');
+    const isCareerPage = pathName.includes('career');
+    const isHomePage = !isDiaryPage && !isStudyPage && !isCareerPage;
 
-    if (!cleanHash) {
-      if (headerContainer && !headerContainer.classList.contains('exit-active')) {
-        document.body.classList.remove('theme-diary', 'theme-study', 'theme-career');
-        headerContainer.classList.remove('active');
-        if (headerTitle) {
-          headerTitle.classList.remove('show');
-          headerTitle.textContent = '';
-        }
+    if (isHomePage) {
+      // Home page: backward-compatibility redirect or normal load
+      if (cleanHash === 'diary' || cleanHash === 'study' || cleanHash === 'career') {
+        window.location.href = `${cleanHash}.html`;
+        return;
       }
+      if (cleanHash.startsWith('diary/') || cleanHash.startsWith('study/')) {
+        const parts = cleanHash.split('/');
+        window.location.href = `${parts[0]}.html#${cleanHash}`;
+        return;
+      }
+
+      // Normal Home page initialization
       showView('home');
       document.title = "Subin's Blog";
 
-      // Home Entrance Animation Sequence (Only trigger when returning from another subpage)
       const homeView = document.getElementById('home-view');
       const entranceOverlay = document.getElementById('home-entrance-overlay');
-      const isReturningFromSubpage = oldHash && oldHash !== '#' && oldHash !== '';
+      
+      // Determine if returning from subpage via URL parameter (?from=...)
+      const urlParams = new URLSearchParams(window.location.search);
+      const isReturningFromSubpage = urlParams.has('from');
 
       if (homeView && entranceOverlay) {
-        // Clear any previous exiting/animation classes to restore elements cleanly
         homeView.classList.remove('entrance-step-1', 'entrance-step-2', 'home-exiting');
 
         if (isReturningFromSubpage) {
-          entranceOverlay.style.display = 'block';
-          entranceOverlay.style.opacity = '1';
+          // Clear query params to avoid re-triggering entrance animation on page reload
+          window.history.replaceState({}, document.title, window.location.pathname);
+
+          entranceOverlay.style.display = 'none';
+          entranceOverlay.style.opacity = '0';
           homeView.classList.add('home-entrance-active');
 
           // Force reflow
           homeView.offsetHeight;
-
-          // Step 0: Fade out the white overlay
-          requestAnimationFrame(() => {
-            entranceOverlay.style.opacity = '0';
-          });
 
           // Step 1: Fade-in and scale-in the center orbit line & canvas (50ms)
           setTimeout(() => {
@@ -561,7 +579,6 @@ function handleRouting() {
           // Step 3: Clean up animation class properties after transition completes (700ms)
           setTimeout(() => {
             homeView.classList.remove('home-entrance-active', 'entrance-step-1', 'entrance-step-2');
-            entranceOverlay.style.display = 'none';
           }, 700);
         } else {
           // Initial load: just ensure elements are visible normally
@@ -569,108 +586,95 @@ function handleRouting() {
           entranceOverlay.style.opacity = '0';
         }
       }
-
-    } else if (cleanHash === 'profile') {
-      window.location.hash = '#';
-    } else if (cleanHash === 'study') {
-      document.body.classList.add('theme-study');
-      document.body.classList.remove('theme-diary', 'theme-career');
-      if (headerTitle && headerContainer) {
-        headerTitle.textContent = 'Study';
-        if (!isTransitioning) {
-          headerContainer.classList.add('active');
-          headerTitle.classList.add('show');
-        }
-      }
-      showView('study');
-      document.getElementById('study-list-container').style.display = 'block';
-      const readerContainer = document.getElementById('study-reader-container');
-      if (readerContainer) readerContainer.style.display = 'none';
-      renderStudy();
-      document.title = "Study | Subin's Blog";
-      window.scrollTo(0, 0);
-    } else if (cleanHash === 'diary') {
+    } else if (isDiaryPage) {
+      // Diary page:
       document.body.classList.add('theme-diary');
       document.body.classList.remove('theme-study', 'theme-career');
       if (headerTitle && headerContainer) {
         headerTitle.textContent = 'Diary';
-        if (!isTransitioning) {
-          headerContainer.classList.add('active');
-          headerTitle.classList.add('show');
-        }
+        headerContainer.classList.add('active');
+        headerTitle.classList.add('show');
       }
-      showView('diary');
-      document.getElementById('diary-list-container').style.display = 'block';
+      
+      const listContainer = document.getElementById('diary-list-container');
       const readerContainer = document.getElementById('diary-reader-container');
-      if (readerContainer) readerContainer.style.display = 'none';
-      renderDiary();
-      document.title = "Diary | Subin's Blog";
-      window.scrollTo(0, 0);
-    } else if (cleanHash.startsWith('diary/')) {
-      document.body.classList.add('theme-diary');
-      document.body.classList.remove('theme-study', 'theme-career');
-      if (headerTitle && headerContainer) {
-        headerTitle.textContent = 'Diary';
-        if (!isTransitioning) {
-          headerContainer.classList.add('active');
-          headerTitle.classList.add('show');
+
+      if (cleanHash && (cleanHash.startsWith('diary/') || !cleanHash.includes('/'))) {
+        // We are on reader mode
+        if (listContainer) listContainer.style.display = 'none';
+        if (readerContainer) readerContainer.style.display = 'block';
+
+        const filename = cleanHash.startsWith('diary/') 
+          ? decodeURIComponent(cleanHash.substring(6)) 
+          : decodeURIComponent(cleanHash);
+        
+        const post = diaryPosts.find(p => p.filename === filename);
+        if (post) {
+          renderReader(post, 'diary');
+        } else {
+          window.location.hash = '';
         }
-      }
-      showView('diary');
-      document.getElementById('diary-list-container').style.display = 'none';
-      const readerContainer = document.getElementById('diary-reader-container');
-      if (readerContainer) readerContainer.style.display = 'block';
-
-      const filename = decodeURIComponent(cleanHash.substring(6));
-      const post = diaryPosts.find(p => p.filename === filename);
-
-      if (post) {
-        renderReader(post, 'diary');
       } else {
-        window.location.hash = 'diary';
+        // We are on list mode
+        if (listContainer) listContainer.style.display = 'block';
+        if (readerContainer) readerContainer.style.display = 'none';
+        if (typeof renderDiary === 'function') renderDiary();
+        document.title = "Diary | Subin's Blog";
+        window.scrollTo(0, 0);
       }
-    } else if (cleanHash.startsWith('study/')) {
+    } else if (isStudyPage) {
+      // Study page:
       document.body.classList.add('theme-study');
       document.body.classList.remove('theme-diary', 'theme-career');
       if (headerTitle && headerContainer) {
         headerTitle.textContent = 'Study';
-        if (!isTransitioning) {
-          headerContainer.classList.add('active');
-          headerTitle.classList.add('show');
-        }
+        headerContainer.classList.add('active');
+        headerTitle.classList.add('show');
       }
-      showView('study');
-      document.getElementById('study-list-container').style.display = 'none';
+
+      const listContainer = document.getElementById('study-list-container');
       const readerContainer = document.getElementById('study-reader-container');
-      if (readerContainer) readerContainer.style.display = 'block';
 
-      const filename = decodeURIComponent(cleanHash.substring(6));
-      const post = studyPosts.find(p => p.filename === filename);
+      if (cleanHash && (cleanHash.startsWith('study/') || !cleanHash.includes('/'))) {
+        // We are on reader mode
+        if (listContainer) listContainer.style.display = 'none';
+        if (readerContainer) readerContainer.style.display = 'block';
 
-      if (post) {
-        renderReader(post, 'study');
+        const filename = cleanHash.startsWith('study/') 
+          ? decodeURIComponent(cleanHash.substring(6)) 
+          : decodeURIComponent(cleanHash);
+
+        const post = studyPosts.find(p => p.filename === filename);
+        if (post) {
+          renderReader(post, 'study');
+        } else {
+          window.location.hash = '';
+        }
       } else {
-        window.location.hash = 'study';
+        // We are on list mode
+        if (listContainer) listContainer.style.display = 'block';
+        if (readerContainer) readerContainer.style.display = 'none';
+        if (typeof renderStudy === 'function') renderStudy();
+        document.title = "Study | Subin's Blog";
+        window.scrollTo(0, 0);
       }
-    } else if (cleanHash === 'career') {
+    } else if (isCareerPage) {
+      // Career page:
       document.body.classList.add('theme-career');
       document.body.classList.remove('theme-study', 'theme-diary');
       if (headerTitle && headerContainer) {
         headerTitle.textContent = 'Career';
-        if (!isTransitioning) {
-          headerContainer.classList.add('active');
-          headerTitle.classList.add('show');
-        }
+        headerContainer.classList.add('active');
+        headerTitle.classList.add('show');
       }
-      showView('career');
       document.title = "Career | Subin's Blog";
       window.scrollTo(0, 0);
     }
 
-    // Google Analytics SPA virtual page_view track
+    // Google Analytics virtual page_view track
     if (typeof gtag === 'function') {
       gtag('config', 'G-Y1K0WLJYQS', {
-        'page_path': window.location.hash || '/',
+        'page_path': window.location.pathname + window.location.hash,
         'page_title': document.title
       });
     }
@@ -684,11 +688,9 @@ function handleRouting() {
 ------------------------------------- */
 let isTransitioning = false;
 
-function triggerCenterTransition(target, targetHash, satelliteEl, clickEvent) {
+function triggerCenterTransition(target, targetUrl, satelliteEl, clickEvent) {
   if (isTransitioning) return;
   isTransitioning = true;
-
-  // Footer is always visible - no hiding on transition
 
   // Add global transition and theme-specific transitioning classes to body
   document.body.classList.add('global-transitioning', `transitioning-${target}`);
@@ -699,134 +701,12 @@ function triggerCenterTransition(target, targetHash, satelliteEl, clickEvent) {
     homeView.classList.add('home-exiting');
   }
 
-  // Add class to animate slide to center (takes 600ms). The text remains static inside the button.
+  // Add class to animate slide to center (takes 600ms).
   satelliteEl.classList.add('moving-to-center');
 
-  // Compute the center coordinates of the orbit container and dimensions of the button
-  const rect = satelliteEl.getBoundingClientRect();
-  const w = rect.width;
-  const h = rect.height;
-
-  const container = document.querySelector('.orbit-container');
-  let cx = window.innerWidth / 2;
-  let cy = window.innerHeight / 2;
-  if (container) {
-    const cRect = container.getBoundingClientRect();
-    cx = cRect.left + cRect.width / 2;
-    cy = cRect.top + cRect.height / 2;
-  }
-
-  // Create the expanding ripple with theme class, sized to the button container
-  const ripple = document.createElement('div');
-  ripple.className = `expanding-circle theme-${target}`;
-  ripple.style.width = `${w}px`;
-  ripple.style.height = `${h}px`;
-  ripple.style.left = `${cx}px`;
-  ripple.style.top = `${cy}px`;
-
-  // Declare textOverlay in parent scope to be accessed in the route swap timeout
-  let textOverlay;
-
-  // Wait 600ms (slide animation of satellite completes and reaches the center) before swapping and expanding
+  // Wait 600ms (slide animation of satellite completes and reaches the center) then immediately redirect
   setTimeout(() => {
-    // 1. Hide the button's internal text element at the exact moment of arrival
-    const btnSpan = satelliteEl.querySelector('.orbit-btn span');
-    if (btnSpan) {
-      btnSpan.style.opacity = '0';
-    }
-
-    // 2. Create the centered transition text overlay exactly at the center (already at scale 1.25)
-    textOverlay = document.createElement('div');
-    textOverlay.className = 'transition-text-overlay';
-    textOverlay.textContent = target.charAt(0).toUpperCase() + target.slice(1);
-    textOverlay.style.left = `${cx}px`;
-    textOverlay.style.top = `${cy}px`;
-    // Initialize color as white to match the transitioned button text
-    textOverlay.style.color = '#ffffff';
-    textOverlay.style.transform = 'translate(-50%, -50%) scale(1.25)';
-
-    document.body.appendChild(ripple);
-    document.body.appendChild(textOverlay);
-
-    // Force browser reflow to ensure transitions start from initial state
-    ripple.offsetHeight;
-    textOverlay.offsetHeight;
-
-    // Trigger animations
-    requestAnimationFrame(() => {
-      ripple.classList.add('active');
-      textOverlay.classList.add('active');
-    });
-
-    // Perform route swap immediately without 1000ms delay
-    window.location.hash = targetHash;
-
-    // Prepare header subpage title hidden
-    const headerContainer = document.getElementById('header-subpage-container');
-    const headerTitle = document.getElementById('header-subpage-title');
-    if (headerTitle && headerContainer) {
-      headerTitle.textContent = target.charAt(0).toUpperCase() + target.slice(1);
-      headerTitle.classList.remove('show');
-      headerContainer.classList.add('active');
-    }
-
-    // Wait just 50ms (instead of 100ms) for the layout to update, then immediately trigger slide
-    setTimeout(() => {
-      // Calculate translation coordinates from current center position (cx, cy) to the actual header subpage title position
-      let deltaX = 0;
-      let deltaY = 0;
-      let scaleFactor = 0.64; // Fallback
-      if (headerTitle) {
-        const targetRect = headerTitle.getBoundingClientRect();
-        deltaX = (targetRect.left + targetRect.width / 2) - cx;
-        deltaY = (targetRect.top + targetRect.height / 2) - cy;
-
-        // Dynamically compute the exact scale factor to match the header font size
-        const targetFontSize = parseFloat(window.getComputedStyle(headerTitle).fontSize);
-        const baseFontSize = parseFloat(window.getComputedStyle(textOverlay).fontSize);
-        scaleFactor = targetFontSize / baseFontSize;
-      }
-
-      // Apply transform transition and smooth color transition (white to theme color during slide)
-      textOverlay.style.transition = 'transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), color 0.4s ease-out';
-      textOverlay.style.color = 'var(--accent-primary)';
-
-      // Slide/shrink transition text overlay to header logo's right
-      textOverlay.style.transform = `translate(-50%, -50%) translate(${deltaX}px, ${deltaY}px) scale(${scaleFactor})`;
-
-      // Fade out the background ripple to reveal the page
-      ripple.style.opacity = '0';
-
-      // Immediately fade out the body background color back to white along with the ripple
-      // Also remove global-transitioning to let Subin's blog logo fade back in while the text is sliding
-      document.body.classList.remove('global-transitioning', 'transitioning-diary', 'transitioning-study', 'transitioning-career');
-
-      // Wait for slide to complete (800ms from start) then do an atomic seamless handoff
-      setTimeout(() => {
-        if (headerTitle) {
-          headerTitle.style.transition = 'none';
-          headerTitle.style.opacity = '1';
-          headerTitle.classList.add('show');
-        }
-        textOverlay.style.transition = 'none';
-        textOverlay.style.opacity = '0';
-
-        // Clean up DOM and reset transition properties in the next frame
-        requestAnimationFrame(() => {
-          if (headerTitle) {
-            headerTitle.style.transition = '';
-            headerTitle.style.opacity = '';
-          }
-          if (btnSpan) {
-            btnSpan.style.opacity = '';
-          }
-          ripple.remove();
-          textOverlay.remove();
-          satelliteEl.classList.remove('moving-to-center');
-          isTransitioning = false;
-        });
-      }, 800);
-    }, 50);
+    window.location.href = targetUrl;
   }, 600);
 }
 
@@ -930,32 +810,15 @@ function startHeaderWindBlow() {
   }, 1800);
 }
 
-function triggerTransition(targetHash, clickEvent) {
+function triggerTransition(targetUrl, clickEvent) {
   if (isTransitioning) return;
   isTransitioning = true;
-
-  // Footer is always visible on all pages - no hide/show logic needed
 
   // Make footer transparent for entire ripple duration
   document.body.classList.add('footer-transitioning');
 
-  if (targetHash === '#' || targetHash === '') {
-    startHeaderWindBlow();
-  }
-
-  // Create circular transition element at coordinates of mouse click
-  const ripple = document.createElement('div');
-  ripple.className = 'expanding-circle';
-  document.body.appendChild(ripple);
-
-  const x = clickEvent.clientX || window.innerWidth / 2;
-  const y = clickEvent.clientY || window.innerHeight / 2;
-
-  ripple.style.left = `${x}px`;
-  ripple.style.top = `${y}px`;
-
-  // Find the currently active view section and fade it out smoothly in place (disable CSS animation to allow inline styles to work)
-  const currentActiveView = document.querySelector('.view-section:not([style*="display: none"])');
+  // Find the currently active view section and fade it out smoothly in place
+  const currentActiveView = document.querySelector('.view-section');
   if (currentActiveView) {
     currentActiveView.style.animation = 'none';
     currentActiveView.offsetHeight; // Force layout recalculation
@@ -963,30 +826,34 @@ function triggerTransition(targetHash, clickEvent) {
     currentActiveView.style.opacity = '0';
   }
 
+  // Create circular transition element at coordinates of mouse click
+  const ripple = document.createElement('div');
+  ripple.className = 'expanding-circle';
+  
+  // If returning to home, the default color is white. If going to subpage, we can match theme
+  const goingHome = targetUrl.includes('index.html');
+  if (!goingHome) {
+    const targetTheme = targetUrl.replace('.html', '');
+    ripple.classList.add(`theme-${targetTheme}`);
+  }
+  document.body.appendChild(ripple);
+
+  const x = clickEvent ? (clickEvent.clientX || window.innerWidth / 2) : window.innerWidth / 2;
+  const y = clickEvent ? (clickEvent.clientY || window.innerHeight / 2) : window.innerHeight / 2;
+
+  ripple.style.left = `${x}px`;
+  ripple.style.top = `${y}px`;
+
   // Start the expand animation
   requestAnimationFrame(() => {
     ripple.classList.add('active');
   });
 
-  // Swap hash address after the screen is completely covered and fade-out completes (600ms)
-  const goingHome = targetHash === '#' || targetHash === '';
+  // Redirect after the screen is completely covered (500ms for subpage, 850ms for home to allow full fadeout)
+  const delay = goingHome ? 850 : 500;
   setTimeout(() => {
-    window.location.hash = targetHash;
-
-    // Smoothly fade-out and destroy ripple element
-    setTimeout(() => {
-      ripple.style.opacity = '0';
-      setTimeout(() => {
-        ripple.remove();
-        isTransitioning = false;
-        // For non-home transitions, remove footer-transitioning here
-        // For home, startHeaderWindBlow handles removal after 1800ms
-        if (!goingHome) {
-          document.body.classList.remove('footer-transitioning');
-        }
-      }, 400);
-    }, 100);
-  }, 450);
+    window.location.href = targetUrl;
+  }, delay);
 }
 
 // Intercept standard data-target button clicks to trigger expanding animations
@@ -996,13 +863,23 @@ function initNavigationInterceptors() {
     if (btn) {
       e.preventDefault();
       const target = btn.getAttribute('data-target');
-      const hash = target === 'home' ? '#' : `#${target}`;
+      
+      const pathName = window.location.pathname;
+      const isSubpage = pathName.includes('diary') || pathName.includes('study') || pathName.includes('career');
+
+      let targetUrl;
+      if (target === 'home') {
+        const fromParam = isSubpage ? `?from=${pathName.split('/').pop().replace('.html', '')}` : '';
+        targetUrl = `index.html${fromParam}`;
+      } else {
+        targetUrl = `${target}.html`;
+      }
 
       const satellite = btn.closest('.orbit-satellite');
       if (satellite) {
-        triggerCenterTransition(target, hash, satellite, e);
+        triggerCenterTransition(target, targetUrl, satellite, e);
       } else {
-        triggerTransition(hash, e);
+        triggerTransition(targetUrl, e);
       }
     }
   });
@@ -1012,13 +889,16 @@ function initNavigationInterceptors() {
   if (mainLogo) {
     mainLogo.addEventListener('click', (e) => {
       e.preventDefault();
-      const currentHash = window.location.hash;
-      if (!currentHash || currentHash === '#') {
-        // Reload page if already on the home view
+      const pathName = window.location.pathname;
+      const isHomePage = !pathName.includes('diary') && !pathName.includes('study') && !pathName.includes('career');
+      if (isHomePage) {
         window.location.reload();
       } else {
-        // Trigger transition back to home if on another page
-        triggerTransition('#', e);
+        if (typeof startHeaderWindBlow === 'function') {
+          startHeaderWindBlow();
+        }
+        const fromParam = `?from=${pathName.split('/').pop().replace('.html', '')}`;
+        triggerTransition(`index.html${fromParam}`, e);
       }
     });
   }
@@ -1028,15 +908,7 @@ function initNavigationInterceptors() {
   if (headerSubpageContainer) {
     headerSubpageContainer.addEventListener('click', (e) => {
       e.preventDefault();
-      const titleEl = document.getElementById('header-subpage-title');
-      if (titleEl) {
-        const text = titleEl.textContent.trim().toLowerCase();
-        if (text === 'diary') {
-          triggerTransition('#diary', e);
-        } else if (text === 'study') {
-          triggerTransition('#study', e);
-        }
-      }
+      window.location.hash = '';
     });
   }
 }
@@ -1282,5 +1154,85 @@ function getFirstImageUrl(post) {
   }
 
   return null;
+}
+
+// Subpage entrance slide-to-header animation on page load
+function playSubpageEntranceAnimation(target) {
+  const headerTitle = document.getElementById('header-subpage-title');
+  const headerContainer = document.getElementById('header-subpage-container');
+  if (!headerTitle || !headerContainer) return;
+
+  // Find the pre-rendered transition text overlay in HTML
+  let textOverlay = document.getElementById('subpage-transition-text');
+  if (!textOverlay) {
+    // Fallback if not pre-rendered in HTML
+    textOverlay = document.createElement('div');
+    textOverlay.className = 'transition-text-overlay active';
+    textOverlay.textContent = target.charAt(0).toUpperCase() + target.slice(1);
+    textOverlay.style.left = '50%';
+    textOverlay.style.top = 'calc(50% - 30px)';
+    textOverlay.style.color = '#ffffff';
+    textOverlay.style.transform = 'translate(-50%, -50%) scale(1.25)';
+    document.body.appendChild(textOverlay);
+  }
+
+  // Ensure body background is transitioning (in case it wasn't statically set)
+  document.body.classList.add(`transitioning-${target}`);
+
+  // Temporarily hide the static header title so we can animate the flying text
+  headerTitle.style.opacity = '0';
+  headerTitle.classList.remove('show');
+
+  // Find the solid color entrance overlay (hide it since we use body class transitioning instead)
+  const overlay = document.getElementById('subpage-entrance-overlay');
+  if (overlay) {
+    overlay.style.display = 'none';
+  }
+
+  // Force reflow to ensure layout is computed
+  textOverlay.offsetHeight;
+
+  // Wait 50ms to ensure the browser has painted the initial centered state in white
+  setTimeout(() => {
+    // Calculate the text overlay's actual painted center coordinate dynamically *at this frame*
+    const overlayRect = textOverlay.getBoundingClientRect();
+    const startX = overlayRect.left + overlayRect.width / 2;
+    const startY = overlayRect.top + overlayRect.height / 2;
+
+    // Calculate translation coordinates from current center position to the header title position
+    const targetRect = headerTitle.getBoundingClientRect();
+    const deltaX = (targetRect.left + targetRect.width / 2) - startX;
+    const deltaY = (targetRect.top + targetRect.height / 2) - startY;
+
+    const targetFontSize = parseFloat(window.getComputedStyle(headerTitle).fontSize);
+    const baseFontSize = parseFloat(window.getComputedStyle(textOverlay).fontSize);
+    const scaleFactor = targetFontSize / baseFontSize;
+
+    // Apply transform transition and smooth color transition
+    textOverlay.style.transition = 'transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), color 0.4s ease-out';
+    textOverlay.style.color = 'var(--accent-primary)';
+    textOverlay.style.transform = `translate(-50%, -50%) translate(${deltaX}px, ${deltaY}px) scale(${scaleFactor})`;
+
+    // Remove the body transitioning class immediately as the slide starts so it fades back to white
+    document.body.classList.remove(`transitioning-${target}`);
+  }, 50);
+
+  // Wait for animation to finish (850ms = 50ms delay + 800ms transition) then do atomic handoff to static header
+  setTimeout(() => {
+    headerContainer.classList.add('active'); // Add active class to show the / separator and title layout
+    headerTitle.style.transition = 'none';
+    headerTitle.style.opacity = '1';
+    headerTitle.classList.add('show');
+    
+    textOverlay.style.transition = 'none';
+    textOverlay.style.opacity = '0';
+
+    requestAnimationFrame(() => {
+      headerTitle.style.transition = '';
+      headerTitle.style.opacity = '';
+      textOverlay.remove();
+      if (overlay) overlay.remove();
+    });
+  }, 850);
 }
 

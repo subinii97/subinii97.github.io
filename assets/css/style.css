@@ -145,7 +145,7 @@ header.nav-header {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-top: -170px; /* Shift diagram further upwards to decrease top spacing */
+  margin-top: -30px; /* Balanced centering, giving breathing room from the header and footer */
   overflow: visible; /* Allow canvas to extend beyond container without clipping */
 }
 
@@ -246,7 +246,7 @@ header.nav-header {
 .orbit-satellite.moving-to-center {
   transform: translate(0, 0) scale(1.25) !important;
   z-index: 9999;
-  transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1) !important;
   opacity: 1 !important;
 }
 
@@ -386,7 +386,7 @@ header.nav-header {
   .orbit-container {
     width: 320px;
     height: 320px;
-    margin-top: -110px; /* Shift diagram further upwards on mobile */
+    margin-top: -20px; /* Visually centered on mobile screens */
   }
   .orbit-line {
     width: 260px;
@@ -1287,16 +1287,24 @@ header.nav-header {
 /* Centered Navigation Text Overlay */
 .transition-text-overlay {
   position: fixed;
+  left: 50%;
+  top: calc(50% - 15px);
   color: #000000;
   font-family: var(--font-title);
   font-size: 1.25rem; /* Matches the orbit-btn typography exactly */
   font-weight: 600;
   letter-spacing: -0.5px;
-  z-index: 100000;
+  z-index: 2000000;
   pointer-events: none;
   opacity: 1;
   transform: translate(-50%, -50%) translate(0px, 0px) scale(1);
   transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.8s ease-out, color 0.3s ease-out;
+}
+
+@media (max-width: 600px) {
+  .transition-text-overlay {
+    top: calc(50% - 10px);
+  }
 }
 
 .transition-text-overlay.active {
@@ -1446,6 +1454,43 @@ body.theme-career {
   border-top: none;
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
+  opacity: 0;
+  transform: translateY(100%);
+  animation: homeFooterFadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes homeFooterFadeIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Slide down footer when exiting home page to subpages */
+body.global-transitioning .blog-footer {
+  animation: none !important;
+  transform: translateY(100%) !important;
+  opacity: 0 !important;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.6s ease-out !important;
+}
+
+/* When on subpages, footer flows naturally at the bottom of content instead of floating fixed */
+body.theme-diary .blog-footer,
+body.theme-study .blog-footer,
+body.theme-career .blog-footer {
+  position: relative;
+  animation: subpageFooterFadeIn 0.6s ease forwards;
+}
+
+@keyframes subpageFooterFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .footer-container {
@@ -1585,7 +1630,7 @@ body.theme-career {
 
 /* Global Transitioning Styles (for page body and layout transitions) */
 body {
-  transition: background-color 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: background-color 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 body.transitioning-diary {

@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Study | Subin's Blog</title>
+  <meta name="description" content="Subin Lim's personal blog. Research, study, notes.">
+
+  <!-- Tailwind CSS v4 Browser Compiler -->
+  <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+
+  <!-- FontAwesome for Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Custom Stylesheet -->
+  <link rel="stylesheet" href="./assets/css/style.css?v=1.2.4">
+
+  <!-- KaTeX CSS for LaTeX Math Equations -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-Y1K0WLJYQS"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'G-Y1K0WLJYQS');
+  </script>
+</head>
+
+<body id="main-page-container" class="theme-study subpage transitioning-study">
+
+  <!-- Pre-rendered Transition Text to prevent visual flash on load -->
+  <div id="subpage-transition-text" class="transition-text-overlay active" style="color: #ffffff; transform: translate(-50%, -50%) scale(1.25); transition: none;">Study</div>
+
+  <!-- Header Logo -->
+  <header class="main-header" id="blog-logo-header">
+    <a href="index.html" class="main-logo">Subin's blog</a>
+    <div class="header-subpage" id="header-subpage-container">
+      <span class="subpage-separator">/</span>
+      <span class="subpage-title show" id="header-subpage-title">Study</span>
+    </div>
+  </header>
+
+  <!-- Image Preview Modal -->
+  <div id="image-preview-modal" class="image-preview-overlay">
+    <img id="image-preview-content" src="" alt="Preview">
+  </div>
+
+
+
+  <!-- Study View Wrapper -->
+  <div id="study-view" class="view-section">
+    <div class="diary-wrapper container">
+
+      <!-- Post List Section -->
+      <div id="study-list-container">
+        <div class="diary-grid">
+          
+          <!-- 1. Left Sidebar: Categories & Search -->
+          <aside class="category-sidebar">
+            <h3 class="category-title">Categories</h3>
+            <ul class="category-menu" id="study-category-menu-element">
+              <!-- Populated by JavaScript -->
+            </ul>
+
+            <!-- Search bar located under categories -->
+            <div class="search-container sidebar-search" style="margin-top: 1.5rem; width: 100%;">
+              <i class="fas fa-search"></i>
+              <input type="text" id="study-search" class="search-input" placeholder="검색">
+            </div>
+          </aside>
+
+          <!-- 2. Right: Post List Section -->
+          <div class="post-list-container-wrapper">
+            <div class="post-list-header-row">
+              <span class="post-list-title">목록</span>
+              <div class="post-list-header-actions" style="display: flex; gap: 0.5rem; align-items: center;">
+                <button id="study-search-toggle-btn" class="search-toggle-btn">
+                  <i class="fas fa-search"></i> 카테고리/검색
+                </button>
+                <button id="study-sort-btn" class="sort-btn">
+                  <!-- Toggled by JS -->
+                </button>
+              </div>
+            </div>
+
+            <main class="post-list" id="study-post-list-element">
+              <!-- Populated by JavaScript -->
+            </main>
+
+            <!-- Pagination Controls -->
+            <div id="study-pagination" class="pagination-container">
+              <!-- Populated by JavaScript -->
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Detailed Post Reader View -->
+      <div id="study-reader-container" class="reader-container">
+        <article class="glass-card" style="padding: 2.5rem 2rem;">
+          <div class="reader-header">
+            <div class="reader-back-row" style="margin-bottom: 1.5rem;">
+              <a href="#study" class="back-to-list-btn">
+                <i class="fas fa-arrow-left"></i> back to study
+              </a>
+            </div>
+            <div class="reader-category-row" style="margin-bottom: 0.6rem;">
+              <span id="study-reader-post-category"></span>
+            </div>
+            <h1 class="reader-title" id="study-reader-post-title" style="margin-top: 0.4rem; margin-bottom: 0.8rem;">Loading...</h1>
+            <div class="reader-meta">
+              <span id="study-reader-post-date"></span>
+            </div>
+          </div>
+          <div class="reader-content" id="study-reader-post-content">
+            <!-- Rendered Markdown goes here -->
+          </div>
+        </article>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Shared Footer -->
+  <footer class="blog-footer">
+    <div class="footer-container">
+      <div class="footer-socials">
+        <div class="footer-email-container">
+          <a href="mailto:forestsb97@gmail.com" class="email-tooltip" id="footer-email-tooltip">
+            forestsb97@gmail.com
+          </a>
+          <button class="footer-icon" id="footer-email-btn" title="Email"
+            style="background: none; border: none; padding: 0; cursor: pointer;">
+            <i class="fas fa-envelope"></i>
+          </button>
+        </div>
+        <a href="https://www.instagram.com/subin_forest" target="_blank" rel="noopener noreferrer" class="footer-icon"
+          title="Instagram">
+          <i class="fab fa-instagram"></i>
+        </a>
+        <a href="https://github.com/subinii97" target="_blank" rel="noopener noreferrer" class="footer-icon"
+          title="GitHub">
+          <i class="fab fa-github"></i>
+        </a>
+      </div>
+      <div class="footer-credits">
+        Designed by Subin, inspired by Physics
+      </div>
+    </div>
+  </footer>
+
+  <!-- KaTeX Math Equation Renderers -->
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+
+  <!-- Marked JS Library from CDN for Client-side Markdown Compilation -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+  <!-- Application Scripts -->
+  <script src="./assets/js/study.js"></script>
+  <script src="./assets/js/main.js?v=1.1.23"></script>
+</body>
+
+</html>

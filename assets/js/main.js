@@ -521,13 +521,14 @@ function handleRouting() {
     const headerTitle = document.getElementById('header-subpage-title');
 
     if (!cleanHash) {
-      document.body.classList.remove('theme-diary', 'theme-study', 'theme-finance');
+      document.body.classList.remove('theme-diary', 'theme-study', 'theme-career');
       if (headerContainer && headerTitle) {
         headerContainer.classList.remove('active');
         headerTitle.classList.remove('show');
         headerTitle.textContent = '';
       }
       showView('home');
+      document.title = "Subin's Blog";
 
       // Home Entrance Animation Sequence (Only trigger when returning from another subpage)
       const homeView = document.getElementById('home-view');
@@ -576,7 +577,7 @@ function handleRouting() {
       window.location.hash = '#';
     } else if (cleanHash === 'study') {
       document.body.classList.add('theme-study');
-      document.body.classList.remove('theme-diary', 'theme-finance');
+      document.body.classList.remove('theme-diary', 'theme-career');
       if (headerTitle && headerContainer) {
         headerTitle.textContent = 'Study';
         if (!isTransitioning) {
@@ -589,10 +590,11 @@ function handleRouting() {
       const readerContainer = document.getElementById('study-reader-container');
       if (readerContainer) readerContainer.style.display = 'none';
       renderStudy();
+      document.title = "Study | Subin's Blog";
       window.scrollTo(0, 0);
     } else if (cleanHash === 'diary') {
       document.body.classList.add('theme-diary');
-      document.body.classList.remove('theme-study', 'theme-finance');
+      document.body.classList.remove('theme-study', 'theme-career');
       if (headerTitle && headerContainer) {
         headerTitle.textContent = 'Diary';
         if (!isTransitioning) {
@@ -605,10 +607,11 @@ function handleRouting() {
       const readerContainer = document.getElementById('diary-reader-container');
       if (readerContainer) readerContainer.style.display = 'none';
       renderDiary();
+      document.title = "Diary | Subin's Blog";
       window.scrollTo(0, 0);
     } else if (cleanHash.startsWith('diary/')) {
       document.body.classList.add('theme-diary');
-      document.body.classList.remove('theme-study', 'theme-finance');
+      document.body.classList.remove('theme-study', 'theme-career');
       if (headerTitle && headerContainer) {
         headerTitle.textContent = 'Diary';
         if (!isTransitioning) {
@@ -631,7 +634,7 @@ function handleRouting() {
       }
     } else if (cleanHash.startsWith('study/')) {
       document.body.classList.add('theme-study');
-      document.body.classList.remove('theme-diary', 'theme-finance');
+      document.body.classList.remove('theme-diary', 'theme-career');
       if (headerTitle && headerContainer) {
         headerTitle.textContent = 'Study';
         if (!isTransitioning) {
@@ -652,21 +655,27 @@ function handleRouting() {
       } else {
         window.location.hash = 'study';
       }
-    } else if (cleanHash === 'finance') {
-      document.body.classList.add('theme-finance');
+    } else if (cleanHash === 'career') {
+      document.body.classList.add('theme-career');
       document.body.classList.remove('theme-study', 'theme-diary');
       if (headerTitle && headerContainer) {
-        headerTitle.textContent = 'Finance';
+        headerTitle.textContent = 'Career';
         if (!isTransitioning) {
           headerContainer.classList.add('active');
           headerTitle.classList.add('show');
         }
       }
-      showView('finance');
-      if (window.initFinanceDashboard) {
-        window.initFinanceDashboard();
-      }
+      showView('career');
+      document.title = "Career | Subin's Blog";
       window.scrollTo(0, 0);
+    }
+
+    // Google Analytics SPA virtual page_view track
+    if (typeof gtag === 'function') {
+      gtag('config', 'G-Y1K0WLJYQS', {
+        'page_path': window.location.hash || '/',
+        'page_title': document.title
+      });
     }
   };
 
@@ -791,7 +800,7 @@ function triggerCenterTransition(target, targetHash, satelliteEl, clickEvent) {
 
       // Immediately fade out the body background color back to white along with the ripple
       // Also remove global-transitioning to let Subin's blog logo fade back in while the text is sliding
-      document.body.classList.remove('global-transitioning', 'transitioning-diary', 'transitioning-study', 'transitioning-finance');
+      document.body.classList.remove('global-transitioning', 'transitioning-diary', 'transitioning-study', 'transitioning-career');
 
       // Wait for slide to complete (800ms from start) then do an atomic seamless handoff
       setTimeout(() => {
@@ -1004,6 +1013,66 @@ function renderDiary() {
       : `<i class="fas fa-sort-amount-down"></i> 최신순`;
   }
 
+  // 0. Render "Recent Updates" Section (Top 3 recently updated posts across diary posts)
+  const recentUpdatesEl = document.getElementById('diary-recent-updates');
+  if (recentUpdatesEl && diaryPosts.length > 0) {
+    // Sort diaryPosts by updated date desc, using date as fallback
+    const sortedByUpdate = [...diaryPosts].sort((a, b) => {
+      const dateA = a.updated ? new Date(a.updated) : new Date(a.date.split(' ')[0]);
+      const dateB = b.updated ? new Date(b.updated) : new Date(b.date.split(' ')[0]);
+      return dateB - dateA;
+    });
+
+    const topUpdates = sortedByUpdate.slice(0, 3);
+    
+    recentUpdatesEl.innerHTML = topUpdates.map((post, idx) => {
+      const imageUrl = getFirstImageUrl(post);
+      const formattedUpdateDate = post.updated 
+        ? formatPostDate(post.updated.split('T')[0]) 
+        : formatPostDate(post.date);
+
+      const isRead = readPosts.has(post.filename);
+      
+      // Calculate isNew for updates
+      const updateDate = post.updated ? new Date(post.updated) : new Date(post.date);
+      const diffMs = new Date() - updateDate;
+      const diffDays = diffMs / (1000 * 60 * 60 * 24);
+      const isNew = diffDays >= 0 && diffDays <= 7 && !isRead;
+
+      // Determine default background gradients for text-only cards to look premium
+      const gradients = [
+        'linear-gradient(135deg, #1e1e2f 0%, #110e1b 100%)',
+        'linear-gradient(135deg, #122c34 0%, #0a1128 100%)',
+        'linear-gradient(135deg, #2b1055 0%, #0f051d 100%)'
+      ];
+      const fallbackGradient = gradients[idx % gradients.length];
+      const thumbnailStyle = imageUrl 
+        ? `background-image: url('${imageUrl}');` 
+        : `background: ${fallbackGradient};`;
+
+      const typeLabel = post.type === 'study' ? 'Study' : 'Diary';
+      const categoryLabel = post.categories && post.categories.length > 0 ? post.categories[0] : typeLabel;
+      const targetHash = `#${post.type}/${encodeURIComponent(post.filename)}`;
+
+      return `
+        <a href="${targetHash}" class="update-card glass-card ${isRead ? 'read' : ''}" data-filename="${post.filename}">
+          <div class="update-card-image" style="${thumbnailStyle}">
+            <span class="update-card-badge">${categoryLabel}</span>
+          </div>
+          <div class="update-card-body">
+            <h3 class="update-card-title">${escapeHtml(post.title)}</h3>
+            <div class="update-card-meta">
+              <span class="update-card-date">
+                <i class="far fa-clock"></i> ${formattedUpdateDate}
+              </span>
+              ${isNew ? '<span class="new-badge">NEW</span>' : ''}
+            </div>
+          </div>
+        </a>
+      `;
+    }).join('');
+  }
+
   // 1. Gather all categories and counts
   const categoryCounts = { 'All': diaryPosts.length };
   diaryPosts.forEach(post => {
@@ -1082,27 +1151,27 @@ function renderDiary() {
       postDate = new Date(post.date);
     }
 
-    const diffMs = new Date() - postDate;
+    // Determine updated date
+    const updateDate = post.updated ? new Date(post.updated) : postDate;
+    const diffMs = new Date() - updateDate;
     const diffDays = diffMs / (1000 * 60 * 60 * 24);
     const isNew = diffDays >= 0 && diffDays <= 7 && !isRead;
 
     const formattedDate = formatPostDate(post.date);
-    const categoryLabel = post.categories && post.categories.length > 0
-      ? `<span class="post-category-tag">${post.categories[0]}</span>`
-      : '';
+    const dateDisplay = formattedDate;
+
+    const tagText = post.categories && post.categories.length > 0 ? post.categories[0] : 'Diary';
 
     return `
-      <a href="#diary/${encodeURIComponent(post.filename)}" class="post-item compact-post-item glass-card ${isRead ? 'read' : ''}" data-filename="${post.filename}">
-        <div class="post-item-header">
-          <h2 class="post-title">${escapeHtml(post.title)}</h2>
+      <a href="#diary/${encodeURIComponent(post.filename)}" class="post-item diary-inline-item glass-card ${isRead ? 'read' : ''}" data-filename="${post.filename}">
+        <span class="diary-item-tag">${escapeHtml(tagText)}</span>
+        <span class="diary-item-separator">|</span>
+        <h2 class="diary-item-title">
+          <span>${escapeHtml(post.title)}</span>
           ${isNew ? '<span class="new-badge">NEW</span>' : ''}
-        </div>
-        <div class="post-item-meta-row">
-          <span class="post-date"><i class="far fa-calendar-alt"></i> ${formattedDate}</span>
-          <div class="post-item-category-wrapper">
-            ${categoryLabel}
-          </div>
-        </div>
+        </h2>
+        <span class="diary-item-separator">|</span>
+        <span class="diary-item-date">${dateDisplay}</span>
       </a>
     `;
   }).join('');
@@ -1427,12 +1496,21 @@ function renderReader(post, prefix = 'diary') {
   const listContainer = document.getElementById(`${prefix}-list-container`);
   const readerContainer = document.getElementById(`${prefix}-reader-container`);
 
+  // Set document title
+  document.title = `${post.title} | Subin's Blog`;
+
   // Mark as read
   markPostAsRead(post.filename);
 
   // Set header details
   document.getElementById(`${prefix}-reader-post-title`).textContent = post.title;
-  document.getElementById(`${prefix}-reader-post-date`).innerHTML = `<i class="far fa-calendar-alt"></i> ${post.date.split(' ')[0]}`;
+  let dateHtml = `<i class="far fa-calendar-alt"></i> 작성: ${post.date.split(' ')[0]}`;
+  const createdDateOnly = post.date.split(' ')[0];
+  const updatedDateOnly = post.updated ? post.updated.split('T')[0] : createdDateOnly;
+  if (createdDateOnly !== updatedDateOnly && post.updated) {
+    dateHtml += ` <span class="reader-post-updated"><i class="fas fa-edit"></i> 수정: ${updatedDateOnly}</span>`;
+  }
+  document.getElementById(`${prefix}-reader-post-date`).innerHTML = dateHtml;
 
   const categoryTag = post.categories && post.categories.length > 0
     ? `<span class="post-category-tag">${post.categories[0]}</span>`
@@ -1623,3 +1701,32 @@ function openImagePreview(src, alt) {
   overlay.offsetHeight; // Trigger reflow for transition
   overlay.classList.add('show');
 }
+
+// Utility: Find first image in markdown content and resolve its path
+function getFirstImageUrl(post) {
+  const content = post.content || '';
+  const postImgBase = post.folder ? `./_posts/${post.folder}/` : './_posts/';
+
+  // 1. Try HTML img tag
+  const imgTagMatch = content.match(/<img[^>]*?src=["']([^"']+)["']/);
+  if (imgTagMatch) {
+    const src = imgTagMatch[1];
+    if (src.startsWith('http://') || src.startsWith('https://') || src.startsWith('/') || src.startsWith('./')) {
+      return src;
+    }
+    return postImgBase + src;
+  }
+
+  // 2. Try markdown image syntax
+  const mdImgMatch = content.match(/!\[[^\]]*\]\(([^)]+)\)/);
+  if (mdImgMatch) {
+    const src = mdImgMatch[1];
+    if (src.startsWith('http://') || src.startsWith('https://') || src.startsWith('/') || src.startsWith('./')) {
+      return src;
+    }
+    return postImgBase + src;
+  }
+
+  return null;
+}
+

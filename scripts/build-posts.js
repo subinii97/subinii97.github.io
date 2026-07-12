@@ -1,5 +1,24 @@
 const fs = require('fs');
 const path = require('path');
+const { execSync } = require('child_process');
+
+function getGitLastCommitDate(filePath) {
+  try {
+    const stdout = execSync(`git log -1 --format=%cI -- "${filePath}"`, { encoding: 'utf-8' });
+    if (stdout.trim()) {
+      return new Date(stdout.trim()).toISOString();
+    }
+  } catch (e) {
+    // Ignore error and fallback
+  }
+  try {
+    const stat = fs.statSync(filePath);
+    return stat.mtime.toISOString();
+  } catch (e) {
+    return new Date().toISOString();
+  }
+}
+
 
 const postsDir = path.join(__dirname, '../_posts');
 const outputFile = path.join(__dirname, '../posts.json');
@@ -110,6 +129,7 @@ function build() {
       title: metadata.title || file.replace(/\.md$/, ''),
       subtitle: metadata.subtitle || '',
       date: metadata.date || fileDate,
+      updated: metadata.updated || getGitLastCommitDate(filePath),
       categories: metadata.categories || [],
       tags: metadata.tags || [],
       content: content

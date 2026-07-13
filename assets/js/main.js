@@ -1208,16 +1208,17 @@ function playSubpageEntranceAnimation(target) {
     const baseFontSize = parseFloat(window.getComputedStyle(textOverlay).fontSize);
     const scaleFactor = targetFontSize / baseFontSize;
 
-    // Apply transform transition and smooth color transition
-    textOverlay.style.transition = 'transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), color 0.4s ease-out';
+    // Apply transform transition and smooth color transition (0.6s to match the background transition duration)
+    textOverlay.style.transition = 'transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), color 0.4s ease-out';
     textOverlay.style.color = 'var(--accent-primary)';
     textOverlay.style.transform = `translate(-50%, -50%) translate(${deltaX}px, ${deltaY}px) scale(${scaleFactor})`;
 
-    // Remove the body transitioning class immediately as the slide starts so it fades back to white
+    // Explicitly add transition to body background and remove the transitioning class so they fade in perfect sync
+    document.body.style.transition = 'background-color 0.6s cubic-bezier(0.16, 1, 0.3, 1)';
     document.body.classList.remove(`transitioning-${target}`);
   }, 50);
 
-  // Wait for animation to finish (850ms = 50ms delay + 800ms transition) then do atomic handoff to static header
+  // Wait for animation to finish (650ms = 50ms delay + 600ms transition) then do atomic handoff to static header
   setTimeout(() => {
     headerContainer.classList.add('active'); // Add active class to show the / separator and title layout
     headerTitle.style.transition = 'none';
@@ -1232,7 +1233,9 @@ function playSubpageEntranceAnimation(target) {
       headerTitle.style.opacity = '';
       textOverlay.remove();
       if (overlay) overlay.remove();
+      // Reset inline body transition style so subsequent transitions work normally
+      document.body.style.transition = '';
     });
-  }, 850);
+  }, 650);
 }
 

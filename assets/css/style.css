@@ -338,6 +338,7 @@ header.nav-header {
   font-family: var(--font-title);
   font-weight: 600;
   font-size: 1.25rem;
+  letter-spacing: -0.5px;
   color: var(--text-primary);
   background: var(--bg-glass);
   backdrop-filter: blur(12px);
@@ -1736,8 +1737,8 @@ body.theme-career .blog-footer {
 
 
 /* Global Transitioning Styles (for page body and layout transitions) */
-body {
-  transition: background-color 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+body.global-transitioning {
+  transition: background-color 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 body.transitioning-diary {

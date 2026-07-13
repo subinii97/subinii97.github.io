@@ -101,19 +101,9 @@ function renderDiary() {
     
     recentUpdatesEl.innerHTML = topUpdates.map((post, idx) => {
       const imageUrl = getFirstImageUrl(post);
-      const formattedCreatedDate = formatPostDate(post.date);
       const formattedUpdateDate = post.updated 
         ? formatPostDate(post.updated.split('T')[0]) 
-        : null;
-
-      const createdDateOnly = post.date.split(' ')[0];
-      const updatedDateOnly = post.updated ? post.updated.split('T')[0] : createdDateOnly;
-      const isUpdated = post.updated && createdDateOnly !== updatedDateOnly;
-
-      const dateHtml = isUpdated
-        ? `<span><i class="far fa-calendar-alt"></i> 작성: ${formattedCreatedDate}</span>
-           <span><i class="fas fa-edit"></i> 수정: ${formattedUpdateDate}</span>`
-        : `<span><i class="far fa-calendar-alt"></i> 작성: ${formattedCreatedDate}</span>`;
+        : formatPostDate(post.date);
 
       const isRead = readPosts.has(post.filename);
       
@@ -145,7 +135,7 @@ function renderDiary() {
             <h3 class="update-card-title">${escapeHtml(post.title)}</h3>
             <div class="update-card-meta">
               <span class="update-card-date">
-                ${dateHtml}
+                <i class="far fa-clock"></i> ${formattedUpdateDate}
               </span>
               ${isNew ? '<span class="new-badge">NEW</span>' : ''}
             </div>
@@ -234,18 +224,8 @@ function renderDiary() {
     const diffDays = diffMs / (1000 * 60 * 60 * 24);
     const isNew = diffDays >= 0 && diffDays <= 7 && !isRead;
 
-    const formattedCreatedDate = formatPostDate(post.date);
-    const formattedUpdateDate = post.updated 
-      ? formatPostDate(post.updated.split('T')[0]) 
-      : null;
-
-    const createdDateOnly = post.date.split(' ')[0];
-    const updatedDateOnly = post.updated ? post.updated.split('T')[0] : createdDateOnly;
-    const isUpdated = post.updated && createdDateOnly !== updatedDateOnly;
-
-    const dateDisplay = isUpdated
-      ? `${formattedCreatedDate} (수정: ${formattedUpdateDate})`
-      : formattedCreatedDate;
+    const formattedDate = formatPostDate(post.date);
+    const dateDisplay = formattedDate;
 
     const tagText = post.categories && post.categories.length > 0 ? post.categories[0] : 'Diary';
 

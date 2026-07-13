@@ -168,20 +168,7 @@ function renderStudy() {
     const diffDays = diffMs / (1000 * 60 * 60 * 24);
     const isNew = diffDays >= 0 && diffDays <= 7 && !isRead;
 
-    const formattedCreatedDate = formatPostDate(post.date);
-    const formattedUpdateDate = post.updated 
-      ? formatPostDate(post.updated.split('T')[0]) 
-      : null;
-
-    const createdDateOnly = post.date.split(' ')[0];
-    const updatedDateOnly = post.updated ? post.updated.split('T')[0] : createdDateOnly;
-    const isUpdated = post.updated && createdDateOnly !== updatedDateOnly;
-
-    const dateDisplay = isUpdated
-      ? `<span><i class="far fa-calendar-alt"></i> 작성: ${formattedCreatedDate}</span>
-         <span style="margin-left: 0.5rem;"><i class="fas fa-edit"></i> 수정: ${formattedUpdateDate}</span>`
-      : `<span><i class="far fa-calendar-alt"></i> 작성: ${formattedCreatedDate}</span>`;
-
+    const formattedDate = formatPostDate(post.date);
     const categoryLabel = post.categories && post.categories.length > 0
       ? `<span class="post-category-tag">${post.categories[0]}</span>`
       : '';
@@ -194,7 +181,7 @@ function renderStudy() {
         </div>
         ${post.subtitle ? `<div class="post-subtitle">${escapeHtml(post.subtitle)}</div>` : ''}
         <div class="post-item-meta-row">
-          <span class="post-date">${dateDisplay}</span>
+          <span class="post-date"><i class="far fa-calendar-alt"></i> ${formattedDate}</span>
           <div class="post-item-category-wrapper">
             ${categoryLabel}
           </div>

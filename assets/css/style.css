@@ -621,6 +621,7 @@ header.nav-header {
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
+  max-width: 1200px !important;
 }
 
 .diary-wrapper input,
@@ -703,9 +704,14 @@ header.nav-header {
 /* Diary Grid Layout: Categories on Left, Post list on Right */
 .diary-grid {
   display: grid;
-  grid-template-columns: 280px 1fr;
+  grid-template-columns: 220px 1fr 220px;
   gap: 2rem;
   align-items: start;
+}
+
+.diary-grid::after {
+  content: "";
+  display: block;
 }
 
 /* Sidebar Search specific adjustment */
@@ -1184,6 +1190,9 @@ header.nav-header {
 @media (max-width: 800px) {
   .diary-grid {
     grid-template-columns: 1fr;
+  }
+  .diary-grid::after {
+    display: none;
   }
 
   .category-sidebar {
@@ -1815,6 +1824,10 @@ body.transitioning-history {
 #home-view.home-entrance-active .center-datetime-container,
 #home-view.home-entrance-active .orbit-satellite {
   opacity: 0;
+}
+
+#home-view.home-entrance-active:not(.entrance-step-2) .orbit-satellite {
+  transition: none !important;
 }
 
 /* Push satellites outwards before sliding in (Desktop: ±320px vs ±280px, Mobile: ±175px vs ±140px) */

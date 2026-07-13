@@ -70,12 +70,22 @@ document.addEventListener('DOMContentLoaded', async () => {
     const textOverlay = document.getElementById('subpage-transition-text');
     if (textOverlay) textOverlay.remove();
 
+    const isSubpage = pathName.includes('diary') || pathName.includes('study') || pathName.includes('history');
     const headerContainer = document.getElementById('header-subpage-container');
     const headerTitle = document.getElementById('header-subpage-title');
-    if (headerContainer) headerContainer.classList.add('active');
-    if (headerTitle) {
-      headerTitle.classList.add('show');
-      headerTitle.style.opacity = '1';
+
+    if (isSubpage) {
+      if (headerContainer) headerContainer.classList.add('active');
+      if (headerTitle) {
+        headerTitle.classList.add('show');
+        headerTitle.style.opacity = '1';
+      }
+    } else {
+      if (headerContainer) headerContainer.classList.remove('active');
+      if (headerTitle) {
+        headerTitle.classList.remove('show');
+        headerTitle.style.opacity = '';
+      }
     }
 
     // Ensure transitioning background classes are removed
@@ -587,6 +597,7 @@ function handleRouting() {
       // Normal Home page initialization
       showView('home');
       document.title = "Subin's Blog";
+      ensureHistorySatelliteUpdated();
 
       const homeView = document.getElementById('home-view');
       const entranceOverlay = document.getElementById('home-entrance-overlay');
@@ -619,10 +630,10 @@ function handleRouting() {
             homeView.classList.add('entrance-step-2');
           }, 200);
 
-          // Step 3: Clean up animation class properties after transition completes (700ms)
+          // Step 3: Clean up animation class properties after transition completes (850ms)
           setTimeout(() => {
             homeView.classList.remove('home-entrance-active', 'entrance-step-1', 'entrance-step-2');
-          }, 700);
+          }, 850);
         } else {
           // Initial load: just ensure elements are visible normally
           entranceOverlay.style.display = 'none';
@@ -761,8 +772,11 @@ window.addEventListener('pageshow', (event) => {
     activeView.style.display = 'block';
   }
 
+  // Ensure History satellite is correctly labeled/targeted (handles old browser cache issues)
+  ensureHistorySatelliteUpdated();
+
   // Reset satellite positioning/opacity
-  document.querySelectorAll('.orbit-satellite').forEach(sat => {
+  document.querySelectorAll('.orbit-satellite, .satellite-career').forEach(sat => {
     sat.classList.remove('moving-to-center');
     sat.style.opacity = '';
     sat.style.transform = '';
@@ -774,6 +788,20 @@ window.addEventListener('pageshow', (event) => {
     textOverlay.remove();
   }
 });
+
+function ensureHistorySatelliteUpdated() {
+  const oldCareerSat = document.querySelector('.satellite-career');
+  if (oldCareerSat) {
+    oldCareerSat.classList.remove('satellite-career');
+    oldCareerSat.classList.add('satellite-history');
+    const btn = oldCareerSat.querySelector('.orbit-btn');
+    if (btn) {
+      btn.setAttribute('data-target', 'history');
+      const span = btn.querySelector('span');
+      if (span) span.textContent = 'History';
+    }
+  }
+}
 
 function triggerCenterTransition(target, targetUrl, satelliteEl, clickEvent) {
   if (isTransitioning) return;

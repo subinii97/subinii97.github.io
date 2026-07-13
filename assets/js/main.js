@@ -50,14 +50,36 @@ document.addEventListener('DOMContentLoaded', async () => {
   handleRouting();
   window.addEventListener('hashchange', handleRouting);
 
-  // 5. Play subpage entrance transition on load
+  // 5. Play subpage entrance transition on load (only if navigating from home page)
   const pathName = window.location.pathname;
-  if (pathName.includes('diary')) {
-    playSubpageEntranceAnimation('diary');
-  } else if (pathName.includes('study')) {
-    playSubpageEntranceAnimation('study');
-  } else if (pathName.includes('career')) {
-    playSubpageEntranceAnimation('career');
+  const isTransitionFromHome = new URLSearchParams(window.location.search).get('from') === 'home';
+
+  if (isTransitionFromHome) {
+    // Clear query parameter immediately so manual reloads do not trigger animation
+    window.history.replaceState({}, document.title, window.location.pathname + window.location.hash);
+
+    if (pathName.includes('diary')) {
+      playSubpageEntranceAnimation('diary');
+    } else if (pathName.includes('study')) {
+      playSubpageEntranceAnimation('study');
+    } else if (pathName.includes('career')) {
+      playSubpageEntranceAnimation('career');
+    }
+  } else {
+    // Direct load or refresh: immediately clear transition elements and show static headers
+    const textOverlay = document.getElementById('subpage-transition-text');
+    if (textOverlay) textOverlay.remove();
+
+    const headerContainer = document.getElementById('header-subpage-container');
+    const headerTitle = document.getElementById('header-subpage-title');
+    if (headerContainer) headerContainer.classList.add('active');
+    if (headerTitle) {
+      headerTitle.classList.add('show');
+      headerTitle.style.opacity = '1';
+    }
+
+    // Ensure transitioning background classes are removed
+    document.body.classList.remove('transitioning-diary', 'transitioning-study', 'transitioning-career');
   }
 });
 
@@ -198,10 +220,24 @@ function initMainPage() {
     isInitialized = true;
   }
 
+  // Pre-allocated typed arrays for RK4 integration to prevent memory allocation / Garbage Collection micro-stutter
+  const state_q = new Float64Array(5);
+  const state_w = new Float64Array(5);
+  const temp_q = new Float64Array(5);
+  const temp_w = new Float64Array(5);
+  const k1_q = new Float64Array(5);
+  const k1_w = new Float64Array(5);
+  const k2_q = new Float64Array(5);
+  const k2_w = new Float64Array(5);
+  const k3_q = new Float64Array(5);
+  const k3_w = new Float64Array(5);
+  const k4_q = new Float64Array(5);
+  const k4_w = new Float64Array(5);
+
   // Cartesian Spring-Coupled equations of motion
   // q = [phi, x1, y1, x2, y2]
   // w = [omega_phi, vx1, vy1, vx2, vy2]
-  function derivatives(q, w, L1_rest, L2_rest, R) {
+  function computeDerivatives(q, w, L1_rest, L2_rest, R, out) {
     const phi = q[0];
     const x_node1 = q[1];
     const y_node1 = q[2];
@@ -261,17 +297,12 @@ function initMainPage() {
     // Node 0 tangential acceleration
     // Torque = force * tangent
     const tau = m0 * g * R * Math.cos(phi) + Fs1_x * R * Math.sin(phi) - Fs1_y * R * Math.cos(phi);
-    const alpha_phi = tau / (m0 * R * R);
-
-    // Node 1 acceleration
-    const ax1 = (Fs1_x - Fs2_x) / m1;
-    const ay1 = g + (Fs1_y - Fs2_y) / m1;
-
-    // Node 2 acceleration
-    const ax2 = Fs2_x / m2;
-    const ay2 = g + Fs2_y / m2;
-
-    return [alpha_phi, ax1, ay1, ax2, ay2];
+    
+    out[0] = tau / (m0 * R * R);
+    out[1] = (Fs1_x - Fs2_x) / m1;
+    out[2] = g + (Fs1_y - Fs2_y) / m1;
+    out[3] = Fs2_x / m2;
+    out[4] = g + Fs2_y / m2;
   }
 
   // Trails to store previous positions of the two nodes
@@ -334,38 +365,50 @@ function initMainPage() {
     // 3. Runge-Kutta 4th Order (RK4) Integration Sub-stepping
     // Unifies the pivot (Node 0) and the double pendulum (Nodes 1, 2) in a 3-DOF state vector,
     // ensuring perfect physical coupling and energy conservation.
-    const subSteps = 30;
-    const dt = 0.01;
+    // Reduced subSteps to 12 and optimized math to run without any garbage allocations.
+    const subSteps = 20;
+    const dt = 0.02;
 
-    let state_q = [phi, x1, y1, x2, y2];
-    let state_w = [omega_phi, vx1, vy1, vx2, vy2];
+    state_q[0] = phi;
+    state_q[1] = x1;
+    state_q[2] = y1;
+    state_q[3] = x2;
+    state_q[4] = y2;
+
+    state_w[0] = omega_phi;
+    state_w[1] = vx1;
+    state_w[2] = vy1;
+    state_w[3] = vx2;
+    state_w[4] = vy2;
 
     for (let step = 0; step < subSteps; step++) {
       // k1
-      const alpha1 = derivatives(state_q, state_w, L1, L2, R);
-      const k1_q = [...state_w];
-      const k1_w = [...alpha1];
+      computeDerivatives(state_q, state_w, L1, L2, R, k1_w);
+      for (let i = 0; i < 5; i++) k1_q[i] = state_w[i];
 
       // k2
-      const temp_q2 = state_q.map((qVal, i) => qVal + 0.5 * dt * k1_q[i]);
-      const temp_w2 = state_w.map((wVal, i) => wVal + 0.5 * dt * k1_w[i]);
-      const alpha2 = derivatives(temp_q2, temp_w2, L1, L2, R);
-      const k2_q = [...temp_w2];
-      const k2_w = [...alpha2];
+      for (let i = 0; i < 5; i++) {
+        temp_q[i] = state_q[i] + 0.5 * dt * k1_q[i];
+        temp_w[i] = state_w[i] + 0.5 * dt * k1_w[i];
+      }
+      computeDerivatives(temp_q, temp_w, L1, L2, R, k2_w);
+      for (let i = 0; i < 5; i++) k2_q[i] = temp_w[i];
 
       // k3
-      const temp_q3 = state_q.map((qVal, i) => qVal + 0.5 * dt * k2_q[i]);
-      const temp_w3 = state_w.map((wVal, i) => wVal + 0.5 * dt * k2_w[i]);
-      const alpha3 = derivatives(temp_q3, temp_w3, L1, L2, R);
-      const k3_q = [...temp_w3];
-      const k3_w = [...alpha3];
+      for (let i = 0; i < 5; i++) {
+        temp_q[i] = state_q[i] + 0.5 * dt * k2_q[i];
+        temp_w[i] = state_w[i] + 0.5 * dt * k2_w[i];
+      }
+      computeDerivatives(temp_q, temp_w, L1, L2, R, k3_w);
+      for (let i = 0; i < 5; i++) k3_q[i] = temp_w[i];
 
       // k4
-      const temp_q4 = state_q.map((qVal, i) => qVal + dt * k3_q[i]);
-      const temp_w4 = state_w.map((wVal, i) => wVal + dt * k3_w[i]);
-      const alpha4 = derivatives(temp_q4, temp_w4, L1, L2, R);
-      const k4_q = [...temp_w4];
-      const k4_w = [...alpha4];
+      for (let i = 0; i < 5; i++) {
+        temp_q[i] = state_q[i] + dt * k3_q[i];
+        temp_w[i] = state_w[i] + dt * k3_w[i];
+      }
+      computeDerivatives(temp_q, temp_w, L1, L2, R, k4_w);
+      for (let i = 0; i < 5; i++) k4_q[i] = temp_w[i];
 
       // Update state vectors
       for (let i = 0; i < 5; i++) {
@@ -599,7 +642,7 @@ function handleRouting() {
       const listContainer = document.getElementById('diary-list-container');
       const readerContainer = document.getElementById('diary-reader-container');
 
-      if (cleanHash && (cleanHash.startsWith('diary/') || !cleanHash.includes('/'))) {
+      if (cleanHash && cleanHash !== 'diary' && (cleanHash.startsWith('diary/') || !cleanHash.includes('/'))) {
         // We are on reader mode
         if (listContainer) listContainer.style.display = 'none';
         if (readerContainer) readerContainer.style.display = 'block';
@@ -635,7 +678,7 @@ function handleRouting() {
       const listContainer = document.getElementById('study-list-container');
       const readerContainer = document.getElementById('study-reader-container');
 
-      if (cleanHash && (cleanHash.startsWith('study/') || !cleanHash.includes('/'))) {
+      if (cleanHash && cleanHash !== 'study' && (cleanHash.startsWith('study/') || !cleanHash.includes('/'))) {
         // We are on reader mode
         if (listContainer) listContainer.style.display = 'none';
         if (readerContainer) readerContainer.style.display = 'block';
@@ -687,6 +730,50 @@ function handleRouting() {
    EXPANDING RIPPLE PAGE TRANSITION
 ------------------------------------- */
 let isTransitioning = false;
+
+// Handle browser Back/Forward cache (bfcache) loads to clean up transition locks and hidden page states
+window.addEventListener('pageshow', (event) => {
+  isTransitioning = false;
+
+  // Remove transition classes and inline styles from body
+  document.body.classList.remove(
+    'global-transitioning',
+    'transitioning-diary',
+    'transitioning-study',
+    'transitioning-career',
+    'footer-transitioning'
+  );
+  document.body.style.transition = '';
+
+  // Reset Home View state
+  const homeView = document.getElementById('home-view');
+  if (homeView) {
+    homeView.classList.remove('home-exiting', 'home-entrance-active', 'entrance-step-1', 'entrance-step-2');
+    homeView.style.opacity = '';
+    homeView.style.transform = '';
+  }
+
+  // Ensure active view is visible and not stuck in transition opacity
+  const activeView = document.querySelector('.view-section');
+  if (activeView) {
+    activeView.style.opacity = '';
+    activeView.style.transform = '';
+    activeView.style.display = 'block';
+  }
+
+  // Reset satellite positioning/opacity
+  document.querySelectorAll('.orbit-satellite').forEach(sat => {
+    sat.classList.remove('moving-to-center');
+    sat.style.opacity = '';
+    sat.style.transform = '';
+  });
+
+  // Clean up subpage text overlay on page show if we loaded from cache
+  const textOverlay = document.getElementById('subpage-transition-text');
+  if (textOverlay && event.persisted) {
+    textOverlay.remove();
+  }
+});
 
 function triggerCenterTransition(target, targetUrl, satelliteEl, clickEvent) {
   if (isTransitioning) return;
@@ -872,7 +959,7 @@ function initNavigationInterceptors() {
         const fromParam = isSubpage ? `?from=${pathName.split('/').pop().replace('.html', '')}` : '';
         targetUrl = `index.html${fromParam}`;
       } else {
-        targetUrl = `${target}.html`;
+        targetUrl = `${target}.html?from=home`;
       }
 
       const satellite = btn.closest('.orbit-satellite');
@@ -1208,13 +1295,13 @@ function playSubpageEntranceAnimation(target) {
     const baseFontSize = parseFloat(window.getComputedStyle(textOverlay).fontSize);
     const scaleFactor = targetFontSize / baseFontSize;
 
-    // Apply transform transition and smooth color transition (0.6s to match the background transition duration)
-    textOverlay.style.transition = 'transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), color 0.4s ease-out';
+    // Apply transform transition and smooth color transition (transform takes 0.6s, color changes in 0.05s to instantly contrast with the background)
+    textOverlay.style.transition = 'transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), color 0.05s ease-out';
     textOverlay.style.color = 'var(--accent-primary)';
     textOverlay.style.transform = `translate(-50%, -50%) translate(${deltaX}px, ${deltaY}px) scale(${scaleFactor})`;
 
-    // Explicitly add transition to body background and remove the transitioning class so they fade in perfect sync
-    document.body.style.transition = 'background-color 0.6s cubic-bezier(0.16, 1, 0.3, 1)';
+    // Explicitly add transition to body background (0.4s) and remove the transitioning class
+    document.body.style.transition = 'background-color 0.4s cubic-bezier(0.16, 1, 0.3, 1)';
     document.body.classList.remove(`transitioning-${target}`);
   }, 50);
 

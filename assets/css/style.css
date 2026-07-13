@@ -234,6 +234,7 @@ header.nav-header {
   height: 480px;
   border-radius: 50%;
   z-index: 2;
+  will-change: transform;
 }
 
 /* Orbit Satellite wrapper to keep buttons upright while orbiting */
@@ -247,6 +248,7 @@ header.nav-header {
   margin-left: -80px;
   z-index: 3;
   transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
 }
 
 .orbit-satellite.moving-to-center {
@@ -1754,6 +1756,26 @@ body.transitioning-study {
 body.transitioning-career {
   background-color: #f1a396 !important;
   /* Coral Red Pastel */
+}
+
+/* Disable transition elements on direct load or refresh */
+.no-transition-entrance #subpage-transition-text {
+  display: none !important;
+}
+
+.no-transition-entrance body.transitioning-diary,
+.no-transition-entrance body.transitioning-study,
+.no-transition-entrance body.transitioning-career {
+  background-color: var(--bg-primary) !important;
+}
+
+.no-transition-entrance .header-subpage {
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
+
+.no-transition-entrance .subpage-title {
+  opacity: 1 !important;
 }
 
 /* Header logo always visible - no fade out on transition */

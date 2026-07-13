@@ -27,6 +27,11 @@
     gtag('js', new Date());
     gtag('config', 'G-Y1K0WLJYQS');
   </script>
+  <script>
+    if (new URLSearchParams(window.location.search).get('from') !== 'home') {
+      document.documentElement.classList.add('no-transition-entrance');
+    }
+  </script>
 </head>
 
 <body id="main-page-container" class="theme-diary subpage transitioning-diary">

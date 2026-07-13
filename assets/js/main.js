@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   initMainPage();
   if (typeof initDiaryControls === 'function') initDiaryControls();
   if (typeof initStudyControls === 'function') initStudyControls();
-  if (typeof initCareerControls === 'function') initCareerControls();
+  if (typeof initHistoryControls === 'function') initHistoryControls();
   initNavigationInterceptors();
 
   // 4. Handle initial routing based on URL Hash
@@ -62,8 +62,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       playSubpageEntranceAnimation('diary');
     } else if (pathName.includes('study')) {
       playSubpageEntranceAnimation('study');
-    } else if (pathName.includes('career')) {
-      playSubpageEntranceAnimation('career');
+    } else if (pathName.includes('history')) {
+      playSubpageEntranceAnimation('history');
     }
   } else {
     // Direct load or refresh: immediately clear transition elements and show static headers
@@ -79,7 +79,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // Ensure transitioning background classes are removed
-    document.body.classList.remove('transitioning-diary', 'transitioning-study', 'transitioning-career');
+    document.body.classList.remove('transitioning-diary', 'transitioning-study', 'transitioning-history');
   }
 });
 
@@ -569,12 +569,12 @@ function handleRouting() {
     const pathName = window.location.pathname;
     const isDiaryPage = pathName.includes('diary');
     const isStudyPage = pathName.includes('study');
-    const isCareerPage = pathName.includes('career');
-    const isHomePage = !isDiaryPage && !isStudyPage && !isCareerPage;
+    const isHistoryPage = pathName.includes('history');
+    const isHomePage = !isDiaryPage && !isStudyPage && !isHistoryPage;
 
     if (isHomePage) {
       // Home page: backward-compatibility redirect or normal load
-      if (cleanHash === 'diary' || cleanHash === 'study' || cleanHash === 'career') {
+      if (cleanHash === 'diary' || cleanHash === 'study' || cleanHash === 'history') {
         window.location.href = `${cleanHash}.html`;
         return;
       }
@@ -632,7 +632,7 @@ function handleRouting() {
     } else if (isDiaryPage) {
       // Diary page:
       document.body.classList.add('theme-diary');
-      document.body.classList.remove('theme-study', 'theme-career');
+      document.body.classList.remove('theme-study', 'theme-history');
       if (headerTitle && headerContainer) {
         headerTitle.textContent = 'Diary';
         headerContainer.classList.add('active');
@@ -668,7 +668,7 @@ function handleRouting() {
     } else if (isStudyPage) {
       // Study page:
       document.body.classList.add('theme-study');
-      document.body.classList.remove('theme-diary', 'theme-career');
+      document.body.classList.remove('theme-diary', 'theme-history');
       if (headerTitle && headerContainer) {
         headerTitle.textContent = 'Study';
         headerContainer.classList.add('active');
@@ -701,16 +701,16 @@ function handleRouting() {
         document.title = "Study | Subin's Blog";
         window.scrollTo(0, 0);
       }
-    } else if (isCareerPage) {
-      // Career page:
-      document.body.classList.add('theme-career');
+    } else if (isHistoryPage) {
+      // History page:
+      document.body.classList.add('theme-history');
       document.body.classList.remove('theme-study', 'theme-diary');
       if (headerTitle && headerContainer) {
-        headerTitle.textContent = 'Career';
+        headerTitle.textContent = 'History';
         headerContainer.classList.add('active');
         headerTitle.classList.add('show');
       }
-      document.title = "Career | Subin's Blog";
+      document.title = "History | Subin's Blog";
       window.scrollTo(0, 0);
     }
 
@@ -740,7 +740,7 @@ window.addEventListener('pageshow', (event) => {
     'global-transitioning',
     'transitioning-diary',
     'transitioning-study',
-    'transitioning-career',
+    'transitioning-history',
     'footer-transitioning'
   );
   document.body.style.transition = '';
@@ -886,7 +886,7 @@ function startHeaderWindBlow() {
     `;
     
     // Safely remove body theme classes here to prevent recalculating styles during animation flight
-    document.body.classList.remove('theme-diary', 'theme-study', 'theme-career', 'footer-transitioning');
+    document.body.classList.remove('theme-diary', 'theme-study', 'theme-history', 'footer-transitioning');
     headerContainer.classList.remove('active', 'exit-active');
     
     requestAnimationFrame(() => {
@@ -952,7 +952,7 @@ function initNavigationInterceptors() {
       const target = btn.getAttribute('data-target');
       
       const pathName = window.location.pathname;
-      const isSubpage = pathName.includes('diary') || pathName.includes('study') || pathName.includes('career');
+      const isSubpage = pathName.includes('diary') || pathName.includes('study') || pathName.includes('history');
 
       let targetUrl;
       if (target === 'home') {
@@ -977,7 +977,7 @@ function initNavigationInterceptors() {
     mainLogo.addEventListener('click', (e) => {
       e.preventDefault();
       const pathName = window.location.pathname;
-      const isHomePage = !pathName.includes('diary') && !pathName.includes('study') && !pathName.includes('career');
+      const isHomePage = !pathName.includes('diary') && !pathName.includes('study') && !pathName.includes('history');
       if (isHomePage) {
         window.location.reload();
       } else {

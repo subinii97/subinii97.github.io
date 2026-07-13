@@ -1,6 +1,6 @@
-// Career section module initializer
-function initCareerControls() {
-  console.log("Career timeline module initialized.");
+// History section module initializer
+function initHistoryControls() {
+  console.log("History timeline module initialized.");
   initYearSidebar();
 }
 

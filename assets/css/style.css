@@ -299,15 +299,15 @@ header.nav-header {
   transition: background 0.6s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.6s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.6s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 
-.satellite-career.moving-to-center .orbit-btn,
-.satellite-career.moving-to-center .orbit-btn:hover {
+.satellite-history.moving-to-center .orbit-btn,
+.satellite-history.moving-to-center .orbit-btn:hover {
   border-color: #f1a396 !important;
   /* Same as background to fade border boundary */
   box-shadow: none !important;
   /* Remove outer shadow/glow */
   color: #ffffff !important;
   background: #f1a396 !important;
-  /* Matches .expanding-circle.theme-career */
+  /* Matches .expanding-circle.theme-history */
   transition: background 0.6s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.6s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.6s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 
@@ -320,7 +320,7 @@ header.nav-header {
   transform: translate(280px, 0);
 }
 
-.satellite-career {
+.satellite-history {
   transform: translate(0, -280px);
 }
 
@@ -381,7 +381,7 @@ header.nav-header {
   /* Node 2 melon green theme */
 }
 
-.satellite-career .orbit-btn:hover {
+.satellite-history .orbit-btn:hover {
   border-color: rgba(241, 163, 150, 0.7);
   box-shadow: var(--shadow-lg), 0 0 25px rgba(241, 163, 150, 0.25);
   color: #e26d5c;
@@ -441,7 +441,7 @@ header.nav-header {
     transform: translate(140px, 0);
   }
 
-  .satellite-career {
+  .satellite-history {
     transform: translate(0, -140px);
   }
 
@@ -1364,7 +1364,7 @@ header.nav-header {
   background: #b4d6a8;
 }
 
-.expanding-circle.theme-career {
+.expanding-circle.theme-history {
   background: #f1a396;
   /* Coral Red Pastel */
 }
@@ -1433,7 +1433,7 @@ body.theme-study {
   --accent-border-hover: rgba(85, 130, 201, 0.25);
 }
 
-body.theme-career {
+body.theme-history {
   --accent-primary: #e26d5c;
   /* Coral/Red Dark */
   --accent-secondary: #e88d7d;
@@ -1585,7 +1585,7 @@ body.global-transitioning .blog-footer {
 /* When on subpages, footer flows naturally at the bottom of content instead of floating fixed */
 body.theme-diary .blog-footer,
 body.theme-study .blog-footer,
-body.theme-career .blog-footer {
+body.theme-history .blog-footer {
   position: relative;
   animation: subpageFooterFadeIn 0.6s ease forwards;
 }
@@ -1753,7 +1753,7 @@ body.transitioning-study {
   /* Light Blue */
 }
 
-body.transitioning-career {
+body.transitioning-history {
   background-color: #f1a396 !important;
   /* Coral Red Pastel */
 }
@@ -1765,7 +1765,7 @@ body.transitioning-career {
 
 .no-transition-entrance body.transitioning-diary,
 .no-transition-entrance body.transitioning-study,
-.no-transition-entrance body.transitioning-career {
+.no-transition-entrance body.transitioning-history {
   background-color: var(--bg-primary) !important;
 }
 
@@ -1826,7 +1826,7 @@ body.transitioning-career {
   transform: translate(320px, 0) scale(0.95);
 }
 
-#home-view.home-entrance-active .satellite-career {
+#home-view.home-entrance-active .satellite-history {
   transform: translate(0, -320px) scale(0.95);
 }
 
@@ -1839,7 +1839,7 @@ body.transitioning-career {
     transform: translate(175px, 0) scale(0.95);
   }
 
-  #home-view.home-entrance-active .satellite-career {
+  #home-view.home-entrance-active .satellite-history {
     transform: translate(0, -175px) scale(0.95);
   }
 }
@@ -1863,7 +1863,7 @@ body.transitioning-career {
   transform: translate(280px, 0) scale(1.0);
 }
 
-#home-view.home-entrance-active.entrance-step-2 .satellite-career {
+#home-view.home-entrance-active.entrance-step-2 .satellite-history {
   opacity: 1;
   transform: translate(0, -280px) scale(1.0);
 }
@@ -1879,7 +1879,7 @@ body.transitioning-career {
     transform: translate(140px, 0) scale(1.0);
   }
 
-  #home-view.home-entrance-active.entrance-step-2 .satellite-career {
+  #home-view.home-entrance-active.entrance-step-2 .satellite-history {
     opacity: 1;
     transform: translate(0, -140px) scale(1.0);
   }
@@ -1927,9 +1927,9 @@ body.transitioning-career {
 
 
 /* ==========================================================================
-   CAREER VIEW STYLES
+   HISTORY VIEW STYLES
    ========================================================================= */
-body.theme-career {
+body.theme-history {
   --accent-primary: #e26d5c;
   /* Coral/Red Dark */
   --accent-secondary: #e88d7d;
@@ -1940,10 +1940,10 @@ body.theme-career {
   --accent-border-hover: rgba(226, 109, 92, 0.25);
 }
 
-/* Career two-column layout: year sidebar + timeline */
-.career-layout {
+/* History two-column layout: year sidebar + timeline */
+.history-layout {
   display: grid;
-  grid-template-columns: 72px 1fr;
+  grid-template-columns: 150px 1fr;
   gap: 2rem;
   align-items: start;
 }
@@ -1952,6 +1952,24 @@ body.theme-career {
 .year-sidebar {
   position: sticky;
   top: 6rem;
+  padding: 1.2rem;
+  background: var(--bg-glass);
+  border: 1px solid var(--border-glass);
+  border-radius: 16px;
+  box-shadow: var(--shadow-sm);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.year-title {
+  font-family: var(--font-title);
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border-subtle);
+  padding-bottom: 0.4rem;
+  text-align: center;
 }
 
 .year-sidebar-inner {
@@ -1963,18 +1981,18 @@ body.theme-career {
 .year-link {
   display: block;
   font-family: var(--font-title);
-  font-size: 0.82rem;
+  font-size: 0.9rem;
   font-weight: 600;
-  color: var(--text-muted);
+  color: var(--text-secondary);
   text-decoration: none;
-  padding: 0.35rem 0.6rem;
-  border-radius: 8px;
+  padding: 0.5rem 0.8rem;
+  border-radius: 10px;
   transition: all 0.2s ease;
   letter-spacing: -0.3px;
   text-align: center;
 }
 
-.career-timeline-wrapper {
+.history-timeline-wrapper {
   min-width: 0; /* prevent grid blowout */
 }
 
@@ -1990,25 +2008,32 @@ body.theme-career {
 }
 
 @media (max-width: 600px) {
-  .career-layout {
+  .history-layout {
     grid-template-columns: 1fr;
   }
   .year-sidebar {
     position: static;
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: 0.4rem;
-    margin-bottom: 1rem;
+    display: block;
+    padding: 0;
+    background: none;
+    border: none;
+    box-shadow: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    margin-bottom: 1.5rem;
+  }
+  .year-title {
+    display: none;
   }
   .year-sidebar-inner {
+    display: flex;
     flex-direction: row;
     flex-wrap: wrap;
     gap: 0.4rem;
   }
 }
 
-.career-timeline {
+.history-timeline {
   position: relative;
   margin-top: 1.5rem;
 }
@@ -2070,8 +2095,12 @@ body.theme-career {
   margin: 0;
 }
 
-/* Reset rounded rectangle and glass container for career page reader (career uses its own layout) */
-body.theme-career .reader-container article.glass-card {
+/* Reset rounded rectangle and glass container for history page reader (history uses its own layout) */
+body.theme-history .reader-container {
+  max-width: none;
+}
+
+body.theme-history .reader-container article.glass-card {
   background: none !important;
   border: none !important;
   box-shadow: none !important;

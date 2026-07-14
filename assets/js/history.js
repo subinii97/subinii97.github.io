@@ -166,7 +166,7 @@ async function loadTabContent(target) {
   timelineContainer.innerHTML = '<div class="loading-spinner" style="text-align: center; padding: 3rem; color: var(--accent-primary);"><i class="fas fa-spinner fa-spin fa-2x"></i></div>';
   
   try {
-    const response = await fetch(`./history/${target}.html?v=${Date.now()}`);
+    const response = await fetch(`./${target}.html?v=${Date.now()}`);
     if (!response.ok) throw new Error(`Failed to load ${target} history data`);
     const htmlText = await response.text();
     

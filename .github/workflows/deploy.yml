@@ -26,6 +26,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -34,6 +36,9 @@ jobs:
 
       - name: Build posts.json
         run: node scripts/build-posts.js
+
+      - name: Copy google verification file to root
+        run: cp assets/google7cbe6371df76f957.html ./google7cbe6371df76f957.html
 
       - name: Setup Pages
         uses: actions/configure-pages@v4

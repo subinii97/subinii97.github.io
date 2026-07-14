@@ -23,7 +23,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // 2. Fetch posts database once at start
   try {
-    const response = await fetch(`./posts.json?v=${Date.now()}`);
+    const pathName = window.location.pathname;
+    const isSubpage = pathName.includes('/diary/') || pathName.includes('/study/') || pathName.includes('/history/');
+    const postsUrl = isSubpage ? '../posts.json' : './posts.json';
+    const response = await fetch(`${postsUrl}?v=${Date.now()}`);
     if (!response.ok) throw new Error('Failed to load posts database');
     allPosts = await response.json();
 
@@ -585,12 +588,12 @@ function handleRouting() {
     if (isHomePage) {
       // Home page: backward-compatibility redirect or normal load
       if (cleanHash === 'diary' || cleanHash === 'study' || cleanHash === 'history') {
-        window.location.href = `${cleanHash}.html`;
+        window.location.href = `./${cleanHash}/`;
         return;
       }
       if (cleanHash.startsWith('diary/') || cleanHash.startsWith('study/')) {
         const parts = cleanHash.split('/');
-        window.location.href = `${parts[0]}.html#${cleanHash}`;
+        window.location.href = `./${parts[0]}/#${cleanHash}`;
         return;
       }
 
@@ -946,9 +949,11 @@ function triggerTransition(targetUrl, clickEvent) {
   ripple.className = 'expanding-circle';
   
   // If returning to home, the default color is white. If going to subpage, we can match theme
-  const goingHome = targetUrl.includes('index.html');
+  const goingHome = targetUrl.includes('index.html') || targetUrl === '../' || targetUrl.includes('../index.html');
   if (!goingHome) {
-    const targetTheme = targetUrl.replace('.html', '');
+    let targetTheme = 'diary';
+    if (targetUrl.includes('study')) targetTheme = 'study';
+    else if (targetUrl.includes('history')) targetTheme = 'history';
     ripple.classList.add(`theme-${targetTheme}`);
   }
   document.body.appendChild(ripple);
@@ -980,14 +985,19 @@ function initNavigationInterceptors() {
       const target = btn.getAttribute('data-target');
       
       const pathName = window.location.pathname;
-      const isSubpage = pathName.includes('diary') || pathName.includes('study') || pathName.includes('history');
+      const isSubpage = pathName.includes('/diary/') || pathName.includes('/study/') || pathName.includes('/history/');
+
+      let pageName = 'home';
+      if (pathName.includes('diary')) pageName = 'diary';
+      else if (pathName.includes('study')) pageName = 'study';
+      else if (pathName.includes('history')) pageName = 'history';
 
       let targetUrl;
       if (target === 'home') {
-        const fromParam = isSubpage ? `?from=${pathName.split('/').pop().replace('.html', '')}` : '';
-        targetUrl = `index.html${fromParam}`;
+        const fromParam = isSubpage ? `?from=${pageName}` : '';
+        targetUrl = isSubpage ? `../index.html${fromParam}` : `index.html${fromParam}`;
       } else {
-        targetUrl = `${target}.html?from=home`;
+        targetUrl = isSubpage ? `../${target}/?from=home` : `./${target}/?from=home`;
       }
 
       const satellite = btn.closest('.orbit-satellite');
@@ -1005,15 +1015,19 @@ function initNavigationInterceptors() {
     mainLogo.addEventListener('click', (e) => {
       e.preventDefault();
       const pathName = window.location.pathname;
-      const isHomePage = !pathName.includes('diary') && !pathName.includes('study') && !pathName.includes('history');
-      if (isHomePage) {
+      const isSubpage = pathName.includes('/diary/') || pathName.includes('/study/') || pathName.includes('/history/');
+      if (!isSubpage) {
         window.location.reload();
       } else {
         if (typeof startHeaderWindBlow === 'function') {
           startHeaderWindBlow();
         }
-        const fromParam = `?from=${pathName.split('/').pop().replace('.html', '')}`;
-        triggerTransition(`index.html${fromParam}`, e);
+        let pageName = 'home';
+        if (pathName.includes('diary')) pageName = 'diary';
+        else if (pathName.includes('study')) pageName = 'study';
+        else if (pathName.includes('history')) pageName = 'history';
+        const fromParam = `?from=${pageName}`;
+        triggerTransition(`../index.html${fromParam}`, e);
       }
     });
   }
@@ -1060,7 +1074,10 @@ function renderReader(post, prefix = 'diary') {
 
   // Determine the base path for images in this post's folder
   // post.folder is the subdirectory name within _posts/ (e.g. "2018-01-23-norway-1")
-  const postImgBase = post.folder ? `./_posts/${post.folder}/` : './_posts/';
+  const pathNameForImg = window.location.pathname;
+  const isSubpageForImg = pathNameForImg.includes('/diary/') || pathNameForImg.includes('/study/') || pathNameForImg.includes('/history/');
+  const basePathForImg = isSubpageForImg ? '../' : './';
+  const postImgBase = post.folder ? `${basePathForImg}_posts/${post.folder}/` : `${basePathForImg}_posts/`;
 
   // Compile markdown
   if (window.marked) {
@@ -1081,7 +1098,7 @@ function renderReader(post, prefix = 'diary') {
     //   b) HTML <img> tag absolute path correction: src="/assets/img/..." -> src="./_posts/..."
     cleanContent = cleanContent.replace(
       /<img([^>]*?)src="\/assets\/img\/([^"]+)"/g,
-      (_, before, imgPath) => `<img${before}src="./_posts/${imgPath}"`
+      (_, before, imgPath) => `<img${before}src="${basePathForImg}_posts/${imgPath}"`
     );
 
     //   c) HTML <img> tag relative path correction: src="X.jpeg" -> src="postImgBase/X.jpeg"
@@ -1092,8 +1109,8 @@ function renderReader(post, prefix = 'diary') {
 
     //   d) Legacy absolute /assets/img/X paths in markdown → ./_posts/X
     cleanContent = cleanContent.replace(
-      /!\[([^\]]*)\]\(\/assets\/img\/([^)]+)\)/g,
-      (_, alt, imgPath) => `![${alt}](${'./_posts/' + imgPath})`
+      /!\[([^\]]*)\]\((\/assets\/img\/|assets\/img\/)([^)]+)\)/g,
+      (_, alt, prefix, imgPath) => `![${alt}](${basePathForImg + '_posts/' + imgPath})`
     );
 
     //   e) Relative paths in markdown (no leading / or http) → prefix with post folder
@@ -1246,13 +1263,32 @@ function openImagePreview(src, alt) {
 // Utility: Find first image in markdown content and resolve its path
 function getFirstImageUrl(post) {
   const content = post.content || '';
-  const postImgBase = post.folder ? `./_posts/${post.folder}/` : './_posts/';
+  
+  const pathNameForImg = window.location.pathname;
+  const isSubpageForImg = pathNameForImg.includes('/diary/') || pathNameForImg.includes('/study/') || pathNameForImg.includes('/history/');
+  const basePathForImg = isSubpageForImg ? '../' : './';
+  const postImgBase = post.folder ? `${basePathForImg}_posts/${post.folder}/` : `${basePathForImg}_posts/`;
+
+  // 0. Try designated preview image in post front-matter
+  if (post.preview) {
+    const src = post.preview;
+    if (src.startsWith('http://') || src.startsWith('https://') || src.startsWith('/') || src.startsWith('./')) {
+      if (src.startsWith('/assets/img/')) {
+        return src.replace('/assets/img/', `${basePathForImg}_posts/`);
+      }
+      return src;
+    }
+    return postImgBase + src;
+  }
 
   // 1. Try HTML img tag
   const imgTagMatch = content.match(/<img[^>]*?src=["']([^"']+)["']/);
   if (imgTagMatch) {
     const src = imgTagMatch[1];
     if (src.startsWith('http://') || src.startsWith('https://') || src.startsWith('/') || src.startsWith('./')) {
+      if (src.startsWith('/assets/img/')) {
+        return src.replace('/assets/img/', `${basePathForImg}_posts/`);
+      }
       return src;
     }
     return postImgBase + src;
@@ -1263,6 +1299,9 @@ function getFirstImageUrl(post) {
   if (mdImgMatch) {
     const src = mdImgMatch[1];
     if (src.startsWith('http://') || src.startsWith('https://') || src.startsWith('/') || src.startsWith('./')) {
+      if (src.startsWith('/assets/img/')) {
+        return src.replace('/assets/img/', `${basePathForImg}_posts/`);
+      }
       return src;
     }
     return postImgBase + src;

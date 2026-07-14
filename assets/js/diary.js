@@ -137,7 +137,7 @@ function renderDiary() {
               <span class="update-card-date">
                 <i class="far fa-clock"></i> ${formattedUpdateDate}
               </span>
-              ${isNew ? '<span class="new-badge">NEW</span>' : ''}
+              ${isNew ? '<span class="new-badge">UPDATED</span>' : ''}
             </div>
           </div>
         </a>
@@ -235,7 +235,7 @@ function renderDiary() {
         <span class="diary-item-separator">|</span>
         <h2 class="diary-item-title">
           <span>${escapeHtml(post.title)}</span>
-          ${isNew ? '<span class="new-badge">NEW</span>' : ''}
+          ${isNew ? '<span class="new-badge">UPDATED</span>' : ''}
         </h2>
         <span class="diary-item-separator">|</span>
         <span class="diary-item-date">${dateDisplay}</span>

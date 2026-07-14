@@ -177,7 +177,7 @@ function renderStudy() {
       <a href="#study/${encodeURIComponent(post.filename)}" class="post-item study-post-item glass-card ${isRead ? 'read' : ''}" data-filename="${post.filename}">
         <div class="post-item-header">
           <h2 class="post-title">${escapeHtml(post.title)}</h2>
-          ${isNew ? '<span class="new-badge">NEW</span>' : ''}
+          ${isNew ? '<span class="new-badge">UPDATED</span>' : ''}
         </div>
         ${post.subtitle ? `<div class="post-subtitle">${escapeHtml(post.subtitle)}</div>` : ''}
         <div class="post-item-meta-row">

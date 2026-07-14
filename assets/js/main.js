@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // 2. Fetch posts database once at start
   try {
-    const response = await fetch('./posts.json');
+    const response = await fetch(`./posts.json?v=${Date.now()}`);
     if (!response.ok) throw new Error('Failed to load posts database');
     allPosts = await response.json();
 

@@ -63,6 +63,34 @@ function initYearSidebar() {
 // Tabs switcher between Life timeline and Travel timeline
 function initTabs() {
   const tabBtns = document.querySelectorAll('.history-toggle-btn');
+  if (!tabBtns.length) return;
+
+  tabBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const target = btn.getAttribute('data-tab'); // 'life' or 'travel'
+      window.location.hash = target;
+    });
+  });
+
+  // Listen to hashchange to switch tabs
+  window.addEventListener('hashchange', handleHistoryHash);
+
+  // Run once at start
+  handleHistoryHash();
+}
+
+function handleHistoryHash() {
+  const hash = window.location.hash.substring(1); // 'life' or 'travel' or other (e.g. empty)
+  if (hash === 'travel') {
+    switchTab('travel');
+  } else {
+    // Default or explicit 'life'
+    switchTab('life');
+  }
+}
+
+function switchTab(target) {
+  const tabBtns = document.querySelectorAll('.history-toggle-btn');
   const timelineSection = document.getElementById('timeline-content');
   const travelSection = document.getElementById('travel-content');
   const timelineYears = document.getElementById('timeline-years');
@@ -70,31 +98,27 @@ function initTabs() {
 
   if (!tabBtns.length) return;
 
+  // Update button active state
   tabBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-      const target = btn.getAttribute('data-tab');
-
-      // Update button active state
-      tabBtns.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-
-      // Update content visibility
-      if (target === 'timeline') {
-        if (timelineSection) timelineSection.style.display = 'block';
-        if (travelSection) travelSection.style.display = 'none';
-        if (timelineYears) timelineYears.style.display = 'flex';
-        if (travelYears) travelYears.style.display = 'none';
-      } else {
-        if (timelineSection) timelineSection.style.display = 'none';
-        if (travelSection) travelSection.style.display = 'block';
-        if (timelineYears) timelineYears.style.display = 'none';
-        if (travelYears) travelYears.style.display = 'flex';
-      }
-
-      // Re-trigger active sidebar link update
-      if (typeof window.updateActiveYear === 'function') {
-        window.updateActiveYear();
-      }
-    });
+    const btnTab = btn.getAttribute('data-tab'); // 'life' or 'travel'
+    btn.classList.toggle('active', btnTab === target);
   });
+
+  // Update content visibility
+  if (target === 'life') {
+    if (timelineSection) timelineSection.style.display = 'block';
+    if (travelSection) travelSection.style.display = 'none';
+    if (timelineYears) timelineYears.style.display = 'flex';
+    if (travelYears) travelYears.style.display = 'none';
+  } else {
+    if (timelineSection) timelineSection.style.display = 'none';
+    if (travelSection) travelSection.style.display = 'block';
+    if (timelineYears) timelineYears.style.display = 'none';
+    if (travelYears) travelYears.style.display = 'flex';
+  }
+
+  // Re-trigger active sidebar link update
+  if (typeof window.updateActiveYear === 'function') {
+    window.updateActiveYear();
+  }
 }

@@ -4,12 +4,19 @@ const { execSync } = require('child_process');
 
 function getGitLastCommitDate(filePath) {
   try {
+    // If the file has uncommitted changes (modified, staged, etc.), use the disk mtime
+    const status = execSync(`git status --porcelain -- "${filePath}"`, { encoding: 'utf-8' }).trim();
+    if (status) {
+      const stat = fs.statSync(filePath);
+      return stat.mtime.toISOString();
+    }
+
     const stdout = execSync(`git log -1 --format=%cI -- "${filePath}"`, { encoding: 'utf-8' });
     if (stdout.trim()) {
       return new Date(stdout.trim()).toISOString();
     }
   } catch (e) {
-    // Ignore error and fallback
+    // Ignore error and fallback to stat
   }
   try {
     const stat = fs.statSync(filePath);

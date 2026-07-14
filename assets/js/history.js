@@ -2,6 +2,7 @@
 function initHistoryControls() {
   console.log("History timeline module initialized.");
   initYearSidebar();
+  initTabs();
 }
 
 // Year sidebar: smooth scroll on click + active state on scroll
@@ -37,9 +38,12 @@ function initYearSidebar() {
     let currentYear = null;
 
     timelineItems.forEach(item => {
+      // Only check visible items to support toggle view
+      if (item.offsetHeight === 0) return;
+
       const top = item.getBoundingClientRect().top + window.scrollY;
       if (scrollY >= top) {
-        currentYear = item.id; // e.g. "year-2023"
+        currentYear = item.id; // e.g. "year-2023" or "travel-2024"
       }
     });
 
@@ -52,5 +56,45 @@ function initYearSidebar() {
   }
 
   window.addEventListener('scroll', updateActiveYear, { passive: true });
+  window.updateActiveYear = updateActiveYear; // Expose to window so toggle can invoke it
   updateActiveYear(); // run once on load
+}
+
+// Tabs switcher between Life timeline and Travel timeline
+function initTabs() {
+  const tabBtns = document.querySelectorAll('.history-toggle-btn');
+  const timelineSection = document.getElementById('timeline-content');
+  const travelSection = document.getElementById('travel-content');
+  const timelineYears = document.getElementById('timeline-years');
+  const travelYears = document.getElementById('travel-years');
+
+  if (!tabBtns.length) return;
+
+  tabBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const target = btn.getAttribute('data-tab');
+
+      // Update button active state
+      tabBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      // Update content visibility
+      if (target === 'timeline') {
+        if (timelineSection) timelineSection.style.display = 'block';
+        if (travelSection) travelSection.style.display = 'none';
+        if (timelineYears) timelineYears.style.display = 'flex';
+        if (travelYears) travelYears.style.display = 'none';
+      } else {
+        if (timelineSection) timelineSection.style.display = 'none';
+        if (travelSection) travelSection.style.display = 'block';
+        if (timelineYears) timelineYears.style.display = 'none';
+        if (travelYears) travelYears.style.display = 'flex';
+      }
+
+      // Re-trigger active sidebar link update
+      if (typeof window.updateActiveYear === 'function') {
+        window.updateActiveYear();
+      }
+    });
+  });
 }

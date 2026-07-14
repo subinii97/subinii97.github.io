@@ -1,5 +1,5 @@
 ---
-title: 수술 이후 평온한 일상 & 성별정정
+title: 평범한 일상으로의 복귀
 author: subin
 date: 2026-03-26 12:00:00 +0800
 categories: [Transition]

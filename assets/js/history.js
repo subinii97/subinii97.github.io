@@ -1,7 +1,6 @@
 // History section module initializer
 function initHistoryControls() {
   console.log("History timeline module initialized.");
-  initYearSidebar();
   initTabs();
 }
 
@@ -43,7 +42,7 @@ function initYearSidebar() {
 
       const top = item.getBoundingClientRect().top + window.scrollY;
       if (scrollY >= top) {
-        currentYear = item.id; // e.g. "year-2023" or "travel-2024"
+        currentYear = item.id; // e.g. "year-2023" or "travel-2024" or "hobby-ballet"
       }
     });
 
@@ -56,19 +55,24 @@ function initYearSidebar() {
     }
   }
 
+  // Prevent multiple scroll event listeners when reloading tabs
+  if (window.currentScrollListener) {
+    window.removeEventListener('scroll', window.currentScrollListener);
+  }
+  window.currentScrollListener = updateActiveYear;
   window.addEventListener('scroll', updateActiveYear, { passive: true });
-  window.updateActiveYear = updateActiveYear; // Expose to window so toggle can invoke it
+  window.updateActiveYear = updateActiveYear; // Expose to window
   updateActiveYear(); // run once on load
 }
 
-// Tabs switcher between Life timeline and Travel timeline
+// Tabs switcher between Life, Travel and Hobby
 function initTabs() {
   const tabBtns = document.querySelectorAll('.history-toggle-btn');
   if (!tabBtns.length) return;
 
   tabBtns.forEach(btn => {
     btn.addEventListener('click', () => {
-      const target = btn.getAttribute('data-tab'); // 'life' or 'travel'
+      const target = btn.getAttribute('data-tab'); // 'life', 'travel', or 'hobby'
       window.location.hash = target;
     });
   });
@@ -81,45 +85,135 @@ function initTabs() {
 }
 
 function handleHistoryHash() {
-  const hash = window.location.hash.substring(1); // 'life' or 'travel' or other (e.g. empty)
-  if (hash === 'travel') {
-    switchTab('travel');
+  const hash = window.location.hash.substring(1); // 'life' or 'travel' or 'hobby'
+  
+  // If hash points to a specific item ID, extract the appropriate tab
+  let targetTab = 'life';
+  if (hash.startsWith('travel-') || hash === 'travel') {
+    targetTab = 'travel';
+  } else if (hash.startsWith('hobby-') || hash === 'hobby') {
+    targetTab = 'hobby';
+  } else if (hash.startsWith('year-') || hash === 'life') {
+    targetTab = 'life';
   } else {
-    // Default or explicit 'life'
-    switchTab('life');
+    // Default fallback
+    targetTab = 'life';
   }
+  
+  switchTab(targetTab);
 }
 
-function switchTab(target) {
-  const tabBtns = document.querySelectorAll('.history-toggle-btn');
-  const timelineSection = document.getElementById('timeline-content');
-  const travelSection = document.getElementById('travel-content');
-  const timelineYears = document.getElementById('timeline-years');
-  const travelYears = document.getElementById('travel-years');
+let currentActiveTab = null;
 
+async function switchTab(target) {
+  if (currentActiveTab === target) {
+    // If the tab is already loaded, but we have a specific hash anchor (e.g. #travel-2024), scroll to it.
+    scrollToHashAnchor();
+    return;
+  }
+  currentActiveTab = target;
+
+  const tabBtns = document.querySelectorAll('.history-toggle-btn');
   if (!tabBtns.length) return;
+
+  // Toggle hobby-mode class on history-layout
+  const layoutContainer = document.querySelector('.history-layout');
+  if (layoutContainer) {
+    if (target === 'hobby') {
+      layoutContainer.classList.add('hobby-mode');
+    } else {
+      layoutContainer.classList.remove('hobby-mode');
+    }
+  }
 
   // Update button active state
   tabBtns.forEach(btn => {
-    const btnTab = btn.getAttribute('data-tab'); // 'life' or 'travel'
+    const btnTab = btn.getAttribute('data-tab');
     btn.classList.toggle('active', btnTab === target);
   });
 
-  // Update content visibility
-  if (target === 'life') {
-    if (timelineSection) timelineSection.style.display = 'block';
-    if (travelSection) travelSection.style.display = 'none';
-    if (timelineYears) timelineYears.style.display = 'flex';
-    if (travelYears) travelYears.style.display = 'none';
-  } else {
-    if (timelineSection) timelineSection.style.display = 'none';
-    if (travelSection) travelSection.style.display = 'block';
-    if (timelineYears) timelineYears.style.display = 'none';
-    if (travelYears) travelYears.style.display = 'flex';
+  // Update year sidebar title text
+  const yearTitle = document.querySelector('.year-title');
+  if (yearTitle) {
+    if (target === 'hobby') {
+      yearTitle.textContent = 'Categories';
+    } else {
+      yearTitle.textContent = 'Years';
+    }
   }
 
-  // Re-trigger active sidebar link update
-  if (typeof window.updateActiveYear === 'function') {
-    window.updateActiveYear();
+  // Update main history title text
+  const historyTitle = document.querySelector('.history-title');
+  if (historyTitle) {
+    if (target === 'hobby') {
+      historyTitle.textContent = 'Hobbies';
+    } else {
+      historyTitle.textContent = 'Timeline';
+    }
+  }
+
+  // Load content dynamically
+  await loadTabContent(target);
+}
+
+async function loadTabContent(target) {
+  const sidebarContainer = document.getElementById('year-sidebar-content');
+  const timelineContainer = document.getElementById('history-timeline-container');
+  
+  if (!sidebarContainer || !timelineContainer) return;
+  
+  // Show loading indicator
+  timelineContainer.innerHTML = '<div class="loading-spinner" style="text-align: center; padding: 3rem; color: var(--accent-primary);"><i class="fas fa-spinner fa-spin fa-2x"></i></div>';
+  
+  try {
+    const response = await fetch(`./history/${target}.html?v=${Date.now()}`);
+    if (!response.ok) throw new Error(`Failed to load ${target} history data`);
+    const htmlText = await response.text();
+    
+    // Parse fetched HTML
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(htmlText, 'text/html');
+    
+    const newSidebar = doc.querySelector('.year-sidebar-inner');
+    const newTimeline = doc.querySelector('.history-timeline');
+    
+    if (newSidebar) {
+      sidebarContainer.innerHTML = '';
+      sidebarContainer.appendChild(newSidebar);
+    } else {
+      sidebarContainer.innerHTML = '';
+    }
+    
+    if (newTimeline) {
+      timelineContainer.innerHTML = '';
+      timelineContainer.appendChild(newTimeline);
+    }
+    
+    // Re-initialize Year Sidebar links and scroll listeners
+    initYearSidebar();
+    
+
+    
+    // Scroll to the specific timeline item if specified in hash
+    scrollToHashAnchor();
+    
+  } catch (error) {
+    console.error(error);
+    timelineContainer.innerHTML = `<p class="error-msg" style="text-align: center; padding: 3rem; color: #ff3333;">이력을 불러오는 도중 오류가 발생했습니다.</p>`;
+  }
+}
+
+function scrollToHashAnchor() {
+  const hash = window.location.hash;
+  if (hash && hash.length > 1) {
+    const targetId = hash.substring(1);
+    const targetElement = document.getElementById(targetId);
+    if (targetElement) {
+      setTimeout(() => {
+        const offset = 90;
+        const top = targetElement.getBoundingClientRect().top + window.scrollY - offset;
+        window.scrollTo({ top, behavior: 'smooth' });
+      }, 100);
+    }
   }
 }

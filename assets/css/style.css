@@ -258,18 +258,42 @@ header.nav-header {
   opacity: 1 !important;
 }
 
-/* Ensure inner text inside the moving satellite instantly turns white and stays visible */
-.orbit-satellite.moving-to-center .orbit-btn span {
-  color: #ffffff !important;
+/* Ensure inner text inside the moving satellite instantly turns to the theme color and stays visible */
+.satellite-study.moving-to-center .orbit-btn span {
+  color: #5582c9 !important;
+  opacity: 1 !important;
+  transition: none !important;
+}
+.satellite-study.moving-to-center .orbit-btn i {
+  background: none !important;
+  -webkit-text-fill-color: #5582c9 !important;
+  color: #5582c9 !important;
   opacity: 1 !important;
   transition: none !important;
 }
 
-/* Ensure icons inside the moving satellite also instantly turn white and stay visible */
-.orbit-satellite.moving-to-center .orbit-btn i {
+.satellite-diary.moving-to-center .orbit-btn span {
+  color: #6c9e5f !important;
+  opacity: 1 !important;
+  transition: none !important;
+}
+.satellite-diary.moving-to-center .orbit-btn i {
   background: none !important;
-  -webkit-text-fill-color: #ffffff !important;
-  color: #ffffff !important;
+  -webkit-text-fill-color: #6c9e5f !important;
+  color: #6c9e5f !important;
+  opacity: 1 !important;
+  transition: none !important;
+}
+
+.satellite-history.moving-to-center .orbit-btn span {
+  color: #e26d5c !important;
+  opacity: 1 !important;
+  transition: none !important;
+}
+.satellite-history.moving-to-center .orbit-btn i {
+  background: none !important;
+  -webkit-text-fill-color: #e26d5c !important;
+  color: #e26d5c !important;
   opacity: 1 !important;
   transition: none !important;
 }
@@ -277,37 +301,34 @@ header.nav-header {
 /* Satellites lock their styles when moving to the center, matching background transition timing with the page body (0.6s) */
 .satellite-study.moving-to-center .orbit-btn,
 .satellite-study.moving-to-center .orbit-btn:hover {
-  border-color: #adcbf7 !important;
-  /* Same as background to fade border boundary */
+  border-color: #5582c9 !important;
+  /* Same as theme color */
   box-shadow: none !important;
   /* Remove outer shadow/glow */
-  color: #ffffff !important;
-  background: #adcbf7 !important;
-  /* Matches .expanding-circle.theme-study */
+  background: #ffffff !important;
+  /* Keep background inside the circle white */
   transition: background 0.6s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.6s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.6s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 
 .satellite-diary.moving-to-center .orbit-btn,
 .satellite-diary.moving-to-center .orbit-btn:hover {
-  border-color: #b4d6a8 !important;
-  /* Same as background to fade border boundary */
+  border-color: #6c9e5f !important;
+  /* Same as theme color */
   box-shadow: none !important;
   /* Remove outer shadow/glow */
-  color: #ffffff !important;
-  background: #b4d6a8 !important;
-  /* Matches .expanding-circle.theme-diary */
+  background: #ffffff !important;
+  /* Keep background inside the circle white */
   transition: background 0.6s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.6s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.6s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 
 .satellite-history.moving-to-center .orbit-btn,
 .satellite-history.moving-to-center .orbit-btn:hover {
-  border-color: #f1a396 !important;
-  /* Same as background to fade border boundary */
+  border-color: #e26d5c !important;
+  /* Same as theme color */
   box-shadow: none !important;
   /* Remove outer shadow/glow */
-  color: #ffffff !important;
-  background: #f1a396 !important;
-  /* Matches .expanding-circle.theme-history */
+  background: #ffffff !important;
+  /* Keep background inside the circle white */
   transition: background 0.6s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.6s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.6s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 
@@ -1755,18 +1776,15 @@ body.global-transitioning {
 }
 
 body.transitioning-diary {
-  background-color: #b4d6a8 !important;
-  /* Melon Green Soft Pastel */
+  background-color: var(--bg-primary) !important;
 }
 
 body.transitioning-study {
-  background-color: #adcbf7 !important;
-  /* Light Blue */
+  background-color: var(--bg-primary) !important;
 }
 
 body.transitioning-history {
-  background-color: #f1a396 !important;
-  /* Coral Red Pastel */
+  background-color: var(--bg-primary) !important;
 }
 
 /* Disable transition elements on direct load or refresh */
@@ -2443,4 +2461,135 @@ body.theme-history .reader-container article.glass-card {
 .update-card.read:hover .update-card-title {
   color: var(--text-primary) !important;
   opacity: 0.85;
+}
+
+/* Hobby Page Layout Overrides */
+.history-layout.hobby-mode .year-sidebar {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* Hobby Horizontal Card Styling (Vertically stacked for cleaner reading) */
+.hobby-card {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  background: var(--bg-glass);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 16px;
+  padding: 1.8rem;
+  margin-bottom: 1.5rem;
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition-smooth);
+}
+
+.hobby-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--accent-primary);
+}
+
+.hobby-card-header {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  width: 100%;
+  border-bottom: 1px solid var(--border-subtle);
+  padding-bottom: 1rem;
+}
+
+.hobby-icon-wrap {
+  font-size: 2rem;
+  width: 54px;
+  height: 54px;
+  background: var(--accent-pastel);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.hobby-meta {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+  min-width: 0;
+  width: 100%;
+}
+
+.hobby-title {
+  font-family: var(--font-title);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.hobby-meta-divider {
+  color: var(--border-glass);
+  font-size: 0.8rem;
+  opacity: 0.5;
+  user-select: none;
+}
+
+.hobby-subtitle {
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+}
+
+.hobby-date {
+  font-family: var(--font-title);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--accent-primary);
+  margin-left: auto; /* Push date to the far right */
+}
+
+.hobby-desc {
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.hobby-desc ul {
+  list-style-type: disc;
+  margin-left: 1.2rem;
+}
+
+.hobby-desc li {
+  margin-bottom: 0.4rem;
+}
+
+.hobby-desc li:last-child {
+  margin-bottom: 0;
+}
+
+/* Responsiveness for Hobby Cards */
+@media (max-width: 768px) {
+  .hobby-card-header {
+    align-items: flex-start;
+  }
+  
+  .hobby-meta {
+    gap: 0.4rem;
+  }
+  
+  .hobby-meta-divider {
+    display: none; /* Hide dividers on mobile and wrap */
+  }
+  
+  .hobby-subtitle {
+    width: 100%;
+    font-size: 0.9rem;
+  }
+  
+  .hobby-date {
+    margin-left: 0;
+    width: 100%;
+    font-size: 0.8rem;
+  }
 }

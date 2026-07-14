@@ -1286,7 +1286,7 @@ function playSubpageEntranceAnimation(target) {
     textOverlay.textContent = target.charAt(0).toUpperCase() + target.slice(1);
     textOverlay.style.left = '50%';
     textOverlay.style.top = 'calc(50% - 30px)';
-    textOverlay.style.color = '#ffffff';
+    textOverlay.style.color = 'var(--accent-primary)';
     textOverlay.style.transform = 'translate(-50%, -50%) scale(1.25)';
     document.body.appendChild(textOverlay);
   }

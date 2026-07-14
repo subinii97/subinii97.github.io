@@ -481,7 +481,7 @@ header.nav-header {
    PROFILE PAGE (profile.html) STYLE
 ------------------------------------- */
 .profile-wrapper {
-  min-height: 100vh;
+  min-height: calc(100vh - 240px);
   display: flex;
   flex-direction: column;
   padding-top: 5.5rem;
@@ -637,7 +637,7 @@ header.nav-header {
 .diary-wrapper {
   padding-top: 5.5rem;
   padding-bottom: 3rem;
-  min-height: 100vh;
+  min-height: calc(100vh - 240px);
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
@@ -1620,6 +1620,14 @@ body.theme-study .blog-footer,
 body.theme-history .blog-footer {
   position: relative;
   animation: subpageFooterFadeIn 0.6s ease forwards;
+}
+
+/* Fade/Slide down footer when transitioning from subpages back to home */
+body.footer-transitioning .blog-footer {
+  animation: none !important;
+  opacity: 0 !important;
+  transform: translateY(40px) !important;
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.5s ease-out !important;
 }
 
 @keyframes subpageFooterFadeIn {

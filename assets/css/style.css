@@ -1955,13 +1955,21 @@ body.theme-history {
   --accent-border-hover: rgba(226, 109, 92, 0.25);
 }
 
-/* History two-column layout: year sidebar + timeline */
+/* History layout: Year sidebar (left), Timeline (centered), Spacer (right) for symmetry */
 .history-layout {
   display: grid;
-  grid-template-columns: 150px 1fr;
-  gap: 2rem;
+  grid-template-columns: 120px 1fr 150px;
+  gap: 5rem;
   align-items: start;
+  max-width: 1800px;
+  margin: 0 auto;
 }
+
+.history-layout::after {
+  content: "";
+  display: block;
+}
+
 
 /* Year Sidebar */
 .year-sidebar {
@@ -2027,6 +2035,10 @@ body.theme-history {
 @media (max-width: 600px) {
   .history-layout {
     grid-template-columns: 1fr;
+  }
+
+  .history-layout::after {
+    display: none;
   }
 
   .year-sidebar {

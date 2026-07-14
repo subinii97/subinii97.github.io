@@ -48,9 +48,10 @@ function initYearSidebar() {
     });
 
     if (currentYear) {
+      const mainYear = currentYear.split('-').slice(0, 2).join('-');
       yearLinks.forEach(link => {
         const href = link.getAttribute('href').slice(1);
-        link.classList.toggle('active', href === currentYear);
+        link.classList.toggle('active', href === mainYear);
       });
     }
   }

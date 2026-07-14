@@ -2463,11 +2463,7 @@ body.theme-history .reader-container article.glass-card {
   opacity: 0.85;
 }
 
-/* Hobby Page Layout Overrides */
-.history-layout.hobby-mode .year-sidebar {
-  visibility: hidden;
-  pointer-events: none;
-}
+
 
 /* Hobby Horizontal Card Styling (Vertically stacked for cleaner reading) */
 .hobby-card {

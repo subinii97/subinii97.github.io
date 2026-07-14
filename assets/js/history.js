@@ -29,7 +29,7 @@ function initYearSidebar() {
   });
 
   // Update active year link based on scroll position
-  const timelineItems = document.querySelectorAll('.timeline-item[id]');
+  const timelineItems = document.querySelectorAll('.timeline-item[id], .hobby-card[id]');
   if (!timelineItems.length) return;
 
   function updateActiveYear() {

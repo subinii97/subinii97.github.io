@@ -133,6 +133,7 @@ function initMainPage() {
   let designSize = isMobile ? 850 : 1300;
   let cx = designSize / 2;
   let cy = designSize / 2;
+  let g = isMobile ? 0.25 : 0.5;
 
 
 
@@ -141,6 +142,7 @@ function initMainPage() {
     designSize = isMobile ? 850 : 1300;
     cx = designSize / 2;
     cy = designSize / 2;
+    g = isMobile ? 0.25 : 0.5;
 
     const dpr = window.devicePixelRatio || 1;
     canvas.width = designSize * dpr;
@@ -180,7 +182,6 @@ function initMainPage() {
   let frameCount = 0;
 
   // Physics Settings
-  const g = 0.5; // Gravity scaled for Runge-Kutta 4th order time step integration
   const damp = 1.0; // Lossless damping (kept for compatibility)
 
   // Pendulum nodes physical masses (0: Pivot, 1: Node 1, 2: Node 2)
@@ -209,7 +210,7 @@ function initMainPage() {
 
   function initNodeAngles() {
     // Rest lengths
-    const L1 = isMobile ? 30 : 100;
+    const L1 = isMobile ? 45 : 100;
     const L2 = L1 * 1;
 
     // Start with small deflected angles
@@ -367,7 +368,7 @@ function initMainPage() {
     ctx.stroke();
 
     // Pendulum rod lengths (Ratio L1:L2 is set strictly to 2:3)
-    const L1 = isMobile ? 60 : 100;
+    const L1 = isMobile ? 45 : 100;
     const L2 = L1 * 1;
 
     // Initialize node angles if not done
@@ -497,8 +498,9 @@ function initMainPage() {
       }
     };
 
-    drawTrail(trail1, '173, 203, 247', 2.25); // Node 1: #adcbf7 (Width 2.25, Mass 2.0, Blue)
-    drawTrail(trail2, '180, 214, 168', 2.25); // Node 2: #b4d6a8 (Width 2.25, Mass 3.0, Melon Green)
+    const trailWidth = isMobile ? 1.5 : 2.25;
+    drawTrail(trail1, '173, 203, 247', trailWidth); // Node 1: #adcbf7 (Width 2.25, Mass 2.0, Blue)
+    drawTrail(trail2, '180, 214, 168', trailWidth); // Node 2: #b4d6a8 (Width 2.25, Mass 3.0, Melon Green)
 
     // 5. Draw rods
     ctx.beginPath();
@@ -506,7 +508,7 @@ function initMainPage() {
     ctx.lineTo(x1, y1);
     ctx.lineTo(x2, y2);
     ctx.strokeStyle = 'rgba(0, 0, 0, 0.22)';
-    ctx.lineWidth = 1.5;
+    ctx.lineWidth = isMobile ? 1.0 : 1.5;
     ctx.stroke();
 
     // 6. Draw nodes (custom fill with solid white border, sized proportionally to mass)
@@ -520,10 +522,15 @@ function initMainPage() {
       ctx.stroke();
     };
 
+    const pivotRadius = isMobile ? 7.0 : 11.0;
+    const node1Radius = isMobile ? 6.0 : 10.0;
+    const node2Radius = isMobile ? 4.5 : 7.0;
+    const redBeadRadius = isMobile ? 4.5 : 7.5;
+
     // Node sizes scaled proportionally (Pivot mass 4.0, Node 1 mass 2.0, Node 2 mass 3.0)
-    drawNode(x0, y0, 11.0, '#888888'); // Pivot (Mass 4.0, Grey)
-    drawNode(x1, y1, 10, '#adcbf7');  // Node 1 (Mass 2.0)
-    drawNode(x2, y2, 7, '#b4d6a8'); // Node 2 (Mass 3.0)
+    drawNode(x0, y0, pivotRadius, '#888888'); // Pivot (Mass 4.0, Grey)
+    drawNode(x1, y1, node1Radius, '#adcbf7');  // Node 1 (Mass 2.0)
+    drawNode(x2, y2, node2Radius, '#b4d6a8'); // Node 2 (Mass 3.0)
 
     // 6.2 Render the red bead acting as the Sweep Second Hand of the central clock (symmetrically starts at 12 o'clock / -Math.PI / 2)
     const seconds = now.getSeconds();
@@ -536,7 +543,7 @@ function initMainPage() {
 
     const red_x = cx + R * Math.cos(angle_red);
     const red_y = cy + R * Math.sin(angle_red);
-    drawNode(red_x, red_y, 7.5, '#e26d5c'); // Red Node (Clock Sweep Second Hand Indicator)
+    drawNode(red_x, red_y, redBeadRadius, '#e26d5c'); // Red Node (Clock Sweep Second Hand Indicator)
 
 
 

@@ -9,24 +9,98 @@ let currentPage = 1;
 ------------------------------------- */
 function initDiaryControls() {
   const searchInput = document.getElementById('diary-search');
+  const searchInputMobile = document.getElementById('diary-search-mobile');
+  const searchInputMobileWrapper = document.getElementById('diary-search-mobile-wrapper');
   const sortBtn = document.getElementById('diary-sort-btn');
   const searchToggleBtn = document.getElementById('diary-search-toggle-btn');
   const categorySidebar = document.querySelector('.category-sidebar');
 
+  const repositionPopover = () => {
+    if (!categorySidebar.classList.contains('show') || window.innerWidth > 800) return;
+    const grid = document.querySelector('.diary-grid');
+    const anchor = searchInputMobileWrapper && searchInputMobileWrapper.style.display !== 'none' ? searchInputMobileWrapper : searchToggleBtn;
+    const buttonRect = anchor.getBoundingClientRect();
+    const gridRect = grid.getBoundingClientRect();
+    const top = buttonRect.bottom - gridRect.top + 8;
+    const sidebarWidth = 280;
+    let left = buttonRect.left - gridRect.left;
+    
+    if (left + sidebarWidth > gridRect.width) {
+      left = Math.max(0, gridRect.width - sidebarWidth);
+    }
+    
+    categorySidebar.style.setProperty('--popover-top', `${top}px`);
+    categorySidebar.style.setProperty('--popover-left', `${left}px`);
+  };
+
   // Search/Category toggle listener for mobile
   if (searchToggleBtn && categorySidebar) {
-    searchToggleBtn.addEventListener('click', () => {
+    searchToggleBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
       categorySidebar.classList.toggle('show');
+      if (categorySidebar.classList.contains('show') && window.innerWidth <= 800) {
+        // Swap button with search input
+        searchToggleBtn.style.display = 'none';
+        if (searchInputMobileWrapper) {
+          searchInputMobileWrapper.style.display = 'flex';
+          if (searchInputMobile) {
+            searchInputMobile.focus();
+          }
+        }
+        repositionPopover();
+      }
+    });
+
+    // Close when clicking outside
+    document.addEventListener('click', (e) => {
+      const isOutside = categorySidebar.classList.contains('show') && 
+          !categorySidebar.contains(e.target) && 
+          !searchToggleBtn.contains(e.target) &&
+          (!searchInputMobileWrapper || !searchInputMobileWrapper.contains(e.target));
+          
+      if (isOutside) {
+        categorySidebar.classList.remove('show');
+      }
+
+      // Restore toggle button if popover is hidden and search input is empty
+      if (!categorySidebar.classList.contains('show') && 
+          searchInputMobile && 
+          searchInputMobile.value.trim().length === 0) {
+        if (searchInputMobileWrapper && searchInputMobileWrapper.style.display !== 'none') {
+          searchInputMobileWrapper.style.display = 'none';
+          searchToggleBtn.style.display = 'flex';
+        }
+      }
     });
   }
 
-  // Search filter listener
+  // Helper to handle search query changes
+  const handleSearchInput = (value) => {
+    searchQuery = value.toLowerCase().trim();
+    currentPage = 1; // Reset to page 1 on new search query
+    renderDiary();
+
+    // Sync input values
+    if (searchInput && searchInput.value !== value) searchInput.value = value;
+    if (searchInputMobile && searchInputMobile.value !== value) searchInputMobile.value = value;
+
+    // Mobile popover display logic
+    if (window.innerWidth <= 800) {
+      if (value.trim().length > 0) {
+        categorySidebar.classList.remove('show');
+      } else {
+        categorySidebar.classList.add('show');
+        repositionPopover();
+      }
+    }
+  };
+
+  // Search filter listeners
   if (searchInput) {
-    searchInput.addEventListener('input', (e) => {
-      searchQuery = e.target.value.toLowerCase().trim();
-      currentPage = 1; // Reset to page 1 on new search query
-      renderDiary();
-    });
+    searchInput.addEventListener('input', (e) => handleSearchInput(e.target.value));
+  }
+  if (searchInputMobile) {
+    searchInputMobile.addEventListener('input', (e) => handleSearchInput(e.target.value));
   }
 
   // Sort toggle listener
@@ -299,4 +373,19 @@ window.filterCategory = function (categoryName) {
   selectedCategory = categoryName;
   currentPage = 1;
   renderDiary();
+
+  // Close mobile categories popover
+  const categorySidebar = document.querySelector('.category-sidebar');
+  if (categorySidebar && window.innerWidth <= 800) {
+    categorySidebar.classList.remove('show');
+    
+    // Restore button if search is empty
+    const searchInputMobile = document.getElementById('diary-search-mobile');
+    const searchInputMobileWrapper = document.getElementById('diary-search-mobile-wrapper');
+    const searchToggleBtn = document.getElementById('diary-search-toggle-btn');
+    if (searchInputMobile && searchInputMobile.value.trim().length === 0) {
+      if (searchInputMobileWrapper) searchInputMobileWrapper.style.display = 'none';
+      if (searchToggleBtn) searchToggleBtn.style.display = 'flex';
+    }
+  }
 };

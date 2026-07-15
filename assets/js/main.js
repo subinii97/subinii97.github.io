@@ -322,6 +322,7 @@ function initMainPage() {
   // Trails to store previous positions of the two nodes
   const trail1 = [];
   const trail2 = [];
+  const redBeadTrail = [];
   // Constant permanent trails (cleared on page navigation/hashchange)
   // We set a high maximum length of 20000 points as a safety limit to prevent memory leaks
   const maxTrailLength = 20000;
@@ -331,6 +332,7 @@ function initMainPage() {
   window.addEventListener('hashchange', () => {
     trail1.length = 0;
     trail2.length = 0;
+    redBeadTrail.length = 0;
   });
 
   function updatePhysicsAndRender() {
@@ -543,6 +545,78 @@ function initMainPage() {
 
     const red_x = cx + R * Math.cos(angle_red);
     const red_y = cy + R * Math.sin(angle_red);
+
+    // Spawn smoke particle shooting backward purely in the tangent direction (shorter jet tail)
+    const ux = Math.sin(angle_red);
+    const uy = -Math.cos(angle_red);
+    const ejectSpeed = isMobile ? 1.6 : 3.0; // speed in pixels per frame
+    
+    // Pure tangent velocity with minor random dispersion
+    const vx = ux * ejectSpeed + (Math.random() - 0.5) * 0.4;
+    const vy = uy * ejectSpeed + (Math.random() - 0.5) * 0.4;
+
+    redBeadTrail.push({
+      x: red_x,
+      y: red_y,
+      vx: vx,
+      vy: vy,
+      age: 0
+    });
+
+    // Update and draw expanding jet smoke trail (clean tangent linear motion, short lifetime)
+    if (redBeadTrail.length > 0) {
+      ctx.save();
+      for (let i = redBeadTrail.length - 1; i >= 0; i--) {
+        const p = redBeadTrail[i];
+        
+        // Move particle
+        p.x += p.vx;
+        p.y += p.vy;
+
+        // Soft air resistance to let it fade out gracefully at the tail end
+        p.vx *= 0.985;
+        p.vy *= 0.985;
+
+        // Age particle (assuming ~16.7ms per frame at 60fps)
+        p.age += 16.7;
+
+        // Rotate the velocity vector as it ages to bend the tail end slightly (vortex wake effect towards the circle)
+        const ageRatio = Math.min(1.0, p.age / 900);
+        const angleDelta = -0.02 * ageRatio; // negative angle rotates counter-clockwise, curving inwards towards the circle
+        const cosD = Math.cos(angleDelta);
+        const sinD = Math.sin(angleDelta);
+        const newVx = p.vx * cosD - p.vy * sinD;
+        const newVy = p.vx * sinD + p.vy * cosD;
+        p.vx = newVx;
+        p.vy = newVy;
+
+        // Remove old particles (lifetime 0.9 seconds for a compact look)
+        if (p.age > 900) {
+          redBeadTrail.splice(i, 1);
+          continue;
+        }
+
+        const ageFraction = p.age / 900;
+        const alpha = Math.max(0, 0.14 * (1 - ageFraction)); // soft subtle opacity (0.14 max)
+        if (alpha <= 0) continue;
+
+        // Smoke particles expand as they age
+        const size = redBeadRadius * (0.6 + 1.6 * ageFraction);
+
+        // Draw soft, wispy smoke using a radial gradient (completely removes hard circular borders)
+        const grad = ctx.createRadialGradient(p.x, p.y, size * 0.05, p.x, p.y, size);
+        grad.addColorStop(0, `rgba(226, 109, 92, ${alpha})`);
+        grad.addColorStop(0.3, `rgba(226, 109, 92, ${alpha * 0.4})`);
+        grad.addColorStop(1, 'rgba(226, 109, 92, 0)');
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, size, 0, 2 * Math.PI);
+        ctx.fillStyle = grad;
+        ctx.fill();
+      }
+      ctx.restore();
+    }
+
     drawNode(red_x, red_y, redBeadRadius, '#e26d5c'); // Red Node (Clock Sweep Second Hand Indicator)
 
 
@@ -1242,8 +1316,10 @@ function openImagePreview(src, alt) {
     overlay.appendChild(previewImg);
 
     document.body.appendChild(overlay);
+  }
 
-    // Close overlay on click
+  // Bind close-on-click and copy prevention event listeners if they haven't been bound yet
+  if (!overlay.dataset.listenerAdded) {
     overlay.addEventListener('click', () => {
       overlay.classList.remove('show');
       setTimeout(() => {
@@ -1256,11 +1332,15 @@ function openImagePreview(src, alt) {
     overlay.addEventListener('selectstart', (e) => e.preventDefault());
     overlay.addEventListener('dragstart', (e) => e.preventDefault());
     overlay.addEventListener('contextmenu', (e) => e.preventDefault());
+
+    overlay.dataset.listenerAdded = 'true';
   }
 
   const previewImg = overlay.querySelector('img');
-  previewImg.src = src;
-  previewImg.alt = alt || '';
+  if (previewImg) {
+    previewImg.src = src;
+    previewImg.alt = alt || '';
+  }
 
   overlay.style.display = 'flex';
   overlay.offsetHeight; // Trigger reflow for transition

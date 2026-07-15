@@ -2024,6 +2024,13 @@ body.transitioning-history {
   letter-spacing: 0.8px;
 }
 
+@media (max-width: 600px) {
+  .center-date {
+    font-size: 1.0rem;
+  }
+  .center-clock {
+    font-size: 1.8rem;
+  }
 }
 
 

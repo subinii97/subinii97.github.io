@@ -1,5 +1,5 @@
 ---
-title: 평범한 일상으로의 복귀
+title: 2026년 3월, 일상으로
 author: subin
 date: 2026-03-26 12:00:00 +0800
 categories: [Transition]

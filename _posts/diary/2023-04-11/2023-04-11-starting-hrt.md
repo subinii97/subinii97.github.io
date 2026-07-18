@@ -1,5 +1,5 @@
 ---
-title: 변화의 시작
+title: 2023년 4월, 변화의 시작
 author: subin
 date: 2023-04-11 12:00:00 +0800
 categories: [Transition]

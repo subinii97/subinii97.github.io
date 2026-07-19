@@ -25,7 +25,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   try {
     const pathName = window.location.pathname;
     const isSubpage = pathName.includes('/diary/') || pathName.includes('/study/') || pathName.includes('/history/');
-    const postsUrl = isSubpage ? '../posts.json' : './posts.json';
+    const isPagesSubpage = pathName.includes('/pages/');
+    const postsUrl = isPagesSubpage ? '../../posts.json' : (isSubpage ? '../posts.json' : './posts.json');
     const response = await fetch(`${postsUrl}?v=${Date.now()}`);
     if (!response.ok) throw new Error('Failed to load posts database');
     allPosts = await response.json();
@@ -669,12 +670,12 @@ function handleRouting() {
     if (isHomePage) {
       // Home page: backward-compatibility redirect or normal load
       if (cleanHash === 'diary' || cleanHash === 'study' || cleanHash === 'history') {
-        window.location.href = `./${cleanHash}/`;
+        window.location.href = `./pages/${cleanHash}/`;
         return;
       }
       if (cleanHash.startsWith('diary/') || cleanHash.startsWith('study/')) {
         const parts = cleanHash.split('/');
-        window.location.href = `./${parts[0]}/#${cleanHash}`;
+        window.location.href = `./pages/${parts[0]}/#${cleanHash}`;
         return;
       }
 
@@ -1067,6 +1068,7 @@ function initNavigationInterceptors() {
       
       const pathName = window.location.pathname;
       const isSubpage = pathName.includes('/diary/') || pathName.includes('/study/') || pathName.includes('/history/');
+      const isPagesSubpage = pathName.includes('/pages/');
 
       let pageName = 'home';
       if (pathName.includes('diary')) pageName = 'diary';
@@ -1074,11 +1076,13 @@ function initNavigationInterceptors() {
       else if (pathName.includes('history')) pageName = 'history';
 
       let targetUrl;
+      const rootPath = isPagesSubpage ? '../../' : (isSubpage ? '../' : './');
+
       if (target === 'home') {
-        const fromParam = isSubpage ? `?from=${pageName}` : '';
-        targetUrl = isSubpage ? `../index.html${fromParam}` : `index.html${fromParam}`;
+        const fromParam = (isPagesSubpage || isSubpage) ? `?from=${pageName}` : '';
+        targetUrl = rootPath + `index.html${fromParam}`;
       } else {
-        targetUrl = isSubpage ? `../${target}/?from=home` : `./${target}/?from=home`;
+        targetUrl = isPagesSubpage ? `../${target}/?from=home` : (isSubpage ? `../${target}/?from=home` : `./pages/${target}/?from=home`);
       }
 
       const satellite = btn.closest('.orbit-satellite');
@@ -1097,7 +1101,9 @@ function initNavigationInterceptors() {
       e.preventDefault();
       const pathName = window.location.pathname;
       const isSubpage = pathName.includes('/diary/') || pathName.includes('/study/') || pathName.includes('/history/');
-      if (!isSubpage) {
+      const isPagesSubpage = pathName.includes('/pages/');
+      
+      if (!isSubpage && !isPagesSubpage) {
         window.location.reload();
       } else {
         if (typeof startHeaderWindBlow === 'function') {
@@ -1108,7 +1114,8 @@ function initNavigationInterceptors() {
         else if (pathName.includes('study')) pageName = 'study';
         else if (pathName.includes('history')) pageName = 'history';
         const fromParam = `?from=${pageName}`;
-        triggerTransition(`../index.html${fromParam}`, e);
+        const rootPath = isPagesSubpage ? '../../' : '../';
+        triggerTransition(`${rootPath}index.html${fromParam}`, e);
       }
     });
   }
@@ -1157,8 +1164,9 @@ function renderReader(post, prefix = 'diary') {
   // post.folder is the subdirectory name within _posts/ (e.g. "2018-01-23-norway-1")
   const pathNameForImg = window.location.pathname;
   const isSubpageForImg = pathNameForImg.includes('/diary/') || pathNameForImg.includes('/study/') || pathNameForImg.includes('/history/');
-  const basePathForImg = isSubpageForImg ? '../' : './';
-  const postImgBase = post.folder ? `${basePathForImg}_posts/${post.folder}/` : `${basePathForImg}_posts/`;
+  const isPagesSubpageForImg = pathNameForImg.includes('/pages/');
+  const basePathForImg = isPagesSubpageForImg ? '../../' : (isSubpageForImg ? '../' : './');
+  const postImgBase = post.folder ? `${basePathForImg}${post.folder}/` : basePathForImg;
 
   // Compile markdown
   if (window.marked) {
@@ -1400,8 +1408,9 @@ function getFirstImageUrl(post) {
   
   const pathNameForImg = window.location.pathname;
   const isSubpageForImg = pathNameForImg.includes('/diary/') || pathNameForImg.includes('/study/') || pathNameForImg.includes('/history/');
-  const basePathForImg = isSubpageForImg ? '../' : './';
-  const postImgBase = post.folder ? `${basePathForImg}_posts/${post.folder}/` : `${basePathForImg}_posts/`;
+  const isPagesSubpageForImg = pathNameForImg.includes('/pages/');
+  const basePathForImg = isPagesSubpageForImg ? '../../' : (isSubpageForImg ? '../' : './');
+  const postImgBase = post.folder ? `${basePathForImg}${post.folder}/` : basePathForImg;
 
   // 0. Try designated preview image in post front-matter
   if (post.preview) {

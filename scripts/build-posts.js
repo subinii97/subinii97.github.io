@@ -27,7 +27,7 @@ function getGitLastCommitDate(filePath) {
 }
 
 
-const postsDir = path.join(__dirname, '../_posts');
+const pagesDir = path.join(__dirname, '../pages');
 const outputFile = path.join(__dirname, '../posts.json');
 
 function parseFrontMatter(fileContent) {
@@ -72,7 +72,7 @@ function parseFrontMatter(fileContent) {
 }
 
 /**
- * Recursively collect all .md files under _posts/ folder.
+ * Recursively collect all .md files under _posts/ folders inside pages/.
  */
 function collectMdFilesRecursively(dir, baseDir = dir) {
   let results = [];
@@ -86,26 +86,32 @@ function collectMdFilesRecursively(dir, baseDir = dir) {
     } else if (entry.isFile() && (entry.name.endsWith('.md') || entry.name.endsWith('.markdown'))) {
       const relativePath = path.relative(baseDir, entryPath);
       const pathParts = relativePath.split(path.sep);
-      const type = pathParts[0]; 
-      const folder = pathParts.slice(0, -1).join('/'); 
       
-      results.push({
-        filePath: entryPath,
-        folder: folder,
-        type: type
-      });
+      // Only process markdown files inside a '_posts' folder
+      if (pathParts.includes('_posts')) {
+        const type = pathParts[0]; 
+        const workspaceRoot = path.join(__dirname, '..');
+        const parentDir = path.dirname(entryPath);
+        const folder = path.relative(workspaceRoot, parentDir).replace(/\\/g, '/'); 
+        
+        results.push({
+          filePath: entryPath,
+          folder: folder,
+          type: type
+        });
+      }
     }
   }
   return results;
 }
 
 function build() {
-  if (!fs.existsSync(postsDir)) {
-    console.error('_posts directory not found');
+  if (!fs.existsSync(pagesDir)) {
+    console.error('pages directory not found');
     return;
   }
   
-  const mdFiles = collectMdFilesRecursively(postsDir).filter(
+  const mdFiles = collectMdFilesRecursively(pagesDir).filter(
     file => file.type === 'diary' || file.type === 'study'
   );
   const posts = [];
@@ -123,7 +129,7 @@ function build() {
     
     posts.push({
       filename: file,
-      folder: folder,   // relative folder name within _posts, e.g. "diary/2018-01-23-norway-1"
+      folder: folder,   // relative folder name from workspace root, e.g. "pages/diary/_posts/2018-01-23-norway-1"
       type: type,       // 'diary' or 'study'
       title: metadata.title || file.replace(/\.md$/, ''),
       subtitle: metadata.subtitle || '',
@@ -152,10 +158,10 @@ function build() {
 build();
 
 if (process.argv.includes('--watch') || process.argv.includes('-w')) {
-  console.log(`Watching for changes in ${postsDir}...`);
+  console.log(`Watching for changes in ${pagesDir}...`);
   let debounceTimeout;
   try {
-    fs.watch(postsDir, { recursive: true }, (eventType, filename) => {
+    fs.watch(pagesDir, { recursive: true }, (eventType, filename) => {
       if (filename) {
         if (filename.startsWith('.') || filename.endsWith('~')) return;
         clearTimeout(debounceTimeout);

@@ -3,6 +3,7 @@ let selectedCategory = 'All';
 let isDescOrder = true;
 let searchQuery = '';
 let currentPage = 1;
+let updateRecentUpdatesNav = () => {};
 
 /* ----------------------------------
    DIARY PAGE SYSTEM LOGIC
@@ -146,6 +147,41 @@ function initDiaryControls() {
       }
     });
   }
+
+  // Setup Carousel Navigation
+  const recentPrevBtn = document.getElementById('recent-prev-btn');
+  const recentNextBtn = document.getElementById('recent-next-btn');
+  const recentUpdatesEl = document.getElementById('diary-recent-updates');
+
+  if (recentPrevBtn && recentNextBtn && recentUpdatesEl) {
+    const getScrollAmount = () => {
+      const card = recentUpdatesEl.querySelector('.update-card');
+      if (card) {
+        const cardWidth = card.getBoundingClientRect().width;
+        const gap = parseFloat(window.getComputedStyle(recentUpdatesEl).gap) || 16;
+        return cardWidth + gap;
+      }
+      return 300;
+    };
+
+    recentPrevBtn.addEventListener('click', () => {
+      recentUpdatesEl.scrollBy({ left: -getScrollAmount(), behavior: 'smooth' });
+    });
+
+    recentNextBtn.addEventListener('click', () => {
+      recentUpdatesEl.scrollBy({ left: getScrollAmount(), behavior: 'smooth' });
+    });
+
+    updateRecentUpdatesNav = () => {
+      const scrollLeft = recentUpdatesEl.scrollLeft;
+      const maxScrollLeft = recentUpdatesEl.scrollWidth - recentUpdatesEl.clientWidth;
+      recentPrevBtn.disabled = scrollLeft <= 2;
+      recentNextBtn.disabled = scrollLeft >= maxScrollLeft - 2;
+    };
+
+    recentUpdatesEl.addEventListener('scroll', updateRecentUpdatesNav);
+    window.addEventListener('resize', updateRecentUpdatesNav);
+  }
 }
 
 // Render list items and category filter items
@@ -162,7 +198,7 @@ function renderDiary() {
       : `<i class="fas fa-sort-amount-down"></i> 최신순`;
   }
 
-  // 0. Render "Recent Updates" Section (Top 3 recently updated posts across diary posts)
+  // 0. Render "Recent Updates" Section (Top 5 recently updated posts across diary posts)
   const recentUpdatesEl = document.getElementById('diary-recent-updates');
   if (recentUpdatesEl && diaryPosts.length > 0) {
     const sortedByUpdate = [...diaryPosts].sort((a, b) => {
@@ -171,7 +207,7 @@ function renderDiary() {
       return dateB - dateA;
     });
 
-    const topUpdates = sortedByUpdate.slice(0, 3);
+    const topUpdates = sortedByUpdate.slice(0, 5);
     
     recentUpdatesEl.innerHTML = topUpdates.map((post, idx) => {
       const imageUrl = getFirstImageUrl(post);
@@ -217,6 +253,11 @@ function renderDiary() {
         </a>
       `;
     }).join('');
+
+    // Update carousel navigation buttons status
+    setTimeout(() => {
+      updateRecentUpdatesNav();
+    }, 50);
   }
 
   // 1. Gather all categories and counts

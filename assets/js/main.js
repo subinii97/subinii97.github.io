@@ -1225,8 +1225,55 @@ function renderReader(post, prefix = 'diary') {
     document.getElementById(`${prefix}-reader-post-content`).innerHTML = `<pre>${escapeHtml(post.content)}</pre>`;
   }
 
-  // Trigger KaTeX math rendering if auto-render is loaded
+  // Wrap table tags in scrollable table-wrapper containers and auto-merge empty cells (colspan)
   const contentEl = document.getElementById(`${prefix}-reader-post-content`);
+  if (contentEl) {
+    contentEl.querySelectorAll('table').forEach(table => {
+      // 1. Auto-merge cells horizontally (colspan) if they are empty
+      table.querySelectorAll('tr').forEach(tr => {
+        const cells = Array.from(tr.cells);
+        if (cells.length > 0) {
+          let lastNonEmptyCell = null;
+          let spanCount = 1;
+          const cellsToRemove = [];
+
+          for (let i = 0; i < cells.length; i++) {
+            const cell = cells[i];
+            const text = cell.textContent.trim();
+            const html = cell.innerHTML.trim();
+            const isEmpty = text === "" && html.replace(/<br\s*\/?>/gi, '').trim() === "";
+
+            if (i > 0 && isEmpty) {
+              if (lastNonEmptyCell) {
+                spanCount++;
+                cellsToRemove.push(cell);
+              }
+            } else {
+              if (lastNonEmptyCell && spanCount > 1) {
+                lastNonEmptyCell.setAttribute('colspan', spanCount);
+              }
+              lastNonEmptyCell = cell;
+              spanCount = 1;
+            }
+          }
+          if (lastNonEmptyCell && spanCount > 1) {
+            lastNonEmptyCell.setAttribute('colspan', spanCount);
+          }
+          cellsToRemove.forEach(c => c.remove());
+        }
+      });
+
+      // 2. Wrap the table in a scrollable wrapper
+      if (!table.parentElement.classList.contains('table-wrapper')) {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'table-wrapper';
+        table.parentNode.insertBefore(wrapper, table);
+        wrapper.appendChild(table);
+      }
+    });
+  }
+
+  // Trigger KaTeX math rendering if auto-render is loaded
   if (contentEl && window.renderMathInElement) {
     window.renderMathInElement(contentEl, {
       delimiters: [

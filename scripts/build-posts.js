@@ -72,35 +72,28 @@ function parseFrontMatter(fileContent) {
 }
 
 /**
- * Collect all .md files from _posts/type/.
- * Supports both root-level files and per-post folders.
+ * Recursively collect all .md files under _posts/ folder.
  */
-function collectMdFilesForType(type) {
-  const typeDir = path.join(postsDir, type);
-  if (!fs.existsSync(typeDir)) return [];
-
-  const results = [];
-  const entries = fs.readdirSync(typeDir);
-
+function collectMdFilesRecursively(dir, baseDir = dir) {
+  let results = [];
+  if (!fs.existsSync(dir)) return results;
+  
+  const entries = fs.readdirSync(dir, { withFileTypes: true });
   for (const entry of entries) {
-    const entryPath = path.join(typeDir, entry);
-    const stat = fs.statSync(entryPath);
-
-    if (stat.isFile() && (entry.endsWith('.md') || entry.endsWith('.markdown'))) {
+    const entryPath = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      results = results.concat(collectMdFilesRecursively(entryPath, baseDir));
+    } else if (entry.isFile() && (entry.name.endsWith('.md') || entry.name.endsWith('.markdown'))) {
+      const relativePath = path.relative(baseDir, entryPath);
+      const pathParts = relativePath.split(path.sep);
+      const type = pathParts[0]; 
+      const folder = pathParts.slice(0, -1).join('/'); 
+      
       results.push({
         filePath: entryPath,
-        folder: type,
+        folder: folder,
         type: type
       });
-    } else if (stat.isDirectory()) {
-      const subFiles = fs.readdirSync(entryPath).filter(f => f.endsWith('.md') || f.endsWith('.markdown'));
-      for (const subFile of subFiles) {
-        results.push({
-          filePath: path.join(entryPath, subFile),
-          folder: `${type}/${entry}`,
-          type: type
-        });
-      }
     }
   }
   return results;
@@ -112,10 +105,9 @@ function build() {
     return;
   }
   
-  const mdFiles = [
-    ...collectMdFilesForType('diary'),
-    ...collectMdFilesForType('study')
-  ];
+  const mdFiles = collectMdFilesRecursively(postsDir).filter(
+    file => file.type === 'diary' || file.type === 'study'
+  );
   const posts = [];
   
   for (const { filePath, folder, type } of mdFiles) {

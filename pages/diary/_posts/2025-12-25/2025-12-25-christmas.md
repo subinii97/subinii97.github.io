@@ -1,5 +1,5 @@
 ---
-title: 2025년 12월 - 3편(끝)
+title: 2025년 12월 - (3, 끝)
 author: subin
 date: 2025-12-25 12:00:00 +0800
 categories: [Transition]
